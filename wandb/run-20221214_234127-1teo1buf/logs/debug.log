@@ -1,0 +1,28 @@
+2022-12-14 23:41:27,152 INFO    MainThread:10334 [wandb_setup.py:_flush():68] Configure stats pid to 10334
+2022-12-14 23:41:27,152 INFO    MainThread:10334 [wandb_setup.py:_flush():68] Loading settings from /home/breeze/.config/wandb/settings
+2022-12-14 23:41:27,152 INFO    MainThread:10334 [wandb_setup.py:_flush():68] Loading settings from /media/breeze/dev/Mf_Cls/wandb/settings
+2022-12-14 23:41:27,152 INFO    MainThread:10334 [wandb_setup.py:_flush():68] Loading settings from environment variables: {'_require_service': 'True'}
+2022-12-14 23:41:27,152 INFO    MainThread:10334 [wandb_setup.py:_flush():68] Inferring run settings from compute environment: {'program_relpath': 'train.py', 'program': 'train.py'}
+2022-12-14 23:41:27,153 INFO    MainThread:10334 [wandb_setup.py:_flush():68] Applying login settings: {'anonymous': 'must'}
+2022-12-14 23:41:27,153 INFO    MainThread:10334 [wandb_setup.py:_flush():68] Applying login settings: {'api_key': '***REDACTED***'}
+2022-12-14 23:41:27,153 INFO    MainThread:10334 [wandb_init.py:_log_setup():476] Logging user logs to /media/breeze/dev/Mf_Cls/wandb/run-20221214_234127-1teo1buf/logs/debug.log
+2022-12-14 23:41:27,153 INFO    MainThread:10334 [wandb_init.py:_log_setup():477] Logging internal logs to /media/breeze/dev/Mf_Cls/wandb/run-20221214_234127-1teo1buf/logs/debug-internal.log
+2022-12-14 23:41:27,153 INFO    MainThread:10334 [wandb_init.py:init():516] calling init triggers
+2022-12-14 23:41:27,153 INFO    MainThread:10334 [wandb_init.py:init():519] wandb.init called with sweep_config: {}
+config: {}
+2022-12-14 23:41:27,154 INFO    MainThread:10334 [wandb_init.py:init():569] starting backend
+2022-12-14 23:41:27,154 INFO    MainThread:10334 [wandb_init.py:init():573] setting up manager
+2022-12-14 23:41:27,158 INFO    MainThread:10334 [backend.py:_multiprocessing_setup():102] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2022-12-14 23:41:27,166 INFO    MainThread:10334 [wandb_init.py:init():580] backend started and connected
+2022-12-14 23:41:27,171 INFO    MainThread:10334 [wandb_init.py:init():658] updated telemetry
+2022-12-14 23:41:27,241 INFO    MainThread:10334 [wandb_init.py:init():693] communicating run to backend with 60 second timeout
+2022-12-14 23:41:28,593 INFO    MainThread:10334 [wandb_run.py:_on_init():2006] communicating current version
+2022-12-14 23:41:28,790 INFO    MainThread:10334 [wandb_run.py:_on_init():2010] got version response 
+2022-12-14 23:41:28,791 INFO    MainThread:10334 [wandb_init.py:init():728] starting run threads in backend
+2022-12-14 23:41:28,977 INFO    MainThread:10334 [wandb_run.py:_console_start():1986] atexit reg
+2022-12-14 23:41:28,977 INFO    MainThread:10334 [wandb_run.py:_redirect():1844] redirect: SettingsConsole.WRAP_RAW
+2022-12-14 23:41:28,981 INFO    MainThread:10334 [wandb_run.py:_redirect():1909] Wrapping output streams.
+2022-12-14 23:41:28,981 INFO    MainThread:10334 [wandb_run.py:_redirect():1931] Redirects installed.
+2022-12-14 23:41:28,982 INFO    MainThread:10334 [wandb_init.py:init():765] run started, returning control to user process
+2022-12-14 23:41:28,983 INFO    MainThread:10334 [wandb_run.py:_config_callback():1163] config_cb None None {'epochs': 5, 'batch_size': 1, 'learning_rate': 1e-05, 'val_percent': 0.1, 'save_checkpoint': True, 'img_scale': 0.5, 'amp': True}
+2022-12-14 23:41:35,524 WARNING MsgRouterThr:10334 [router.py:message_loop():77] message_loop has been closed

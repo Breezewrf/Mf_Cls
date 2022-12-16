@@ -1,0 +1,276 @@
+INFO: Starting training:
+        Epochs:          5
+        Batch size:      1
+        Learning rate:   1e-05
+        Training size:   252
+        Validation size: 27
+        Checkpoints:     True
+        Device:          cuda
+        Images scaling:  1
+        Mixed Precision: False
+Epoch 1/5:   1%|          | 2/252 [00:01<03:25,  1.22img/s, loss (batch)=1.01e+4]
+tensor(10130.8164, device='cuda:0')
+tensor(5967.1304, device='cuda:0')
+tensor(14812.4707, device='cuda:0')
+
+Epoch 1/5:   2%|▏         | 6/252 [00:03<02:05,  1.97img/s, loss (batch)=9.76e+3]
+tensor(9763.7139, device='cuda:0')
+tensor(7606.8066, device='cuda:0')
+tensor(3140.8655, device='cuda:0')
+
+Epoch 1/5:   4%|▍         | 11/252 [00:05<01:35,  2.52img/s, loss (batch)=2.63e+3]
+tensor(3912.0955, device='cuda:0')
+tensor(2625.3113, device='cuda:0')
+tensor(6945.5298, device='cuda:0')
+tensor(3119.6077, device='cuda:0')
+
+Epoch 1/5:   6%|▌         | 15/252 [00:07<01:54,  2.07img/s, loss (batch)=1.98e+3]
+tensor(5421.5049, device='cuda:0')
+tensor(1983.7640, device='cuda:0')
+tensor(4151.7983, device='cuda:0')
+
+Epoch 1/5:   8%|▊         | 19/252 [00:09<01:54,  2.04img/s, loss (batch)=2.92e+3]
+tensor(2917.7686, device='cuda:0')
+tensor(8047.6797, device='cuda:0')
+tensor(2977.5518, device='cuda:0')
+
+Epoch 1/5:  10%|▉         | 24/252 [00:11<01:42,  2.23img/s, loss (batch)=2.68e+3]
+tensor(5411.5381, device='cuda:0')
+tensor(2683.5386, device='cuda:0')
+tensor(617.5936, device='cuda:0')
+tensor(1441.8076, device='cuda:0')
+tensor(2564.5117, device='cuda:0')
+
+Epoch 1/5:  11%|█         | 28/252 [00:13<01:39,  2.25img/s, loss (batch)=3.97e+3]
+tensor(3970.2251, device='cuda:0')
+tensor(2518.2800, device='cuda:0')
+tensor(1501.0411, device='cuda:0')
+
+Epoch 1/5:  13%|█▎        | 34/252 [00:15<01:24,  2.58img/s, loss (batch)=813]
+tensor(4302.5986, device='cuda:0')
+tensor(812.8408, device='cuda:0')
+tensor(1392.6543, device='cuda:0')
+tensor(1216.3162, device='cuda:0')
+tensor(3146.4475, device='cuda:0')
+
+Epoch 1/5:  15%|█▌        | 38/252 [00:17<01:42,  2.09img/s, loss (batch)=4.72e+3]
+tensor(14069.3486, device='cuda:0')
+tensor(1472.8098, device='cuda:0')
+
+Epoch 1/5:  17%|█▋        | 42/252 [00:19<01:32,  2.27img/s, loss (batch)=3.62e+3]
+tensor(329.1252, device='cuda:0')
+tensor(3620.0181, device='cuda:0')
+tensor(5673.4805, device='cuda:0')
+
+Epoch 1/5:  18%|█▊        | 46/252 [00:21<01:47,  1.92img/s, loss (batch)=2.75e+3]
+tensor(2745.8447, device='cuda:0')
+tensor(3546.6199, device='cuda:0')
+tensor(3702.5479, device='cuda:0')
+
+Epoch 1/5:  20%|█▉        | 50/252 [00:23<01:38,  2.04img/s, loss (batch)=1.34e+3]
+tensor(2118.0015, device='cuda:0')
+tensor(1340.2153, device='cuda:0')
+
+Validation round:  89%|████████▉ | 24/27 [00:02<00:00, 11.02batch/s]
+
+Epoch 1/5:  21%|██        | 53/252 [00:29<03:53,  1.17s/img, loss (batch)=4.32e+3]
+tensor(4315.8164, device='cuda:0')
+tensor(1449.8154, device='cuda:0')
+
+Epoch 1/5:  23%|██▎       | 57/252 [00:31<01:58,  1.64img/s, loss (batch)=2.46e+3]
+tensor(2351.0293, device='cuda:0')
+tensor(1637.0714, device='cuda:0')
+tensor(2459.0002, device='cuda:0')
+tensor(1862.2019, device='cuda:0')
+tensor(1862.3939, device='cuda:0')
+
+Epoch 1/5:  25%|██▌       | 63/252 [00:33<01:14,  2.53img/s, loss (batch)=793]
+tensor(1245.6669, device='cuda:0')
+tensor(793.2445, device='cuda:0')
+tensor(2116.1682, device='cuda:0')
+tensor(2025.7128, device='cuda:0')
+tensor(652.2568, device='cuda:0')
+
+Epoch 1/5:  27%|██▋       | 69/252 [00:35<01:06,  2.74img/s, loss (batch)=1.51e+3]
+tensor(3872.3105, device='cuda:0')
+tensor(1512.5875, device='cuda:0')
+tensor(1257.2950, device='cuda:0')
+
+Epoch 1/5:  28%|██▊       | 71/252 [00:37<01:31,  1.97img/s, loss (batch)=7.79e+3]
+tensor(7791.2349, device='cuda:0')
+tensor(1634.3777, device='cuda:0')
+
+Epoch 1/5:  29%|██▉       | 74/252 [00:39<01:47,  1.65img/s, loss (batch)=1.78e+3]
+tensor(7171.8877, device='cuda:0')
+tensor(398.8940, device='cuda:0')
+
+Epoch 1/5:  31%|███       | 78/252 [00:41<01:48,  1.61img/s, loss (batch)=2.23e+3]
+tensor(2232.4160, device='cuda:0')
+tensor(3751.7493, device='cuda:0')
+tensor(1199.4755, device='cuda:0')
+
+Epoch 1/5:  33%|███▎      | 83/252 [00:43<01:08,  2.45img/s, loss (batch)=1e+3]
+tensor(2433.9065, device='cuda:0')
+tensor(1004.3055, device='cuda:0')
+tensor(1412.4934, device='cuda:0')
+tensor(765.5324, device='cuda:0')
+tensor(1617.0526, device='cuda:0')
+
+Epoch 1/5:  35%|███▍      | 88/252 [00:45<01:03,  2.59img/s, loss (batch)=1.35e+3]
+tensor(1499.9412, device='cuda:0')
+tensor(1354.3721, device='cuda:0')
+tensor(1345.0941, device='cuda:0')
+
+Epoch 1/5:  37%|███▋      | 93/252 [00:47<01:11,  2.24img/s, loss (batch)=1.72e+3]
+tensor(1796.0807, device='cuda:0')
+tensor(1718.8309, device='cuda:0')
+tensor(1381.0333, device='cuda:0')
+tensor(748.2026, device='cuda:0')
+
+Epoch 1/5:  39%|███▉      | 98/252 [00:49<00:57,  2.68img/s, loss (batch)=963]
+tensor(1883.9259, device='cuda:0')
+tensor(962.3817, device='cuda:0')
+tensor(1395.3059, device='cuda:0')
+tensor(2355.7236, device='cuda:0')
+
+Epoch 1/5:  40%|███▉      | 100/252 [00:51<01:05,  2.32img/s, loss (batch)=1.03e+3]
+
+Epoch 1/5:  40%|████      | 102/252 [00:55<03:20,  1.33s/img, loss (batch)=939]
+tensor(938.4850, device='cuda:0')
+tensor(1425.9856, device='cuda:0')
+tensor(1317.8215, device='cuda:0')
+
+Epoch 1/5:  42%|████▏     | 107/252 [00:57<01:13,  1.96img/s, loss (batch)=220]
+tensor(591.1716, device='cuda:0')
+tensor(219.6919, device='cuda:0')
+tensor(432.8225, device='cuda:0')
+tensor(1362.4679, device='cuda:0')
+
+Epoch 1/5:  44%|████▎     | 110/252 [00:59<01:09,  2.04img/s, loss (batch)=4.07e+3]
+tensor(4067.9333, device='cuda:0')
+tensor(611.0164, device='cuda:0')
+tensor(1283.3556, device='cuda:0')
+
+Epoch 1/5:  45%|████▌     | 114/252 [01:01<01:03,  2.18img/s, loss (batch)=429]
+tensor(428.6555, device='cuda:0')
+tensor(500.4748, device='cuda:0')
+tensor(4241.4082, device='cuda:0')
+tensor(2534.7668, device='cuda:0')
+
+Epoch 1/5:  48%|████▊     | 120/252 [01:03<01:03,  2.07img/s, loss (batch)=1.95e+3]
+tensor(1952.1854, device='cuda:0')
+tensor(1288.6433, device='cuda:0')
+tensor(294.0646, device='cuda:0')
+
+Epoch 1/5:  49%|████▉     | 123/252 [01:05<01:20,  1.60img/s, loss (batch)=5.85e+3]
+tensor(745.1872, device='cuda:0')
+tensor(1350.6924, device='cuda:0')
+tensor(729.5800, device='cuda:0')
+
+Epoch 1/5:  51%|█████     | 129/252 [01:07<00:46,  2.62img/s, loss (batch)=696]
+tensor(1357.7650, device='cuda:0')
+tensor(696.4194, device='cuda:0')
+tensor(1146.9563, device='cuda:0')
+tensor(357.3297, device='cuda:0')
+
+Epoch 1/5:  53%|█████▎    | 134/252 [01:09<00:49,  2.38img/s, loss (batch)=1.23e+3]
+tensor(1587.3839, device='cuda:0')
+tensor(1231.9769, device='cuda:0')
+tensor(1072.0485, device='cuda:0')
+tensor(1634.6979, device='cuda:0')
+
+Epoch 1/5:  55%|█████▌    | 139/252 [01:11<00:41,  2.70img/s, loss (batch)=220]
+tensor(287.7576, device='cuda:0')
+tensor(219.5676, device='cuda:0')
+tensor(3437.2625, device='cuda:0')
+
+Epoch 1/5:  56%|█████▋    | 142/252 [01:13<00:58,  1.88img/s, loss (batch)=947]
+tensor(947.0645, device='cuda:0')
+tensor(1374.5479, device='cuda:0')
+tensor(1511.1145, device='cuda:0')
+
+Epoch 1/5:  58%|█████▊    | 146/252 [01:15<00:53,  1.99img/s, loss (batch)=1.24e+3]
+tensor(1238.8510, device='cuda:0')
+tensor(1071.5322, device='cuda:0')
+tensor(415.0614, device='cuda:0')
+
+Epoch 1/5:  60%|█████▉    | 150/252 [01:17<00:39,  2.55img/s, loss (batch)=854]
+tensor(853.7587, device='cuda:0')
+Epoch 1/5:  60%|█████▉    | 150/252 [01:17<00:39,  2.55img/s, loss (batch)=621]
+
+Validation round:  96%|█████████▋| 26/27 [00:02<00:00, 10.61batch/s]
+tensor(838.6503, device='cuda:0')
+
+Epoch 1/5:  62%|██████▏   | 156/252 [01:24<00:58,  1.64img/s, loss (batch)=334]
+tensor(471.6390, device='cuda:0')
+tensor(756.2906, device='cuda:0')
+tensor(334.4625, device='cuda:0')
+tensor(284.0028, device='cuda:0')
+
+Epoch 1/5:  63%|██████▎   | 158/252 [01:26<01:07,  1.39img/s, loss (batch)=1.92e+3]
+tensor(1921.4575, device='cuda:0')
+tensor(1207.2628, device='cuda:0')
+
+Epoch 1/5:  65%|██████▍   | 163/252 [01:28<00:47,  1.86img/s, loss (batch)=669]
+tensor(1019.3052, device='cuda:0')
+tensor(668.7517, device='cuda:0')
+tensor(1177.0542, device='cuda:0')
+
+Epoch 1/5:  67%|██████▋   | 168/252 [01:30<00:34,  2.43img/s, loss (batch)=865]
+tensor(1041.3905, device='cuda:0')
+tensor(1219.3081, device='cuda:0')
+tensor(865.1639, device='cuda:0')
+tensor(882.8514, device='cuda:0')
+
+Epoch 1/5:  69%|██████▊   | 173/252 [01:32<00:30,  2.56img/s, loss (batch)=1.05e+3]
+tensor(884.8014, device='cuda:0')
+tensor(502.7152, device='cuda:0')
+tensor(1050.0316, device='cuda:0')
+tensor(839.1271, device='cuda:0')
+
+Epoch 1/5:  71%|███████   | 178/252 [01:34<00:28,  2.58img/s, loss (batch)=153]
+tensor(1988.5394, device='cuda:0')
+tensor(2454.7849, device='cuda:0')
+tensor(152.8822, device='cuda:0')
+tensor(1134.1655, device='cuda:0')
+
+Epoch 1/5:  73%|███████▎  | 183/252 [01:36<00:30,  2.23img/s, loss (batch)=4.51e+3]
+tensor(657.9231, device='cuda:0')
+tensor(3579.2087, device='cuda:0')
+tensor(4505.8584, device='cuda:0')
+tensor(1990.3137, device='cuda:0')
+
+Epoch 1/5:  75%|███████▍  | 188/252 [01:38<00:24,  2.62img/s, loss (batch)=296]
+tensor(994.1218, device='cuda:0')
+tensor(1125.0116, device='cuda:0')
+tensor(296.2178, device='cuda:0')
+tensor(1274.1475, device='cuda:0')
+tensor(770.6828, device='cuda:0')
+
+Epoch 1/5:  77%|███████▋  | 193/252 [01:40<00:22,  2.66img/s, loss (batch)=1.38e+3]
+tensor(1325.5094, device='cuda:0')
+tensor(756.9980, device='cuda:0')
+tensor(1376.7899, device='cuda:0')
+
+Epoch 1/5:  79%|███████▊  | 198/252 [01:42<00:22,  2.45img/s, loss (batch)=967]
+tensor(1422.1935, device='cuda:0')
+tensor(854.2660, device='cuda:0')
+tensor(966.5001, device='cuda:0')
+tensor(143.6938, device='cuda:0')
+
+Epoch 1/5:  79%|███████▉  | 200/252 [01:43<00:21,  2.43img/s, loss (batch)=2.03e+3]
+tensor(2027.9277, device='cuda:0')
+
+Epoch 1/5:  80%|███████▉  | 201/252 [01:48<01:23,  1.63s/img, loss (batch)=608]
+tensor(607.5781, device='cuda:0')
+tensor(3259.4746, device='cuda:0')
+
+Epoch 1/5:  81%|████████▏ | 205/252 [01:49<00:37,  1.25img/s, loss (batch)=828]
+tensor(827.5433, device='cuda:0')
+tensor(1111.0814, device='cuda:0')
+Epoch 1/5:  82%|████████▏ | 206/252 [01:50<00:24,  1.86img/s, loss (batch)=1.11e+3]
+Traceback (most recent call last):
+  File "/media/breeze/dev/Mf_Cls/train.py", line 251, in <module>
+    train_model(
+  File "/media/breeze/dev/Mf_Cls/train.py", line 129, in train_model
+    epoch_loss += loss.item()

@@ -1,0 +1,949 @@
+2022-12-15 20:18:49,586 INFO    StreamThr :21021 [internal.py:wandb_internal():88] W&B internal server running at pid: 21021, started at: 2022-12-15 20:18:49.585970
+2022-12-15 20:18:49,588 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: status
+2022-12-15 20:18:49,591 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: status
+2022-12-15 20:18:49,592 DEBUG   SenderThread:21021 [sender.py:send():303] send: header
+2022-12-15 20:18:49,592 INFO    WriterThread:21021 [datastore.py:open_for_write():75] open: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/run-392hngct.wandb
+2022-12-15 20:18:49,632 DEBUG   SenderThread:21021 [sender.py:send():303] send: run
+2022-12-15 20:18:49,634 INFO    SenderThread:21021 [sender.py:_maybe_setup_resume():593] checking resume status for None/U-Net/392hngct
+2022-12-15 20:18:51,015 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: check_version
+2022-12-15 20:18:51,025 INFO    SenderThread:21021 [dir_watcher.py:__init__():216] watching files in: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files
+2022-12-15 20:18:51,025 INFO    SenderThread:21021 [sender.py:_start_run_threads():928] run started: 392hngct with start time 1671106729.583367
+2022-12-15 20:18:51,025 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:51,026 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:51,026 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: check_version
+2022-12-15 20:18:51,246 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: run_start
+2022-12-15 20:18:51,260 DEBUG   HandlerThread:21021 [system_info.py:__init__():31] System info init
+2022-12-15 20:18:51,261 DEBUG   HandlerThread:21021 [system_info.py:__init__():46] System info init done
+2022-12-15 20:18:51,261 INFO    HandlerThread:21021 [system_monitor.py:start():150] Starting system monitor
+2022-12-15 20:18:51,261 INFO    SystemMonitor:21021 [system_monitor.py:_start():116] Starting system asset monitoring threads
+2022-12-15 20:18:51,262 INFO    HandlerThread:21021 [system_monitor.py:probe():168] Collecting system info
+2022-12-15 20:18:51,262 INFO    SystemMonitor:21021 [interfaces.py:start():168] Started cpu
+2022-12-15 20:18:51,264 INFO    SystemMonitor:21021 [interfaces.py:start():168] Started disk
+2022-12-15 20:18:51,266 INFO    SystemMonitor:21021 [interfaces.py:start():168] Started gpu
+2022-12-15 20:18:51,266 INFO    SystemMonitor:21021 [interfaces.py:start():168] Started memory
+2022-12-15 20:18:51,267 INFO    SystemMonitor:21021 [interfaces.py:start():168] Started network
+2022-12-15 20:18:51,293 DEBUG   HandlerThread:21021 [system_info.py:probe():195] Probing system
+2022-12-15 20:18:51,316 DEBUG   HandlerThread:21021 [system_info.py:_probe_git():180] Probing git
+2022-12-15 20:18:51,372 DEBUG   HandlerThread:21021 [system_info.py:_probe_git():188] Probing git done
+2022-12-15 20:18:51,372 DEBUG   HandlerThread:21021 [system_info.py:probe():241] Probing system done
+2022-12-15 20:18:51,373 DEBUG   HandlerThread:21021 [system_monitor.py:probe():177] {'os': 'Linux-5.15.0-56-generic-x86_64-with-glibc2.29', 'python': '3.8.10', 'heartbeatAt': '2022-12-15T12:18:51.294397', 'startedAt': '2022-12-15T12:18:49.542214', 'docker': None, 'cuda': '11.0.207', 'args': (), 'state': 'running', 'program': '/media/breeze/dev/Mf_Cls/train.py', 'codePath': 'train.py', 'git': {'remote': 'https://github.com/Breezewrf/Mf_Cls.git', 'commit': '4bb7823ab295acc2520530d0b895d392abdfec47'}, 'email': '578450426@qq.com', 'root': '/media/breeze/dev/Mf_Cls', 'host': 'breeze-Ubuntu', 'username': 'breeze', 'executable': '/media/breeze/dev/Mf_Cls/venv/bin/python', 'cpu_count': 4, 'cpu_count_logical': 8, 'cpu_freq': {'current': 1782.2285, 'min': 400.0, 'max': 3400.0}, 'cpu_freq_per_core': [{'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1657.828, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}], 'disk': {'total': 70.03250503540039, 'used': 46.32037353515625}, 'gpu': 'NVIDIA GeForce MX150', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce MX150', 'memory_total': 2147483648}], 'memory': {'total': 15.507335662841797}}
+2022-12-15 20:18:51,373 INFO    HandlerThread:21021 [system_monitor.py:probe():178] Finished collecting system info
+2022-12-15 20:18:51,374 INFO    HandlerThread:21021 [system_monitor.py:probe():181] Publishing system info
+2022-12-15 20:18:51,374 DEBUG   HandlerThread:21021 [system_info.py:_save_pip():51] Saving list of pip packages installed into the current environment
+2022-12-15 20:18:51,376 DEBUG   HandlerThread:21021 [system_info.py:_save_pip():67] Saving pip packages done
+2022-12-15 20:18:51,378 INFO    HandlerThread:21021 [system_monitor.py:probe():183] Finished publishing system info
+2022-12-15 20:18:51,393 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:18:51,394 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-metadata.json with policy now
+2022-12-15 20:18:51,411 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: stop_status
+2022-12-15 20:18:51,411 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: stop_status
+2022-12-15 20:18:51,829 DEBUG   SenderThread:21021 [sender.py:send():303] send: telemetry
+2022-12-15 20:18:51,830 DEBUG   SenderThread:21021 [sender.py:send():303] send: config
+2022-12-15 20:18:52,027 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:18:52,027 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:18:52,028 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/requirements.txt
+2022-12-15 20:18:52,028 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-metadata.json
+2022-12-15 20:18:52,541 INFO    Thread-16 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/2rbu5p2o-wandb-metadata.json
+2022-12-15 20:18:53,048 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:53,049 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:53,050 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:53,052 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:53,385 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:53,386 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:53,386 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:53,387 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:53,774 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:53,774 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:53,775 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:53,775 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:54,028 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:18:54,029 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:18:54,403 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:54,404 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:54,405 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:54,405 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:54,705 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:54,706 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:54,706 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:54,707 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:55,029 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:18:55,029 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:18:55,030 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:55,031 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:55,031 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:55,032 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:55,332 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:55,333 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:55,333 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:55,335 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:55,864 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:55,865 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:55,865 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:55,866 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:56,030 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:18:56,031 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:18:56,303 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:56,304 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:56,304 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:56,305 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:56,678 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:56,679 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:56,679 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:56,680 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:57,031 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:18:57,032 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:18:57,131 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:57,131 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:57,131 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:57,132 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:57,685 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:57,685 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:57,686 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:57,688 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:58,017 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:58,018 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:58,018 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:58,018 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:58,033 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:18:58,033 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:18:58,428 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:58,429 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:58,429 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:58,430 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:58,826 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:58,827 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:58,828 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:58,828 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:59,034 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:18:59,034 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:18:59,054 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:59,055 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:59,055 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:59,056 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:59,551 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:59,552 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:59,552 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:59,553 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:18:59,925 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:18:59,926 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:18:59,927 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:18:59,927 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:00,035 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:00,035 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:00,406 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:00,407 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:00,408 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:00,408 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:00,844 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:00,845 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:00,845 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:00,846 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:01,036 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:01,036 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:01,124 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:01,125 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:01,125 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:01,126 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:01,462 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:01,463 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:01,463 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:01,464 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:02,037 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:02,038 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:02,503 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:02,504 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:02,504 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:02,505 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:03,038 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:03,039 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:03,214 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:03,215 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:03,215 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:03,216 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:03,498 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:03,499 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:03,499 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:03,500 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:03,872 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:03,873 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:03,873 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:03,874 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:04,040 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:04,040 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:04,118 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:04,119 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:04,119 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:04,120 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:04,330 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:04,331 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:04,331 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:04,333 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:04,882 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:04,883 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:04,884 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:04,884 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:05,041 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:05,042 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:05,563 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:05,564 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:05,564 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:05,564 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:05,922 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:05,923 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:05,923 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:05,924 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:06,042 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:06,043 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:06,563 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:06,564 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:06,565 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:06,565 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:06,832 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: stop_status
+2022-12-15 20:19:06,833 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: stop_status
+2022-12-15 20:19:06,940 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:07,044 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:07,044 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:07,274 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:07,300 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:07,300 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:07,301 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:07,301 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:07,301 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:07,302 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:07,714 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:07,714 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:07,715 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:07,715 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:08,045 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:08,046 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:08,048 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:08,048 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:08,049 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:08,049 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:08,435 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:08,436 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:08,437 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:08,437 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:08,729 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:08,730 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:08,731 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:08,731 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:08,936 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:08,938 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:08,938 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:08,939 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:09,047 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:09,047 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:09,312 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:09,312 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:09,313 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:09,313 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:09,704 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:09,705 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:09,705 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:09,706 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:10,048 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:10,048 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:10,057 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:10,057 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:10,058 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:10,058 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:10,731 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:10,732 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:10,732 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:10,733 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:11,049 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:11,050 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:11,128 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:11,129 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:11,129 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:11,130 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:11,515 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:11,515 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:11,516 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:11,516 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:12,050 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:12,051 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:12,335 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:12,336 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:12,336 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:12,336 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:12,811 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:12,812 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:12,812 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:12,813 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:13,051 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:13,052 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:13,123 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:13,124 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:13,124 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:13,132 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:13,454 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:13,455 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:13,455 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:13,455 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:13,685 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:13,686 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:13,687 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:13,687 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:14,052 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:14,053 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:15,053 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:16,054 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:18,060 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:18,785 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:19:18,785 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/images_50_08bfd02a33e27de0a5e5.png with policy now
+2022-12-15 20:19:18,792 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:19:18,792 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/true_50_0831cfcfdb62407a4727.png with policy now
+2022-12-15 20:19:18,801 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:19:18,801 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/pred_50_15ba85caaaac95c4cf82.png with policy now
+2022-12-15 20:19:18,817 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:18,857 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:18,881 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:18,898 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:19,061 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:19,061 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/true_50_0831cfcfdb62407a4727.png
+2022-12-15 20:19:19,062 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/images_50_08bfd02a33e27de0a5e5.png
+2022-12-15 20:19:19,063 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/pred_50_15ba85caaaac95c4cf82.png
+2022-12-15 20:19:19,063 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media
+2022-12-15 20:19:19,063 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images
+2022-12-15 20:19:19,140 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:19,146 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:19,155 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:19,172 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:19,533 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:19,539 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:19,547 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:19,564 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:19,802 INFO    Thread-19 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/r3m77k8f-media/images/pred_50_15ba85caaaac95c4cf82.png
+2022-12-15 20:19:19,864 INFO    Thread-18 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/15ggb5er-media/images/true_50_0831cfcfdb62407a4727.png
+2022-12-15 20:19:19,898 INFO    Thread-17 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/k5j9qhqx-media/images/images_50_08bfd02a33e27de0a5e5.png
+2022-12-15 20:19:19,974 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:20,012 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:20,012 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:20,028 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:20,063 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:20,063 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:20,063 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/config.yaml
+2022-12-15 20:19:20,355 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:20,361 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:20,370 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:20,386 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:20,757 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:20,767 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:20,768 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:20,785 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:21,064 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:21,065 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:21,097 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:21,102 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:21,108 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:21,125 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:21,190 INFO    Thread-20 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/33s7kp7t-media/images/pred_50_15ba85caaaac95c4cf82.png
+2022-12-15 20:19:21,427 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:21,433 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:21,444 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:21,462 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:21,775 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:21,781 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:21,792 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:21,810 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:22,066 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:22,066 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:22,169 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:22,175 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:22,186 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:22,203 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:22,302 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: stop_status
+2022-12-15 20:19:22,302 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: stop_status
+2022-12-15 20:19:22,589 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:22,650 INFO    Thread-21 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/mhunp059-media/images/true_50_0831cfcfdb62407a4727.png
+2022-12-15 20:19:22,885 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:22,886 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:22,903 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:22,957 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:22,963 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:22,970 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:22,986 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:23,067 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:23,068 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:23,480 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:23,485 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:23,497 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:23,515 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:23,935 INFO    Thread-22 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/252zt8n1-media/images/images_50_08bfd02a33e27de0a5e5.png
+2022-12-15 20:19:24,069 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:24,070 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:24,072 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:24,078 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:24,085 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:24,109 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:24,604 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:24,610 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:24,615 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:24,640 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:25,068 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:25,074 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:25,080 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:25,099 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:25,099 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:25,100 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:25,570 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:25,576 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:25,584 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:25,600 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:26,101 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:26,101 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:26,867 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:26,872 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:26,878 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:26,894 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:27,103 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:27,104 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:27,395 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:27,400 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:27,406 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:27,423 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:27,777 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:27,783 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:27,792 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:27,812 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:28,105 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:28,105 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:28,153 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:28,159 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:28,164 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:28,183 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:28,479 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:28,485 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:28,491 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:28,508 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:28,807 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:28,812 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:28,819 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:28,836 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:29,106 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:29,107 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:29,178 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:29,184 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:29,189 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:29,207 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:29,579 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:29,585 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:29,593 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:29,610 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:29,933 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:29,939 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:29,944 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:29,963 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:30,107 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:30,108 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:30,309 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:30,314 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:30,322 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:30,339 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:30,651 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:30,656 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:30,668 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:30,688 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:31,081 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:31,086 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:31,098 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:31,116 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:31,116 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:31,117 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:31,438 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:31,443 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:31,456 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:31,474 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:32,063 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:32,069 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:32,081 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:32,099 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:32,118 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:32,118 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:32,380 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:32,386 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:32,397 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:32,414 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:33,120 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:33,120 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:33,135 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:33,141 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:33,148 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:33,166 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:33,475 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:33,481 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:33,490 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:33,510 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:34,065 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:34,087 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:34,093 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:34,110 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:34,121 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:34,122 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:34,379 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:34,385 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:34,392 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:34,410 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:34,833 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:34,839 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:34,846 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:34,862 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:35,123 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:35,123 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:35,174 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:35,179 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:35,192 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:35,210 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:35,672 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:35,678 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:35,702 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:35,722 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:36,011 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:36,017 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:36,022 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:36,042 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:36,124 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:36,125 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:36,537 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:36,543 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:36,549 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:36,567 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:36,873 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:36,879 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:36,887 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:36,903 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:37,126 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:37,126 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:37,489 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:37,495 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:37,502 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:37,519 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:37,902 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: stop_status
+2022-12-15 20:19:37,902 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: stop_status
+2022-12-15 20:19:38,019 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:38,127 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:38,128 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:38,245 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:38,246 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:38,262 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:38,397 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:38,403 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:38,412 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:38,428 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:38,771 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:38,777 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:38,786 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:38,804 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:39,129 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:39,130 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:39,149 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:39,155 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:39,163 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:39,181 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:39,529 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:39,534 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:39,541 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:39,559 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:40,066 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:40,072 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:40,079 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:40,104 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:40,131 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:40,131 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:40,378 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:40,384 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:40,391 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:40,407 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:40,902 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:40,907 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:40,915 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:40,935 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:41,133 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:41,133 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:42,134 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:43,136 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:44,137 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:44,911 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:19:44,912 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/images_101_f7efd56f28c2a62bd3dd.png with policy now
+2022-12-15 20:19:44,916 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:19:44,916 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/true_101_9553c8cc911171c623fe.png with policy now
+2022-12-15 20:19:44,920 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:19:44,920 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/pred_101_580e3d09bc24e6909fb3.png with policy now
+2022-12-15 20:19:44,933 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:44,965 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:44,993 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:45,016 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:45,139 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:45,139 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/images_101_f7efd56f28c2a62bd3dd.png
+2022-12-15 20:19:45,140 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/true_101_9553c8cc911171c623fe.png
+2022-12-15 20:19:45,141 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/pred_101_580e3d09bc24e6909fb3.png
+2022-12-15 20:19:45,141 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images
+2022-12-15 20:19:45,437 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:45,443 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:45,451 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:45,470 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:45,816 INFO    Thread-25 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/1h37do37-media/images/pred_101_580e3d09bc24e6909fb3.png
+2022-12-15 20:19:45,866 INFO    Thread-23 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/3h0rnk3n-media/images/images_101_f7efd56f28c2a62bd3dd.png
+2022-12-15 20:19:45,881 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:45,886 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:45,894 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:45,912 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:46,141 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:46,141 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:46,216 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:46,222 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:46,227 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:46,256 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:46,339 INFO    Thread-24 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/ah6am01v-media/images/true_101_9553c8cc911171c623fe.png
+2022-12-15 20:19:46,505 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:46,511 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:46,519 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:46,545 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:47,085 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:47,091 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:47,099 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:47,116 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:47,143 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:47,143 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:47,232 INFO    Thread-26 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/1mw2vorr-media/images/pred_101_580e3d09bc24e6909fb3.png
+2022-12-15 20:19:47,620 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:47,626 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:47,634 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:47,652 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:47,949 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:47,955 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:47,963 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:47,985 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:48,144 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:48,145 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:48,529 INFO    Thread-27 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/1c52la36-media/images/images_101_f7efd56f28c2a62bd3dd.png
+2022-12-15 20:19:48,545 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:48,551 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:48,556 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:48,572 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:49,146 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:49,146 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:49,151 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:49,156 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:49,162 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:49,183 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:49,415 INFO    Thread-28 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/3euehhg3-media/images/true_101_9553c8cc911171c623fe.png
+2022-12-15 20:19:50,148 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:50,148 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:50,248 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:50,254 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:50,260 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:50,278 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:50,592 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:50,598 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:50,605 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:50,633 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:50,922 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:50,927 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:50,940 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:50,971 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:51,150 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:51,150 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:51,267 DEBUG   SystemMonitor:21021 [system_monitor.py:_start():130] Starting system metrics aggregation loop
+2022-12-15 20:19:51,268 DEBUG   SenderThread:21021 [sender.py:send():303] send: stats
+2022-12-15 20:19:51,318 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:51,324 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:51,330 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:51,348 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:51,688 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:51,701 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:51,701 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:51,718 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:52,143 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:52,148 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:52,154 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:52,175 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:52,176 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:52,176 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:52,424 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:52,430 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:52,435 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:52,464 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:53,034 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:53,040 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:53,047 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:53,065 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:53,178 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:53,178 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:53,261 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: stop_status
+2022-12-15 20:19:53,261 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: stop_status
+2022-12-15 20:19:53,385 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:53,564 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:53,565 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:53,583 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:53,738 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:53,744 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:53,752 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:53,770 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:54,179 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:54,180 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:54,345 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:54,351 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:54,359 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:54,378 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:54,642 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:54,648 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:54,655 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:54,674 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:55,172 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:55,178 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:55,185 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:55,203 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:55,204 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:55,204 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:55,532 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:55,538 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:55,546 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:55,563 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:56,206 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:56,206 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:56,307 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:56,313 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:56,319 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:56,336 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:56,764 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:56,770 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:56,776 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:56,792 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:57,208 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:57,209 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:57,477 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:57,483 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:57,490 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:57,508 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:57,735 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:57,741 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:57,748 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:57,765 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:58,125 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:58,131 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:58,137 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:58,156 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:58,210 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:58,211 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:58,802 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:58,808 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:58,815 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:58,830 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:19:59,212 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:19:59,213 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:19:59,418 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:19:59,432 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:19:59,432 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:19:59,451 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:00,055 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:00,060 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:00,067 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:00,085 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:00,215 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:00,215 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:00,394 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:00,400 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:00,406 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:00,423 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:00,766 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:00,772 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:00,777 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:00,794 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:01,114 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:01,127 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:01,127 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:01,144 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:01,216 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:01,217 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:01,454 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:01,459 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:01,465 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:01,483 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:01,820 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:01,825 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:01,833 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:01,852 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:02,218 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:02,219 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:02,242 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:02,248 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:02,253 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:02,273 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:02,624 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:02,630 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:02,636 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:02,652 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:02,951 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:02,957 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:02,962 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:02,979 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:03,220 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:03,221 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:03,324 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:03,330 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:03,339 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:03,356 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:03,691 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:03,697 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:03,703 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:03,721 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:04,053 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:04,059 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:04,067 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:04,086 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:04,222 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:04,222 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:04,582 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:04,588 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:04,596 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:04,612 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:04,948 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:04,954 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:04,963 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:04,979 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:05,224 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:05,224 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:05,308 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:05,314 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:05,322 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:05,340 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:05,632 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:05,638 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:05,643 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:05,661 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:06,017 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:06,024 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:06,029 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:06,046 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:06,226 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:06,227 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:06,686 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:06,692 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:06,701 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:06,719 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:07,002 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:07,007 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:07,012 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:07,029 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:07,228 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:07,228 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:07,731 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:07,737 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:07,745 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:07,769 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:08,230 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:08,230 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:08,571 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: stop_status
+2022-12-15 20:20:08,572 DEBUG   SenderThread:21021 [sender.py:send_request():317] send_request: stop_status
+2022-12-15 20:20:09,232 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:10,234 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:11,680 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:20:11,680 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/images_152_4d6ddc6d2d4de7883215.png with policy now
+2022-12-15 20:20:11,750 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:20:11,750 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/true_152_20d5b34038c3079de729.png with policy now
+2022-12-15 20:20:11,758 DEBUG   SenderThread:21021 [sender.py:send():303] send: files
+2022-12-15 20:20:11,758 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file media/images/pred_152_5f1f1f4b441da51aab79.png with policy now
+2022-12-15 20:20:11,779 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:11,811 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:11,852 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:11,873 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:12,239 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:12,239 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:12,239 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/true_152_20d5b34038c3079de729.png
+2022-12-15 20:20:12,240 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/images_152_4d6ddc6d2d4de7883215.png
+2022-12-15 20:20:12,241 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images/pred_152_5f1f1f4b441da51aab79.png
+2022-12-15 20:20:12,241 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/media/images
+2022-12-15 20:20:12,272 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:12,277 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:12,289 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:12,311 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:12,838 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:12,843 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:12,850 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:12,871 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:13,077 INFO    Thread-29 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/3b9nvtu3-media/images/images_152_4d6ddc6d2d4de7883215.png
+2022-12-15 20:20:13,079 INFO    Thread-31 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/ss5fmhxx-media/images/pred_152_5f1f1f4b441da51aab79.png
+2022-12-15 20:20:13,080 INFO    Thread-30 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/3r2rt7j2-media/images/true_152_20d5b34038c3079de729.png
+2022-12-15 20:20:13,166 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:13,172 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:13,178 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:13,198 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:13,241 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:13,241 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:13,584 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:13,589 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:13,595 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:13,616 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:13,962 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:13,968 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:13,973 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:13,992 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:14,244 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:14,244 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:14,393 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:14,398 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:14,404 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:14,422 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:14,614 INFO    Thread-32 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/34uqvoxk-media/images/images_152_4d6ddc6d2d4de7883215.png
+2022-12-15 20:20:14,615 INFO    Thread-33 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/33t03kre-media/images/pred_152_5f1f1f4b441da51aab79.png
+2022-12-15 20:20:14,706 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:14,712 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:14,718 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:14,737 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:15,107 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:15,113 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:15,119 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:15,137 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:15,246 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:15,246 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:15,442 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:15,448 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:15,462 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:15,481 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:15,788 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:15,793 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:15,807 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:15,825 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:16,116 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:16,122 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:16,129 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:16,147 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:16,150 INFO    Thread-34 :21021 [upload_job.py:push():143] Uploaded file /tmp/tmpb452xq5gwandb/29jw129v-media/images/true_152_20d5b34038c3079de729.png
+2022-12-15 20:20:16,248 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:16,248 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:17,233 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:17,239 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:17,246 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:17,269 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:17,270 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:17,270 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:17,375 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:17,381 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:17,390 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:17,409 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:17,856 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:17,863 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:17,875 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:17,894 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:18,227 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:18,233 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:18,240 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:18,259 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:18,272 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:18,272 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:18,549 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:18,555 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:18,567 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:18,595 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:18,983 DEBUG   HandlerThread:21021 [handler.py:handle_request():139] handle_request: partial_history
+2022-12-15 20:20:18,989 DEBUG   SenderThread:21021 [sender.py:send():303] send: history
+2022-12-15 20:20:18,999 DEBUG   SenderThread:21021 [sender.py:send():303] send: summary
+2022-12-15 20:20:19,028 INFO    SenderThread:21021 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-15 20:20:19,276 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/wandb-summary.json
+2022-12-15 20:20:19,277 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:20,284 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:21,272 DEBUG   SenderThread:21021 [sender.py:send():303] send: stats
+2022-12-15 20:20:21,313 INFO    Thread-13 :21021 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221215_201849-392hngct/files/output.log
+2022-12-15 20:20:51,274 DEBUG   SenderThread:21021 [sender.py:send():303] send: stats

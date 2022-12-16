@@ -1,0 +1,44 @@
+INFO: Starting training:
+        Epochs:          5
+        Batch size:      1
+        Learning rate:   1e-05
+        Training size:   252
+        Validation size: 27
+        Checkpoints:     True
+        Device:          cuda
+        Images scaling:  1
+        Mixed Precision: False
+Epoch 1/5:   0%|          | 0/252 [00:01<?, ?img/s]
+Traceback (most recent call last):
+  File "/media/breeze/dev/Mf_Cls/train.py", line 247, in <module>
+    train_model(
+  File "/media/breeze/dev/Mf_Cls/train.py", line 109, in train_model
+    mask = wandb.Image(true_masks.cpu())
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/data_types/image.py", line 157, in __init__
+    self._initialize_from_data(data_or_path, mode)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/data_types/image.py", line 285, in _initialize_from_data
+    data = vis_util.make_grid(data, normalize=True)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/autograd/grad_mode.py", line 27, in decorate_context
+    return func(*args, **kwargs)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torchvision/utils.py", line 107, in make_grid
+    norm_range(tensor, value_range)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torchvision/utils.py", line 101, in norm_range
+    norm_ip(t, float(t.min()), float(t.max()))
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torchvision/utils.py", line 94, in norm_ip
+    img.clamp_(min=low, max=high)
+RuntimeError: result type Float can't be cast to the desired output type long int
+[1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]

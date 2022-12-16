@@ -1,0 +1,34 @@
+2022-12-15 13:55:00,482 INFO    MainThread:21096 [wandb_setup.py:_flush():68] Configure stats pid to 21096
+2022-12-15 13:55:00,483 INFO    MainThread:21096 [wandb_setup.py:_flush():68] Loading settings from /home/breeze/.config/wandb/settings
+2022-12-15 13:55:00,483 INFO    MainThread:21096 [wandb_setup.py:_flush():68] Loading settings from /media/breeze/dev/Mf_Cls/wandb/settings
+2022-12-15 13:55:00,483 INFO    MainThread:21096 [wandb_setup.py:_flush():68] Loading settings from environment variables: {'_require_service': 'True'}
+2022-12-15 13:55:00,483 INFO    MainThread:21096 [wandb_setup.py:_flush():68] Inferring run settings from compute environment: {'program_relpath': 'train.py', 'program': '/media/breeze/dev/Mf_Cls/train.py'}
+2022-12-15 13:55:00,484 INFO    MainThread:21096 [wandb_setup.py:_flush():68] Applying login settings: {'anonymous': 'must'}
+2022-12-15 13:55:00,484 INFO    MainThread:21096 [wandb_init.py:_log_setup():476] Logging user logs to /media/breeze/dev/Mf_Cls/wandb/run-20221215_135500-2ve78ba9/logs/debug.log
+2022-12-15 13:55:00,485 INFO    MainThread:21096 [wandb_init.py:_log_setup():477] Logging internal logs to /media/breeze/dev/Mf_Cls/wandb/run-20221215_135500-2ve78ba9/logs/debug-internal.log
+2022-12-15 13:55:00,487 INFO    MainThread:21096 [wandb_init.py:init():516] calling init triggers
+2022-12-15 13:55:00,487 INFO    MainThread:21096 [wandb_init.py:init():519] wandb.init called with sweep_config: {}
+config: {}
+2022-12-15 13:55:00,489 INFO    MainThread:21096 [wandb_init.py:init():569] starting backend
+2022-12-15 13:55:00,489 INFO    MainThread:21096 [wandb_init.py:init():573] setting up manager
+2022-12-15 13:55:00,497 INFO    MainThread:21096 [backend.py:_multiprocessing_setup():102] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2022-12-15 13:55:00,508 INFO    MainThread:21096 [wandb_init.py:init():580] backend started and connected
+2022-12-15 13:55:00,518 INFO    MainThread:21096 [wandb_init.py:init():658] updated telemetry
+2022-12-15 13:55:00,583 INFO    MainThread:21096 [wandb_init.py:init():693] communicating run to backend with 60 second timeout
+2022-12-15 13:55:05,371 WARNING MainThread:21096 [wandb_init.py:init():1099] interrupted
+Traceback (most recent call last):
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/wandb_init.py", line 1078, in init
+    run = wi.init()
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/wandb_init.py", line 697, in init
+    result = handle.wait(
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/lib/mailbox.py", line 261, in wait
+    found = self._slot._get_and_clear(timeout=wait_timeout)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/lib/mailbox.py", line 118, in _get_and_clear
+    if self._wait(timeout=timeout):
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/lib/mailbox.py", line 114, in _wait
+    return self._event.wait(timeout=timeout)
+  File "/usr/lib/python3.8/threading.py", line 558, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 306, in wait
+    gotit = waiter.acquire(True, timeout)
+KeyboardInterrupt

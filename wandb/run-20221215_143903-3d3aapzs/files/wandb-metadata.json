@@ -1,0 +1,85 @@
+{
+    "os": "Linux-5.15.0-56-generic-x86_64-with-glibc2.29",
+    "python": "3.8.10",
+    "heartbeatAt": "2022-12-15T06:39:05.082330",
+    "startedAt": "2022-12-15T06:39:03.305978",
+    "docker": null,
+    "cuda": "11.0.207",
+    "args": [],
+    "state": "running",
+    "program": "/media/breeze/dev/Mf_Cls/train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/Breezewrf/Mf_Cls.git",
+        "commit": "4bb7823ab295acc2520530d0b895d392abdfec47"
+    },
+    "email": "578450426@qq.com",
+    "root": "/media/breeze/dev/Mf_Cls",
+    "host": "breeze-Ubuntu",
+    "username": "breeze",
+    "executable": "/media/breeze/dev/Mf_Cls/venv/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1837.506875,
+        "min": 400.0,
+        "max": 3400.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3400.0
+        },
+        {
+            "current": 1709.348,
+            "min": 400.0,
+            "max": 3400.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3400.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3400.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3400.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3400.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3400.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3400.0
+        }
+    ],
+    "disk": {
+        "total": 70.03250503540039,
+        "used": 46.260345458984375
+    },
+    "gpu": "NVIDIA GeForce MX150",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce MX150",
+            "memory_total": 2147483648
+        }
+    ],
+    "memory": {
+        "total": 15.507335662841797
+    }
+}

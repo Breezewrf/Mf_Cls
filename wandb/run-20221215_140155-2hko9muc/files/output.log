@@ -1,0 +1,66 @@
+INFO: Starting training:
+        Epochs:          5
+        Batch size:      1
+        Learning rate:   1e-05
+        Training size:   252
+        Validation size: 27
+        Checkpoints:     True
+        Device:          cuda
+        Images scaling:  1
+        Mixed Precision: False
+Epoch 1/5:   0%|          | 0/252 [00:00<?, ?img/s]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   0%|          | 1/252 [00:01<05:46,  1.38s/img, loss (batch)=1.69]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   1%|          | 2/252 [00:02<03:08,  1.33img/s, loss (batch)=1.8] /media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   1%|          | 3/252 [00:02<02:29,  1.66img/s, loss (batch)=1.73]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   2%|▏         | 4/252 [00:02<02:10,  1.90img/s, loss (batch)=1.78]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   2%|▏         | 5/252 [00:03<02:04,  1.98img/s, loss (batch)=1.65]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   2%|▏         | 6/252 [00:03<01:55,  2.13img/s, loss (batch)=1.73]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   3%|▎         | 7/252 [00:04<01:46,  2.29img/s, loss (batch)=1.67]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   3%|▎         | 8/252 [00:04<01:51,  2.18img/s, loss (batch)=1.72]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   4%|▎         | 9/252 [00:05<01:35,  2.55img/s, loss (batch)=1.59]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   4%|▍         | 10/252 [00:05<01:58,  2.04img/s, loss (batch)=1.62]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   4%|▍         | 11/252 [00:06<01:56,  2.08img/s, loss (batch)=1.62]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   5%|▍         | 12/252 [00:06<02:04,  1.92img/s, loss (batch)=1.56]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   5%|▌         | 13/252 [00:07<02:07,  1.88img/s, loss (batch)=1.5] /media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   6%|▌         | 14/252 [00:07<01:54,  2.08img/s, loss (batch)=1.53]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   6%|▌         | 15/252 [00:07<01:48,  2.19img/s, loss (batch)=1.59]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   6%|▋         | 16/252 [00:08<01:44,  2.27img/s, loss (batch)=1.56]/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py:1960: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+Epoch 1/5:   7%|▋         | 17/252 [00:08<02:03,  1.91img/s, loss (batch)=1.53]
+Traceback (most recent call last):
+  File "/media/breeze/dev/Mf_Cls/train.py", line 244, in <module>
+    train_model(
+  File "/media/breeze/dev/Mf_Cls/train.py", line 131, in train_model
+    res.image.show()
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/PIL/Image.py", line 2407, in show
+    _show(self, title=title)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/PIL/Image.py", line 3411, in _show
+    ImageShow.show(image, **options)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/PIL/ImageShow.py", line 62, in show
+    if viewer.show(image, title=title, **options):
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/PIL/ImageShow.py", line 86, in show
+    return self.show_image(image, **options)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/PIL/ImageShow.py", line 112, in show_image
+    return self.show_file(self.save_image(image), **options)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/PIL/ImageShow.py", line 230, in show_file
+    subprocess.Popen(["xdg-open", path])
+  File "/usr/lib/python3.8/subprocess.py", line 858, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.8/subprocess.py", line 1660, in _execute_child
+    part = os.read(errpipe_read, 50000)

@@ -1,0 +1,17 @@
+INFO: Starting training:
+        Epochs:          5
+        Batch size:      1
+        Learning rate:   1e-05
+        Training size:   252
+        Validation size: 27
+        Checkpoints:     True
+        Device:          cuda
+        Images scaling:  1
+        Mixed Precision: False
+
+Epoch 1/5:   0%|          | 1/252 [05:24<22:36:45, 324.32s/img, loss (batch)=1.42]
+Traceback (most recent call last):
+  File "/media/breeze/dev/Mf_Cls/train.py", line 239, in <module>
+    train_model(
+  File "/media/breeze/dev/Mf_Cls/train.py", line 90, in train_model
+    for batch in train_loader:

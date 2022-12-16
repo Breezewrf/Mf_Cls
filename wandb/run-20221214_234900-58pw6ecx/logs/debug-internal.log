@@ -1,0 +1,168 @@
+2022-12-14 23:49:00,516 INFO    StreamThr :11902 [internal.py:wandb_internal():87] W&B internal server running at pid: 11902, started at: 2022-12-14 23:49:00.514574
+2022-12-14 23:49:00,518 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: status
+2022-12-14 23:49:00,523 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: status
+2022-12-14 23:49:00,526 INFO    WriterThread:11902 [datastore.py:open_for_write():75] open: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/run-58pw6ecx.wandb
+2022-12-14 23:49:00,526 DEBUG   SenderThread:11902 [sender.py:send():303] send: header
+2022-12-14 23:49:00,593 DEBUG   SenderThread:11902 [sender.py:send():303] send: run
+2022-12-14 23:49:00,595 INFO    SenderThread:11902 [sender.py:_maybe_setup_resume():593] checking resume status for None/U-Net/58pw6ecx
+2022-12-14 23:49:02,344 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: check_version
+2022-12-14 23:49:02,346 INFO    SenderThread:11902 [dir_watcher.py:__init__():216] watching files in: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files
+2022-12-14 23:49:02,346 INFO    SenderThread:11902 [sender.py:_start_run_threads():928] run started: 58pw6ecx with start time 1671032940.511834
+2022-12-14 23:49:02,347 DEBUG   SenderThread:11902 [sender.py:send():303] send: summary
+2022-12-14 23:49:02,348 INFO    SenderThread:11902 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-14 23:49:02,348 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: check_version
+2022-12-14 23:49:02,541 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: run_start
+2022-12-14 23:49:02,552 DEBUG   HandlerThread:11902 [system_info.py:__init__():31] System info init
+2022-12-14 23:49:02,552 DEBUG   HandlerThread:11902 [system_info.py:__init__():46] System info init done
+2022-12-14 23:49:02,552 INFO    HandlerThread:11902 [system_monitor.py:start():150] Starting system monitor
+2022-12-14 23:49:02,552 INFO    SystemMonitor:11902 [system_monitor.py:_start():116] Starting system asset monitoring threads
+2022-12-14 23:49:02,552 INFO    HandlerThread:11902 [system_monitor.py:probe():171] Collecting system info
+2022-12-14 23:49:02,553 INFO    SystemMonitor:11902 [interfaces.py:start():168] Started cpu
+2022-12-14 23:49:02,554 INFO    SystemMonitor:11902 [interfaces.py:start():168] Started disk
+2022-12-14 23:49:02,554 INFO    SystemMonitor:11902 [interfaces.py:start():168] Started gpu
+2022-12-14 23:49:02,555 INFO    SystemMonitor:11902 [interfaces.py:start():168] Started memory
+2022-12-14 23:49:02,555 INFO    SystemMonitor:11902 [interfaces.py:start():168] Started network
+2022-12-14 23:49:02,584 DEBUG   HandlerThread:11902 [system_info.py:probe():195] Probing system
+2022-12-14 23:49:02,598 DEBUG   HandlerThread:11902 [system_info.py:_probe_git():180] Probing git
+2022-12-14 23:49:02,631 DEBUG   HandlerThread:11902 [system_info.py:_probe_git():188] Probing git done
+2022-12-14 23:49:02,632 DEBUG   HandlerThread:11902 [system_info.py:probe():241] Probing system done
+2022-12-14 23:49:02,632 DEBUG   HandlerThread:11902 [system_monitor.py:probe():180] {'os': 'Linux-5.15.0-56-generic-x86_64-with-glibc2.29', 'python': '3.8.10', 'heartbeatAt': '2022-12-14T15:49:02.585295', 'startedAt': '2022-12-14T15:49:00.492672', 'docker': None, 'cuda': '11.0.207', 'args': ('--amp',), 'state': 'running', 'program': 'train.py', 'codePath': 'train.py', 'git': {'remote': 'https://github.com/Breezewrf/Mf_Cls.git', 'commit': '4bb7823ab295acc2520530d0b895d392abdfec47'}, 'email': '578450426@qq.com', 'root': '/media/breeze/dev/Mf_Cls', 'host': 'breeze-Ubuntu', 'username': 'breeze', 'executable': '/home/breeze/Desktop/siam-mot-main/venv/bin/python', 'cpu_count': 4, 'cpu_count_logical': 8, 'cpu_freq': {'current': 2029.302875, 'min': 400.0, 'max': 3400.0}, 'cpu_freq_per_core': [{'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 2835.597, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}, {'current': 1800.0, 'min': 400.0, 'max': 3400.0}], 'disk': {'total': 70.03250503540039, 'used': 44.36160659790039}, 'gpu': 'NVIDIA GeForce MX150', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce MX150', 'memory_total': 2147483648}], 'memory': {'total': 15.507335662841797}}
+2022-12-14 23:49:02,632 INFO    HandlerThread:11902 [system_monitor.py:probe():181] Finished collecting system info
+2022-12-14 23:49:02,632 INFO    HandlerThread:11902 [system_monitor.py:probe():184] Publishing system info
+2022-12-14 23:49:02,633 DEBUG   HandlerThread:11902 [system_info.py:_save_pip():51] Saving list of pip packages installed into the current environment
+2022-12-14 23:49:02,634 DEBUG   HandlerThread:11902 [system_info.py:_save_pip():67] Saving pip packages done
+2022-12-14 23:49:02,635 INFO    HandlerThread:11902 [system_monitor.py:probe():186] Finished publishing system info
+2022-12-14 23:49:02,675 DEBUG   SenderThread:11902 [sender.py:send():303] send: files
+2022-12-14 23:49:02,676 INFO    SenderThread:11902 [sender.py:_save_file():1171] saving file wandb-metadata.json with policy now
+2022-12-14 23:49:02,683 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: stop_status
+2022-12-14 23:49:02,683 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: stop_status
+2022-12-14 23:49:03,253 DEBUG   SenderThread:11902 [sender.py:send():303] send: telemetry
+2022-12-14 23:49:03,255 DEBUG   SenderThread:11902 [sender.py:send():303] send: config
+2022-12-14 23:49:03,351 INFO    Thread-13 :11902 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/requirements.txt
+2022-12-14 23:49:03,351 INFO    Thread-13 :11902 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/output.log
+2022-12-14 23:49:03,354 INFO    Thread-13 :11902 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/wandb-metadata.json
+2022-12-14 23:49:03,354 INFO    Thread-13 :11902 [dir_watcher.py:_on_file_created():275] file/dir created: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/wandb-summary.json
+2022-12-14 23:49:03,684 DEBUG   SenderThread:11902 [sender.py:send():303] send: exit
+2022-12-14 23:49:03,684 INFO    SenderThread:11902 [sender.py:send_exit():442] handling exit code: 1
+2022-12-14 23:49:03,685 INFO    SenderThread:11902 [sender.py:send_exit():444] handling runtime: 1
+2022-12-14 23:49:03,685 INFO    SenderThread:11902 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-14 23:49:03,685 INFO    SenderThread:11902 [sender.py:send_exit():450] send defer
+2022-12-14 23:49:03,685 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:03,686 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 0
+2022-12-14 23:49:03,686 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:03,686 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 0
+2022-12-14 23:49:03,686 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 1
+2022-12-14 23:49:03,686 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:03,687 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 1
+2022-12-14 23:49:03,687 INFO    HandlerThread:11902 [system_monitor.py:finish():160] Stopping system monitor
+2022-12-14 23:49:03,687 DEBUG   SystemMonitor:11902 [system_monitor.py:_start():130] Starting system metrics aggregation loop
+2022-12-14 23:49:03,688 DEBUG   SystemMonitor:11902 [system_monitor.py:_start():137] Finished system metrics aggregation loop
+2022-12-14 23:49:03,688 DEBUG   SystemMonitor:11902 [system_monitor.py:_start():141] Publishing last batch of metrics
+2022-12-14 23:49:03,688 INFO    HandlerThread:11902 [interfaces.py:finish():175] Joined cpu
+2022-12-14 23:49:03,689 INFO    HandlerThread:11902 [interfaces.py:finish():175] Joined disk
+2022-12-14 23:49:03,726 INFO    HandlerThread:11902 [interfaces.py:finish():175] Joined gpu
+2022-12-14 23:49:03,727 INFO    HandlerThread:11902 [interfaces.py:finish():175] Joined memory
+2022-12-14 23:49:03,727 INFO    HandlerThread:11902 [interfaces.py:finish():175] Joined network
+2022-12-14 23:49:03,727 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:03,728 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 1
+2022-12-14 23:49:03,728 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 2
+2022-12-14 23:49:03,728 DEBUG   SenderThread:11902 [sender.py:send():303] send: stats
+2022-12-14 23:49:03,729 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:03,729 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 2
+2022-12-14 23:49:03,729 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:03,729 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 2
+2022-12-14 23:49:03,729 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 3
+2022-12-14 23:49:03,730 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:03,730 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 3
+2022-12-14 23:49:03,730 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:03,730 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 3
+2022-12-14 23:49:03,730 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 4
+2022-12-14 23:49:03,731 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:03,731 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 4
+2022-12-14 23:49:03,731 DEBUG   SenderThread:11902 [sender.py:send():303] send: summary
+2022-12-14 23:49:03,731 INFO    SenderThread:11902 [sender.py:_save_file():1171] saving file wandb-summary.json with policy end
+2022-12-14 23:49:03,732 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:03,732 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 4
+2022-12-14 23:49:03,732 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 5
+2022-12-14 23:49:03,732 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:03,733 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 5
+2022-12-14 23:49:03,733 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:03,733 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 5
+2022-12-14 23:49:03,753 INFO    Thread-16 :11902 [upload_job.py:push():143] Uploaded file /tmp/tmpsdt4zwdiwandb/2ezbddox-wandb-metadata.json
+2022-12-14 23:49:04,190 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 6
+2022-12-14 23:49:04,191 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:04,192 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 6
+2022-12-14 23:49:04,193 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:04,193 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 6
+2022-12-14 23:49:04,352 INFO    Thread-13 :11902 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/config.yaml
+2022-12-14 23:49:04,353 INFO    Thread-13 :11902 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/wandb-summary.json
+2022-12-14 23:49:04,686 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: poll_exit
+2022-12-14 23:49:05,267 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 7
+2022-12-14 23:49:05,268 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: poll_exit
+2022-12-14 23:49:05,268 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:05,269 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 7
+2022-12-14 23:49:05,269 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:05,269 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 7
+2022-12-14 23:49:05,269 INFO    SenderThread:11902 [dir_watcher.py:finish():362] shutting down directory watcher
+2022-12-14 23:49:05,357 INFO    SenderThread:11902 [dir_watcher.py:_on_file_modified():292] file/dir modified: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/output.log
+2022-12-14 23:49:05,358 INFO    SenderThread:11902 [dir_watcher.py:finish():392] scan: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files
+2022-12-14 23:49:05,359 INFO    SenderThread:11902 [dir_watcher.py:finish():406] scan save: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/config.yaml config.yaml
+2022-12-14 23:49:05,360 INFO    SenderThread:11902 [dir_watcher.py:finish():406] scan save: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/output.log output.log
+2022-12-14 23:49:05,367 INFO    SenderThread:11902 [dir_watcher.py:finish():406] scan save: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/requirements.txt requirements.txt
+2022-12-14 23:49:05,373 INFO    SenderThread:11902 [dir_watcher.py:finish():406] scan save: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/wandb-metadata.json wandb-metadata.json
+2022-12-14 23:49:05,373 INFO    SenderThread:11902 [dir_watcher.py:finish():406] scan save: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/wandb-summary.json wandb-summary.json
+2022-12-14 23:49:05,378 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 8
+2022-12-14 23:49:05,379 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:05,384 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 8
+2022-12-14 23:49:05,386 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:05,386 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 8
+2022-12-14 23:49:05,386 INFO    SenderThread:11902 [file_pusher.py:finish():168] shutting down file pusher
+2022-12-14 23:49:05,689 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: poll_exit
+2022-12-14 23:49:05,690 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: poll_exit
+2022-12-14 23:49:06,334 INFO    Thread-20 :11902 [upload_job.py:push():143] Uploaded file /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/wandb-summary.json
+2022-12-14 23:49:06,336 INFO    Thread-19 :11902 [upload_job.py:push():143] Uploaded file /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/requirements.txt
+2022-12-14 23:49:06,336 INFO    Thread-18 :11902 [upload_job.py:push():143] Uploaded file /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/output.log
+2022-12-14 23:49:06,336 INFO    Thread-17 :11902 [upload_job.py:push():143] Uploaded file /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/files/config.yaml
+2022-12-14 23:49:06,538 INFO    Thread-12 :11902 [sender.py:transition_state():463] send defer: 9
+2022-12-14 23:49:06,540 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:06,541 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 9
+2022-12-14 23:49:06,542 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:06,542 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 9
+2022-12-14 23:49:06,543 INFO    SenderThread:11902 [file_pusher.py:join():173] waiting for file pusher
+2022-12-14 23:49:06,544 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 10
+2022-12-14 23:49:06,545 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:06,545 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 10
+2022-12-14 23:49:06,546 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:06,547 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 10
+2022-12-14 23:49:06,690 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: poll_exit
+2022-12-14 23:49:06,835 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 11
+2022-12-14 23:49:06,836 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: poll_exit
+2022-12-14 23:49:06,838 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:06,838 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 11
+2022-12-14 23:49:06,839 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:06,840 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 11
+2022-12-14 23:49:06,841 INFO    SenderThread:11902 [sender.py:transition_state():463] send defer: 12
+2022-12-14 23:49:06,842 DEBUG   SenderThread:11902 [sender.py:send():303] send: final
+2022-12-14 23:49:06,843 DEBUG   SenderThread:11902 [sender.py:send():303] send: footer
+2022-12-14 23:49:06,843 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: defer
+2022-12-14 23:49:06,844 INFO    HandlerThread:11902 [handler.py:handle_request_defer():162] handle defer: 12
+2022-12-14 23:49:06,845 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: defer
+2022-12-14 23:49:06,845 INFO    SenderThread:11902 [sender.py:send_request_defer():459] handle sender defer: 12
+2022-12-14 23:49:06,848 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: poll_exit
+2022-12-14 23:49:06,849 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: poll_exit
+2022-12-14 23:49:06,850 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: poll_exit
+2022-12-14 23:49:06,852 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: poll_exit
+2022-12-14 23:49:06,855 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: server_info
+2022-12-14 23:49:06,856 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: get_summary
+2022-12-14 23:49:06,857 DEBUG   SenderThread:11902 [sender.py:send_request():317] send_request: server_info
+2022-12-14 23:49:06,858 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: sampled_history
+2022-12-14 23:49:07,863 INFO    MainThread:11902 [wandb_run.py:_footer_history_summary_info():3408] rendering history
+2022-12-14 23:49:07,864 INFO    MainThread:11902 [wandb_run.py:_footer_history_summary_info():3440] rendering summary
+2022-12-14 23:49:07,864 INFO    MainThread:11902 [wandb_run.py:_footer_sync_info():3364] logging synced files
+2022-12-14 23:49:07,866 DEBUG   HandlerThread:11902 [handler.py:handle_request():139] handle_request: shutdown
+2022-12-14 23:49:07,867 INFO    HandlerThread:11902 [handler.py:finish():814] shutting down handler
+2022-12-14 23:49:08,843 INFO    WriterThread:11902 [datastore.py:close():279] close: /media/breeze/dev/Mf_Cls/wandb/run-20221214_234900-58pw6ecx/run-58pw6ecx.wandb
+2022-12-14 23:49:08,862 INFO    SenderThread:11902 [sender.py:finish():1331] shutting down sender
+2022-12-14 23:49:08,863 INFO    SenderThread:11902 [file_pusher.py:finish():168] shutting down file pusher
+2022-12-14 23:49:08,864 INFO    SenderThread:11902 [file_pusher.py:join():173] waiting for file pusher
+2022-12-14 23:49:08,872 INFO    MainThread:11902 [internal.py:handle_exit():77] Internal process exited

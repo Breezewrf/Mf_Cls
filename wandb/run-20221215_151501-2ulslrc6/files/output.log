@@ -1,0 +1,23 @@
+INFO: Starting training:
+        Epochs:          5
+        Batch size:      1
+        Learning rate:   1e-05
+        Training size:   252
+        Validation size: 27
+        Checkpoints:     True
+        Device:          cuda
+        Images scaling:  1
+        Mixed Precision: False
+Epoch 1/5:   0%|          | 0/252 [00:01<?, ?img/s]
+Traceback (most recent call last):
+  File "/media/breeze/dev/Mf_Cls/train.py", line 248, in <module>
+    train_model(
+  File "/media/breeze/dev/Mf_Cls/train.py", line 108, in train_model
+    loss = criterion(masks_pred.argmax(dim=1).float().cpu(), true_masks.float())
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/modules/loss.py", line 1164, in forward
+    return F.cross_entropy(input, target, weight=self.weight,
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/torch/nn/functional.py", line 3014, in cross_entropy
+    return torch._C._nn.cross_entropy_loss(input, target, weight, _Reduction.get_enum(reduction), ignore_index, label_smoothing)
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!

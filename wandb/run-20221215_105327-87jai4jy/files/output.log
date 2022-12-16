@@ -1,0 +1,68 @@
+INFO: Starting training:
+        Epochs:          5
+        Batch size:      1
+        Learning rate:   1e-05
+        Training size:   252
+        Validation size: 27
+        Checkpoints:     True
+        Device:          cuda
+        Images scaling:  1
+        Mixed Precision: False
+
+
+
+
+
+
+
+
+
+Epoch 1/5:  20%|█▉        | 50/252 [00:40<01:04,  3.14img/s, loss (batch)=0.254]
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch 1/5:  40%|███▉      | 100/252 [01:05<01:01,  2.46img/s, loss (batch)=0.262]
+
+
+
+
+
+
+
+
+
+
+
+Epoch 1/5:  60%|█████▉    | 150/252 [01:29<00:31,  3.24img/s, loss (batch)=0.387]
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch 1/5:  79%|███████▉  | 200/252 [01:58<00:30,  1.69img/s, loss (batch)=0.16]
+Traceback (most recent call last):
+  File "/media/breeze/dev/Mf_Cls/train.py", line 238, in <module>
+    train_model(
+  File "/media/breeze/dev/Mf_Cls/train.py", line 139, in train_model
+    histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/wandb/sdk/data_types/histogram.py", line 77, in __init__
+    self.histogram, self.bins = np.histogram(sequence, bins=num_bins)
+  File "<__array_function__ internals>", line 180, in histogram
+  File "/media/breeze/dev/Mf_Cls/venv/lib/python3.8/site-packages/numpy/lib/histograms.py", line 857, in histogram
+    decrement = tmp_a < bin_edges[indices]

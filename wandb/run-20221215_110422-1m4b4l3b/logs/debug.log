@@ -1,0 +1,27 @@
+2022-12-15 11:04:22,907 INFO    MainThread:6888 [wandb_setup.py:_flush():68] Configure stats pid to 6888
+2022-12-15 11:04:22,908 INFO    MainThread:6888 [wandb_setup.py:_flush():68] Loading settings from /home/breeze/.config/wandb/settings
+2022-12-15 11:04:22,908 INFO    MainThread:6888 [wandb_setup.py:_flush():68] Loading settings from /media/breeze/dev/Mf_Cls/wandb/settings
+2022-12-15 11:04:22,908 INFO    MainThread:6888 [wandb_setup.py:_flush():68] Loading settings from environment variables: {'_require_service': 'True'}
+2022-12-15 11:04:22,908 INFO    MainThread:6888 [wandb_setup.py:_flush():68] Inferring run settings from compute environment: {'program_relpath': 'train.py', 'program': '/media/breeze/dev/Mf_Cls/train.py'}
+2022-12-15 11:04:22,908 INFO    MainThread:6888 [wandb_setup.py:_flush():68] Applying login settings: {'anonymous': 'must'}
+2022-12-15 11:04:22,909 INFO    MainThread:6888 [wandb_init.py:_log_setup():476] Logging user logs to /media/breeze/dev/Mf_Cls/wandb/run-20221215_110422-1m4b4l3b/logs/debug.log
+2022-12-15 11:04:22,909 INFO    MainThread:6888 [wandb_init.py:_log_setup():477] Logging internal logs to /media/breeze/dev/Mf_Cls/wandb/run-20221215_110422-1m4b4l3b/logs/debug-internal.log
+2022-12-15 11:04:22,912 INFO    MainThread:6888 [wandb_init.py:init():516] calling init triggers
+2022-12-15 11:04:22,912 INFO    MainThread:6888 [wandb_init.py:init():519] wandb.init called with sweep_config: {}
+config: {}
+2022-12-15 11:04:22,914 INFO    MainThread:6888 [wandb_init.py:init():569] starting backend
+2022-12-15 11:04:22,914 INFO    MainThread:6888 [wandb_init.py:init():573] setting up manager
+2022-12-15 11:04:22,921 INFO    MainThread:6888 [backend.py:_multiprocessing_setup():102] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2022-12-15 11:04:22,930 INFO    MainThread:6888 [wandb_init.py:init():580] backend started and connected
+2022-12-15 11:04:22,940 INFO    MainThread:6888 [wandb_init.py:init():658] updated telemetry
+2022-12-15 11:04:23,002 INFO    MainThread:6888 [wandb_init.py:init():693] communicating run to backend with 60 second timeout
+2022-12-15 11:04:24,605 INFO    MainThread:6888 [wandb_run.py:_on_init():2000] communicating current version
+2022-12-15 11:04:25,054 INFO    MainThread:6888 [wandb_run.py:_on_init():2004] got version response upgrade_message: "wandb version 0.13.7 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2022-12-15 11:04:25,055 INFO    MainThread:6888 [wandb_init.py:init():728] starting run threads in backend
+2022-12-15 11:04:25,235 INFO    MainThread:6888 [wandb_run.py:_console_start():1980] atexit reg
+2022-12-15 11:04:25,237 INFO    MainThread:6888 [wandb_run.py:_redirect():1838] redirect: SettingsConsole.WRAP_RAW
+2022-12-15 11:04:25,238 INFO    MainThread:6888 [wandb_run.py:_redirect():1903] Wrapping output streams.
+2022-12-15 11:04:25,238 INFO    MainThread:6888 [wandb_run.py:_redirect():1925] Redirects installed.
+2022-12-15 11:04:25,239 INFO    MainThread:6888 [wandb_init.py:init():765] run started, returning control to user process
+2022-12-15 11:04:25,249 INFO    MainThread:6888 [wandb_run.py:_config_callback():1160] config_cb None None {'epochs': 5, 'batch_size': 1, 'learning_rate': 1e-05, 'val_percent': 0.1, 'save_checkpoint': True, 'img_scale': 1, 'amp': False}
