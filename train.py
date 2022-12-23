@@ -109,9 +109,9 @@ def train_model(
                         # print(np.array(true_masks.cpu())[np.array(true_masks.cpu()) > 0])
                         # mask = wandb.Image(true_masks.float().cpu())
                         # mask.image.show('gt')
-                        l1 = torch.nn.L1Loss(reduction='sum')
-                        loss += l1(masks_pred.argmax(dim=1).float(), true_masks.float())
-                        print(loss)
+                        # l1 = torch.nn.L1Loss(reduction='sum')
+                        # loss += l1(masks_pred.argmax(dim=1).float(), true_masks.float())
+                        # print(loss)
                         loss += dice_loss(
                             F.softmax(masks_pred, dim=1).float(),
                             F.one_hot(true_masks, model.n_classes).permute(0, 3, 1, 2).float(),
