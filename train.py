@@ -30,7 +30,7 @@ def train_model(
         device,
         epochs: int = 2,
         batch_size: int = 1,
-        learning_rate: float = 1e-8,
+        learning_rate: float = 1e-5,
         val_percent: float = 0.1,
         save_checkpoint: bool = True,
         img_scale: float = 0.5,
@@ -105,13 +105,19 @@ def train_model(
                         loss += dice_loss(F.sigmoid(masks_pred.squeeze(1)), true_masks.float(), multiclass=False)
                     else:
                         # loss = criterion(masks_pred, true_masks)
-                        loss = criterion(masks_pred.argmax(dim=1).float(), true_masks.float())
+                        # loss = criterion(masks_pred.argmax(dim=1).float(), true_masks.float())
                         # print(np.array(true_masks.cpu())[np.array(true_masks.cpu()) > 0])
                         # mask = wandb.Image(true_masks.float().cpu())
                         # mask.image.show('gt')
                         # l1 = torch.nn.L1Loss(reduction='sum')
                         # loss += l1(masks_pred.argmax(dim=1).float(), true_masks.float())
                         # print(loss)
+                        # loss += dice_loss(
+                        #     F.softmax(masks_pred, dim=1).float(),
+                        #     F.one_hot(true_masks, model.n_classes).permute(0, 3, 1, 2).float(),
+                        #     multiclass=True
+                        # )
+                        loss = criterion(masks_pred, true_masks)
                         loss += dice_loss(
                             F.softmax(masks_pred, dim=1).float(),
                             F.one_hot(true_masks, model.n_classes).permute(0, 3, 1, 2).float(),
