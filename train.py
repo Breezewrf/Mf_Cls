@@ -20,6 +20,7 @@ from unet import UNet
 from utils.data_loading import BasicDataset, CarvanaDataset
 from utils.dice_score import dice_loss
 import cv2
+from unetpp.unetpp_model import Nested_UNet
 dir_img = Path('./data/T2W_images/')
 dir_mask = Path('./data/T2W_labels/')
 dir_checkpoint = Path('./checkpoints/')
@@ -201,7 +202,7 @@ def get_args():
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
-
+    parser.add_argument('--model', type=str, default='unet', help='choose model from: unet, unetpp, msfunet, mfcls')
     return parser.parse_args()
 
 
@@ -215,10 +216,14 @@ if __name__ == '__main__':
     # Change here to adapt to your data
     # n_channels=3 for RGB images
     # n_classes is the number of probabilities you want to get per pixel
-    model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
+    if args.model == 'unet':
+        model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
+    elif args.model == 'unetpp':
+        model = Nested_UNet(in_ch=1, out_ch=args.classes)
     model = model.to(memory_format=torch.channels_last)
 
     logging.info(f'Network:\n'
+                 f'\t{args.model} model\n'
                  f'\t{model.n_channels} input channels\n'
                  f'\t{model.n_classes} output channels (classes)\n'
                  f'\t{"Bilinear" if model.bilinear else "Transposed conv"} upscaling')
