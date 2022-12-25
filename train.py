@@ -33,6 +33,7 @@ def train_model(
         learning_rate: float = 1e-5,
         val_percent: float = 0.1,
         save_checkpoint: bool = True,
+        save_interval: int = 10,
         img_scale: float = 0.5,
         amp: bool = False,
         weight_decay: float = 1e-8,
@@ -179,7 +180,7 @@ def train_model(
                         except:
                             pass
 
-        if save_checkpoint:
+        if save_checkpoint and epoch % save_interval == 0:
             Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
             state_dict = model.state_dict()
             state_dict['mask_values'] = dataset.mask_values
