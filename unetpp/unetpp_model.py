@@ -32,7 +32,9 @@ class Nested_UNet(nn.Module):
 
     def __init__(self, in_ch=3, out_ch=1):
         super(Nested_UNet, self).__init__()
-
+        self.n_channels = in_ch
+        self.n_classes = out_ch
+        self.bilinear = True
         n1 = 64
         filters = [n1, n1 * 2, n1 * 4, n1 * 8, n1 * 16]
 
