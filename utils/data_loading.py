@@ -62,9 +62,11 @@ class BasicDataset(Dataset):
         return len(self.ids)
 
     @staticmethod
-    def preprocess(mask_values, pil_img, scale, is_mask=True):
+    def preprocess(mask_values, pil_img, scale, is_mask=True, target_size=256):
         w, h = pil_img.size
-        newW, newH = int(scale * w), int(scale * h)
+        # newW, newH = int(scale * w), int(scale * h)
+        newW = target_size
+        newH = target_size
         assert newW > 0 and newH > 0, 'Scale is too small, resized images would have no pixel'
         pil_img = pil_img.resize((newW, newH), resample=Image.NEAREST if is_mask else Image.BICUBIC)
         img = np.asarray(pil_img)
