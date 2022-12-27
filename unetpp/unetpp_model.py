@@ -32,6 +32,7 @@ class Nested_UNet(nn.Module):
 
     def __init__(self, in_ch=3, out_ch=1):
         super(Nested_UNet, self).__init__()
+        self.name = 'unetpp'
         self.n_channels = in_ch
         self.n_classes = out_ch
         self.bilinear = True

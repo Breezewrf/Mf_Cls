@@ -21,6 +21,7 @@ from utils.data_loading import BasicDataset, CarvanaDataset
 from utils.dice_score import dice_loss
 import cv2
 from unetpp.unetpp_model import Nested_UNet
+from loss import unet_loss, unetpp_loss
 dir_img = Path('./data/T2W_images/')
 dir_mask = Path('./data/T2W_labels/')
 dir_checkpoint = Path('./checkpoints/')
@@ -102,29 +103,11 @@ def train_model(
 
                 with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
                     masks_pred = model(images)
-                    if model.n_classes == 1:
-                        loss = criterion(masks_pred.squeeze(1), true_masks.float())
-                        loss += dice_loss(F.sigmoid(masks_pred.squeeze(1)), true_masks.float(), multiclass=False)
-                    else:
-                        # loss = criterion(masks_pred, true_masks)
-                        # loss = criterion(masks_pred.argmax(dim=1).float(), true_masks.float())
-                        # print(np.array(true_masks.cpu())[np.array(true_masks.cpu()) > 0])
-                        # mask = wandb.Image(true_masks.float().cpu())
-                        # mask.image.show('gt')
-                        # l1 = torch.nn.L1Loss(reduction='sum')
-                        # loss += l1(masks_pred.argmax(dim=1).float(), true_masks.float())
-                        # print(loss)
-                        # loss += dice_loss(
-                        #     F.softmax(masks_pred, dim=1).float(),
-                        #     F.one_hot(true_masks, model.n_classes).permute(0, 3, 1, 2).float(),
-                        #     multiclass=True
-                        # )
-                        loss = criterion(masks_pred, true_masks)
-                        loss += dice_loss(
-                            F.softmax(masks_pred, dim=1).float(),
-                            F.one_hot(true_masks, model.n_classes).permute(0, 3, 1, 2).float(),
-                            multiclass=True
-                        )
+                    if model.name == 'unet':
+                        loss = unet_loss(model, masks_pred, true_masks)
+                    elif model.name == 'unetpp':
+                        loss = unetpp_loss(model, masks_pred, true_masks)
+                        masks_pred = masks_pred[0]
 
                 optimizer.zero_grad(set_to_none=True)
                 grad_scaler.scale(loss).backward()
