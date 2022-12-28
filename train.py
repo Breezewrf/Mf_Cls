@@ -134,13 +134,13 @@ def train_model(
                 division_step = (n_train // (5 * batch_size))
                 if division_step > 0:
                     if global_step % division_step == 0:
-                        histograms = {}
-                        for tag, value in model.named_parameters():
-                            tag = tag.replace('/', '.')
-                            if not torch.isinf(value).any():
-                                histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
-                            if not torch.isinf(value.grad).any():
-                                histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
+                        # histograms = {}
+                        # for tag, value in model.named_parameters():
+                        #     tag = tag.replace('/', '.')
+                        #     if not torch.isinf(value).any():
+                        #         histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
+                        #     if not torch.isinf(value.grad).any():
+                        #         histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
 
                         val_score = evaluate(model, val_loader, device, amp)
                         scheduler.step(val_score)
@@ -157,7 +157,7 @@ def train_model(
                                 },
                                 'step': global_step,
                                 'epoch': epoch,
-                                **histograms
+                                # **histograms
                             })
                             # res = wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu())
                             # res.image.show()
@@ -186,6 +186,7 @@ def get_args():
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
     parser.add_argument('--model', type=str, default='unet', help='choose model from: unet, unetpp, msfunet, mfcls')
+    parser.add_argument('--branch', type=int, default=1, help='denotes the number of streams')
     return parser.parse_args()
 
 
