@@ -63,6 +63,10 @@ class Nested_UNet(nn.Module):
         self.conv0_4 = conv_block_nested(filters[0] * 4 + filters[1], filters[0], filters[0])
 
         self.final = nn.Conv2d(filters[0], out_ch, kernel_size=1)
+        self.final1 = nn.Conv2d(filters[0], out_ch, kernel_size=1)
+        self.final2 = nn.Conv2d(filters[0], out_ch, kernel_size=1)
+        self.final3 = nn.Conv2d(filters[0], out_ch, kernel_size=1)
+        self.final4 = nn.Conv2d(filters[0], out_ch, kernel_size=1)
 
     def forward(self, x):
         x0_0 = self.conv0_0(x)
