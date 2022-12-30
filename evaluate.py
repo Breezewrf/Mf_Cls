@@ -16,17 +16,19 @@ def evaluate(net, dataloader, device, amp):
         for batch in tqdm(dataloader, total=num_val_batches, desc='Validation round', unit='batch', leave=False):
             if net.name == 'msf':
                 t2w_img, adc_img, mask_true = batch['t2w_image'], batch['adc_image'], batch['mask']
+                # move images and labels to correct device and type
+                t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                 image = torch.stack((t2w_img, adc_img))
             else:
                 image, mask_true = batch['image'], batch['mask']
 
             # move images and labels to correct device and type
-            # image = image.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-            image = image.to(device=device, dtype=torch.float32)
+            image = image.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
             mask_true = mask_true.to(device=device, dtype=torch.long)
 
             # predict the mask
-            mask_pred = net(image)[0]
+            mask_pred = net(image)
 
             if net.n_classes == 1:
                 assert mask_true.min() >= 0 and mask_true.max() <= 1, 'True mask indices should be in [0, 1]'

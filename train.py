@@ -100,20 +100,23 @@ def train_model(
         epoch_loss = 0
         with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
             for batch in train_loader:
+                offset = 1 if model.name == 'msf' else 0
                 if model.name == 'msf':
                     t2w_img, adc_img, true_masks = batch['t2w_image'], batch['adc_image'], batch['mask']
+                    t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     images = torch.stack((t2w_img, adc_img))
+                    # if msf: branch x B x C x W x H
                 else:
                     images, true_masks = batch['image'], batch['mask']
-                offset = 1 if model.name == 'msf' else 0
-                # if msf: branch x B x C x W x H
-                assert images.shape[1+offset] == model.n_channels, \
-                    f'Network has been defined with {model.n_channels} input channels, ' \
-                    f'but loaded images have {images.shape[1+offset]} channels. Please check that ' \
-                    'the images are loaded correctly.'
+                    # if msf: branch x B x C x W x H
+                    assert images.shape[1 + offset] == model.n_channels, \
+                        f'Network has been defined with {model.n_channels} input channels, ' \
+                        f'but loaded images have {images.shape[1 + offset]} channels. Please check that ' \
+                        'the images are loaded correctly.'
+                    images = images.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
 
-                # images = images.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                images = images.to(device=device, dtype=torch.float32)
+                # images = images.to(device=device, dtype=torch.float32)
                 true_masks = true_masks.to(device=device, dtype=torch.long)
 
                 with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
