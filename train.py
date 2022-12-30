@@ -17,13 +17,17 @@ from PIL import Image
 import wandb
 from evaluate import evaluate
 from unet import UNet
-from utils.data_loading import BasicDataset, CarvanaDataset
+from utils.data_loading import BasicDataset, CarvanaDataset, MSFDataset
 from utils.dice_score import dice_loss
 import cv2
 from unetpp.unetpp_model import Nested_UNet
 from loss import unet_loss, unetpp_loss
-dir_img = Path('./data/T2W_images/')
-dir_mask = Path('./data/T2W_labels/')
+from msf_cls.msfusion import MSFusionNet
+
+dir_t2w = './data/T2W_images/'
+dir_adc = './data/ADC_images/'
+dir_img = './data/T2W_images/'
+dir_mask = './data/T2W_labels/'
 dir_checkpoint = Path('./checkpoints/')
 
 
@@ -41,14 +45,19 @@ def train_model(
         weight_decay: float = 1e-8,
         momentum: float = 0.999,
         gradient_clipping: float = 1.0,
+        branch: int = 1
 ):
     # 1. Create dataset
-    try:
-        dataset = CarvanaDataset(dir_img, dir_mask, img_scale)
-    except (AssertionError, RuntimeError):
-        dataset = BasicDataset(dir_img, dir_mask, img_scale)
-
+    dataset = None
+    if branch == 1:
+        try:
+            dataset = CarvanaDataset(dir_img, dir_mask, img_scale)
+        except (AssertionError, RuntimeError):
+            dataset = BasicDataset(dir_img, dir_mask, img_scale)
+    elif branch == 2:
+        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale)
     # 2. Split into train / validation partitions
+    assert dataset is not None, f'the branch number is not set correctly: {branch}'
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(0))
@@ -91,14 +100,20 @@ def train_model(
         epoch_loss = 0
         with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
             for batch in train_loader:
-                images, true_masks = batch['image'], batch['mask']
-
-                assert images.shape[1] == model.n_channels, \
+                if model.name == 'msf':
+                    t2w_img, adc_img, true_masks = batch['t2w_image'], batch['adc_image'], batch['mask']
+                    images = torch.stack((t2w_img, adc_img))
+                else:
+                    images, true_masks = batch['image'], batch['mask']
+                offset = 1 if model.name == 'msf' else 0
+                # if msf: branch x B x C x W x H
+                assert images.shape[1+offset] == model.n_channels, \
                     f'Network has been defined with {model.n_channels} input channels, ' \
-                    f'but loaded images have {images.shape[1]} channels. Please check that ' \
+                    f'but loaded images have {images.shape[1+offset]} channels. Please check that ' \
                     'the images are loaded correctly.'
 
-                images = images.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                # images = images.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                images = images.to(device=device, dtype=torch.float32)
                 true_masks = true_masks.to(device=device, dtype=torch.long)
 
                 with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
@@ -108,6 +123,8 @@ def train_model(
                     elif model.name == 'unetpp':
                         loss = unetpp_loss(model, masks_pred, true_masks)
                         masks_pred = masks_pred[0]
+                    else:
+                        loss = unet_loss(model, masks_pred, true_masks)
 
                 optimizer.zero_grad(set_to_none=True)
                 grad_scaler.scale(loss).backward()
@@ -115,7 +132,7 @@ def train_model(
                 grad_scaler.step(optimizer)
                 grad_scaler.update()
 
-                pbar.update(images.shape[0])
+                pbar.update(images.shape[0+offset])
                 global_step += 1
                 epoch_loss += loss.item()
                 experiment.log({
@@ -124,7 +141,7 @@ def train_model(
                     'epoch': epoch
                 })
                 pbar.set_postfix(**{'loss (batch)': loss.item()})
-                if global_step%50 == 0:
+                if global_step % 50 == 0:
                     res = wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu())
                     res.image.show('output')
                     mask = wandb.Image(true_masks.float().cpu())
@@ -150,7 +167,7 @@ def train_model(
                             experiment.log({
                                 'learning rate': optimizer.param_groups[0]['lr'],
                                 'validation Dice': val_score,
-                                'images': wandb.Image(images[0].cpu()),
+                                'images': wandb.Image(images[0+offset].cpu()),
                                 'masks': {
                                     'true': wandb.Image(true_masks[0].float().cpu()),
                                     'pred': wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu()),
@@ -185,8 +202,8 @@ def get_args():
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
-    parser.add_argument('--model', type=str, default='unet', help='choose model from: unet, unetpp, msfunet, mfcls')
-    parser.add_argument('--branch', type=int, default=1, help='denotes the number of streams')
+    parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
+    parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     return parser.parse_args()
 
 
@@ -204,7 +221,9 @@ if __name__ == '__main__':
         model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
     elif args.model == 'unetpp':
         model = Nested_UNet(in_ch=1, out_ch=args.classes)
-    model = model.to(memory_format=torch.channels_last)
+    elif args.model == 'msf':
+        model = MSFusionNet(input_c=2, output_c=args.classes)
+    model = model.to(device)
 
     logging.info(f'Network:\n'
                  f'\t{args.model} model\n'
@@ -254,5 +273,6 @@ if __name__ == '__main__':
         device=device,
         img_scale=args.scale,
         val_percent=args.val / 100,
-        amp=args.amp
+        amp=args.amp,
+        branch=args.branch
     )
