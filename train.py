@@ -45,7 +45,8 @@ def train_model(
         weight_decay: float = 1e-8,
         momentum: float = 0.999,
         gradient_clipping: float = 1.0,
-        branch: int = 1
+        branch: int = 1,
+        seed = 12321
 ):
     # 1. Create dataset
     dataset = None
@@ -60,7 +61,7 @@ def train_model(
     assert dataset is not None, f'the branch number is not set correctly: {branch}'
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
-    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(0))
+    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
 
     # 3. Create data loaders
     loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
@@ -207,6 +208,7 @@ def get_args():
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
     parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
+    parser.add_argument('--seed', type=int, default=12321)
     return parser.parse_args()
 
 
@@ -277,5 +279,6 @@ if __name__ == '__main__':
         img_scale=args.scale,
         val_percent=args.val / 100,
         amp=args.amp,
-        branch=args.branch
+        branch=args.branch,
+        seed=args.seed
     )
