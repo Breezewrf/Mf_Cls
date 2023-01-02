@@ -33,14 +33,6 @@ dir_mask = './data/T2W_labels/'
 dir_checkpoint = Path('./checkpoints/')
 
 
-def set_random_seed(seed_value):
-    os.environ['PYTHONHASHSEED'] = str(seed_value)
-    # 1. Set `python` built-in pseudo-random generator at a fixed value
-    random.seed(seed_value)
-    # 2. Set `numpy` pseudo-random generator at a fixed value
-    np.random.seed(seed_value)
-
-
 def train_model(
         model,
         device,
@@ -71,7 +63,16 @@ def train_model(
     assert dataset is not None, f'the branch number is not set correctly: {branch}'
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
-    set_random_seed(seed)
+
+    # 1. Set `os env`
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    # 2. Set `python` built-in pseudo-random generator at a fixed value
+    random.seed(seed)
+    # 3. Set `numpy` pseudo-random generator at a fixed value
+    np.random.seed(seed)
+    # 4. Set `torch`
+    torch.manual_seed(seed)
+
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
 
     # 3. Create data loaders
