@@ -23,12 +23,22 @@ import cv2
 from unetpp.unetpp_model import Nested_UNet
 from loss import unet_loss, unetpp_loss
 from msf_cls.msfusion import MSFusionNet
+import random
+import os
 
 dir_t2w = './data/T2W_images/'
 dir_adc = './data/ADC_images/'
 dir_img = './data/T2W_images/'
 dir_mask = './data/T2W_labels/'
 dir_checkpoint = Path('./checkpoints/')
+
+
+def set_random_seed(seed_value):
+    os.environ['PYTHONHASHSEED'] = str(seed_value)
+    # 1. Set `python` built-in pseudo-random generator at a fixed value
+    random.seed(seed_value)
+    # 2. Set `numpy` pseudo-random generator at a fixed value
+    np.random.seed(seed_value)
 
 
 def train_model(
@@ -46,7 +56,7 @@ def train_model(
         momentum: float = 0.999,
         gradient_clipping: float = 1.0,
         branch: int = 1,
-        seed = 12321
+        seed=12321
 ):
     # 1. Create dataset
     dataset = None
@@ -61,6 +71,7 @@ def train_model(
     assert dataset is not None, f'the branch number is not set correctly: {branch}'
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
+    set_random_seed(seed)
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
 
     # 3. Create data loaders
@@ -136,7 +147,7 @@ def train_model(
                 grad_scaler.step(optimizer)
                 grad_scaler.update()
 
-                pbar.update(images.shape[0+offset])
+                pbar.update(images.shape[0 + offset])
                 global_step += 1
                 epoch_loss += loss.item()
                 experiment.log({
@@ -171,7 +182,7 @@ def train_model(
                             experiment.log({
                                 'learning rate': optimizer.param_groups[0]['lr'],
                                 'validation Dice': val_score,
-                                'images': wandb.Image(images[0+offset].cpu()),
+                                'images': wandb.Image(images[0 + offset].cpu()),
                                 'masks': {
                                     'true': wandb.Image(true_masks[0].float().cpu()),
                                     'pred': wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu()),
