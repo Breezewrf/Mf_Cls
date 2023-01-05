@@ -31,6 +31,7 @@ dir_adc = './data/ADC_images/'
 dir_img = './data/T2W_images/'
 dir_mask = './data/T2W_labels/'
 dir_checkpoint = Path('./checkpoints/')
+os.environ["WANDB_MODE"] = "offline"
 
 
 def train_model(
@@ -72,7 +73,10 @@ def train_model(
     np.random.seed(seed)
     # 4. Set `torch`
     torch.manual_seed(seed)
-
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
 
     # 3. Create data loaders
@@ -86,7 +90,7 @@ def train_model(
         dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
              val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale, amp=amp)
     )
-
+    wandb.run.name = "seed="+str(seed)+" lr="+str(learning_rate)
     logging.info(f'''Starting training:
         Epochs:          {epochs}
         Batch size:      {batch_size}
