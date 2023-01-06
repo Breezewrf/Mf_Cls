@@ -33,7 +33,7 @@ class Down(nn.Module):
         self.maxpool_conv = nn.Sequential(
             nn.MaxPool2d(2),
             DoubleConv(in_channels, out_channels),
-            nn.BatchNorm2d(out_channels)
+            # nn.BatchNorm2d(out_channels)
         )
 
     def forward(self, x):
@@ -50,12 +50,12 @@ class Up(nn.Module):
         if bilinear:
             self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
             self.conv = DoubleConv(in_channels, out_channels, in_channels // 2)
-            self.bn = nn.BatchNorm2d(out_channels)
-            self.relu = nn.ReLU(inplace=True)
+            # self.bn = nn.BatchNorm2d(out_channels)
+            # self.relu = nn.ReLU(inplace=True)
         else:
             self.up = nn.ConvTranspose2d(in_channels, in_channels // 2, kernel_size=2, stride=2)
             self.conv = DoubleConv(in_channels, out_channels)
-            self.bn = nn.BatchNorm2d(out_channels)
+            # self.bn = nn.BatchNorm2d(out_channels)
 
     def forward(self, x1, x2):
         x1 = self.up(x1)
@@ -69,7 +69,8 @@ class Up(nn.Module):
         # https://github.com/HaiyongJiang/U-Net-Pytorch-Unstructured-Buggy/commit/0e854509c2cea854e247a9c615f175f76fbb2e3a
         # https://github.com/xiaopeng-liao/Pytorch-UNet/commit/8ebac70e633bac59fc22bb5195e513d5832fb3bd
         x = torch.cat([x2, x1], dim=1)
-        return self.bn(self.conv(x))
+        # return self.bn(self.conv(x))
+        return self.conv(x)
 
 
 class OutConv(nn.Module):
