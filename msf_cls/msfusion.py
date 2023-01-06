@@ -242,10 +242,10 @@ class MSFusionNet(nn.Module):
         ) for _ in range(input_c)])
 
         self.merge_out = OutConv(output_c * input_c, output_c)
-        self.bn1 = obtain_normalization(kernel_num >> 1)
-        self.bn2 = obtain_normalization(kernel_num >> 2)
-        self.bn3 = obtain_normalization(kernel_num >> 3)
-        self.bn4 = obtain_normalization(kernel_num >> 4)
+        self.bn1 = obtain_normalization(choice=normalization, channels=kernel_num >> 1, groups=output_c)
+        self.bn2 = obtain_normalization(choice=normalization, channels=kernel_num >> 2, groups=output_c)
+        self.bn3 = obtain_normalization(choice=normalization, channels=kernel_num >> 3, groups=output_c)
+        self.bn4 = obtain_normalization(choice=normalization, channels=kernel_num >> 4, groups=output_c)
         self.drop = nn.Dropout2d(p=p)
         self.bayesian = bayesian
 
@@ -275,13 +275,13 @@ class MSFusionNet(nn.Module):
         feat_decoded4 = torch.tensor([], device=input_device)
 
         for i in range(x.shape[0]):
-            feat_decoded1 = torch.cat([feat_decoded1, self.bn1(self.decoder1[i](x_encoder4[i], x_encoder3[i]).unsqueeze(0))],
+            feat_decoded1 = torch.cat([feat_decoded1, self.decoder1[i](x_encoder4[i], x_encoder3[i]).unsqueeze(0)],
                                       dim=0)
-            feat_decoded2 = torch.cat([feat_decoded2, self.bn2(self.decoder2[i](feat_decoded1[-1], x_encoder2[i]).unsqueeze(0))],
+            feat_decoded2 = torch.cat([feat_decoded2, self.decoder2[i](feat_decoded1[-1], x_encoder2[i]).unsqueeze(0)],
                                       dim=0)
-            feat_decoded3 = torch.cat([feat_decoded3, self.bn3(self.decoder3[i](feat_decoded2[-1], x_encoder1[i]).unsqueeze(0))],
+            feat_decoded3 = torch.cat([feat_decoded3, self.decoder3[i](feat_decoded2[-1], x_encoder1[i]).unsqueeze(0)],
                                       dim=0)
-            feat_decoded4 = torch.cat([feat_decoded4, self.bn4(self.decoder4[i](feat_decoded3[-1], x_inc[i]).unsqueeze(0))],
+            feat_decoded4 = torch.cat([feat_decoded4, self.decoder4[i](feat_decoded3[-1], x_inc[i]).unsqueeze(0)],
                                       dim=0)
 
         logits = torch.tensor([], device=input_device)

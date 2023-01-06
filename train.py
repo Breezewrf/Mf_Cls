@@ -27,7 +27,7 @@ import random
 import os
 
 dir_t2w = './data/T2W_images/'
-dir_adc = './data/ADC_images/'
+dir_adc = './data/T2W_images/'
 dir_img = './data/T2W_images/'
 dir_mask = './data/T2W_labels/'
 dir_checkpoint = Path('./checkpoints/')
