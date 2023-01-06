@@ -76,7 +76,7 @@ def train_model(
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    
+
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
 
     # 3. Create data loaders
@@ -85,12 +85,13 @@ def train_model(
     val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
 
     # (Initialize logging)
-    experiment = wandb.init(project='U-Net', resume='allow', anonymous='must', settings=wandb.Settings(start_method="fork"))
+    experiment = wandb.init(project='U-Net', resume='allow', anonymous='must',
+                            settings=wandb.Settings(start_method="fork"))
     experiment.config.update(
         dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
              val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale, amp=amp)
     )
-    wandb.run.name = "seed="+str(seed)+" lr="+str(learning_rate)
+    wandb.run.name = "seed=" + str(seed) + " lr=" + str(learning_rate)
     logging.info(f'''Starting training:
         Epochs:          {epochs}
         Batch size:      {batch_size}
@@ -238,6 +239,7 @@ if __name__ == '__main__':
     # Change here to adapt to your data
     # n_channels=3 for RGB images
     # n_classes is the number of probabilities you want to get per pixel
+    assert (args.branch == 1 and args.model != 'msf') or (args.branch == 2 and args.model == 'msf')
     if args.model == 'unet':
         model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
     elif args.model == 'unetpp':
