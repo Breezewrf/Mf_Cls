@@ -6,15 +6,15 @@ import glob
 import shutil
 import os
 
-img_path = glob.glob('/media/breeze/dev/Mf_Cls/data/T2W_images/*')
+img_path = glob.glob('/media/breeze/dev/Mf_Cls/data/ADC_images/*')
 label_path = glob.glob('/media/breeze/dev/Mf_Cls/data/T2W_labels/*')
 cnt = 0
 for i in img_path:
     cnt += 1
     if cnt % 5 == 0:
-        shutil.copy(i, '/media/breeze/dev/Mf_Cls/data/test/T2W_images')
+        shutil.copy(i, '/media/breeze/dev/Mf_Cls/data/test/ADC_images')
     else:
-        shutil.copy(i, '/media/breeze/dev/Mf_Cls/data/train/T2W_images')
+        shutil.copy(i, '/media/breeze/dev/Mf_Cls/data/train/ADC_images')
 cnt = 0
 for i in label_path:
     cnt += 1

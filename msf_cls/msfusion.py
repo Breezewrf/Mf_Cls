@@ -53,7 +53,7 @@ class Up(nn.Module):
                              **kwargs)
         else:
             self.conv = conv
-        self.bn = obtain_normalization(0, out_channels)
+        # self.bn = obtain_normalization(0, out_channels)
 
     def forward(self, x1, x2):
         x1 = self.up(x1)
@@ -66,7 +66,7 @@ class Up(nn.Module):
         x = torch.cat([x2, x1], dim=1)
         if self.conv is not None:
             x = self.conv(x)
-        return self.bn(x)
+        return x
 
 
 class DoubleConv(nn.Module):
@@ -242,10 +242,10 @@ class MSFusionNet(nn.Module):
         ) for _ in range(input_c)])
 
         self.merge_out = OutConv(output_c * input_c, output_c)
-        self.bn1 = obtain_normalization(choice=normalization, channels=kernel_num >> 1, groups=output_c)
-        self.bn2 = obtain_normalization(choice=normalization, channels=kernel_num >> 2, groups=output_c)
-        self.bn3 = obtain_normalization(choice=normalization, channels=kernel_num >> 3, groups=output_c)
-        self.bn4 = obtain_normalization(choice=normalization, channels=kernel_num >> 4, groups=output_c)
+        # self.bn1 = obtain_normalization(choice=normalization, channels=kernel_num >> 1, groups=output_c)
+        # self.bn2 = obtain_normalization(choice=normalization, channels=kernel_num >> 2, groups=output_c)
+        # self.bn3 = obtain_normalization(choice=normalization, channels=kernel_num >> 3, groups=output_c)
+        # self.bn4 = obtain_normalization(choice=normalization, channels=kernel_num >> 4, groups=output_c)
         self.drop = nn.Dropout2d(p=p)
         self.bayesian = bayesian
 

@@ -26,8 +26,8 @@ from msf_cls.msfusion import MSFusionNet
 import random
 import os
 
-dir_t2w = './data/T2W_images/'
-dir_adc = './data/ADC_images/'
+dir_t2w = './data/train/T2W_images/'
+dir_adc = './data/train/ADC_images/'
 dir_img = './data/T2W_images/'
 dir_mask = './data/T2W_labels/'
 dir_checkpoint = Path('./checkpoints/')
@@ -226,6 +226,7 @@ def get_args():
     parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
+    parser.add_argument('--desc', type=str)
     return parser.parse_args()
 
 
