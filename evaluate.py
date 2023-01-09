@@ -29,6 +29,8 @@ def evaluate(net, dataloader, device, amp):
 
             # predict the mask
             mask_pred = net(image)
+            if net.name == 'unetpp':
+                mask_pred = mask_pred[0]
 
             if net.n_classes == 1:
                 assert mask_true.min() >= 0 and mask_true.max() <= 1, 'True mask indices should be in [0, 1]'
