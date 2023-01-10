@@ -50,7 +50,8 @@ def train_model(
         gradient_clipping: float = 1.0,
         branch: int = 1,
         seed=12321,
-        aug=1
+        aug=1,
+        desc=''
 ):
     # 1. Create dataset
     dataset = None
@@ -92,7 +93,7 @@ def train_model(
         dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
              val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale, amp=amp)
     )
-    wandb.run.name = model.name + "seed=" + str(seed) + " lr=" + str(learning_rate) + "aug=" + str(aug)
+    wandb.run.name = model.name + "seed=" + str(seed) + " lr=" + str(learning_rate) + "aug=" + str(aug) + desc
     logging.info(f'''Starting training:
         Epochs:          {epochs}
         Batch size:      {batch_size}
@@ -307,5 +308,6 @@ if __name__ == '__main__':
         amp=args.amp,
         branch=args.branch,
         seed=args.seed,
-        aug=args.aug
+        aug=args.aug,
+        desc=args.desc
     )
