@@ -42,14 +42,15 @@ def train_model(
         learning_rate: float = 1e-5,
         val_percent: float = 0.1,
         save_checkpoint: bool = True,
-        save_interval: int = 10,
+        save_interval: int = 50,
         img_scale: float = 0.5,
         amp: bool = False,
         weight_decay: float = 1e-8,
         momentum: float = 0.999,
         gradient_clipping: float = 1.0,
         branch: int = 1,
-        seed=12321
+        seed=12321,
+        aug=1
 ):
     # 1. Create dataset
     dataset = None
@@ -59,7 +60,7 @@ def train_model(
         except (AssertionError, RuntimeError):
             dataset = BasicDataset(dir_img, dir_mask, img_scale)
     elif branch == 2:
-        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale)
+        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale, aug=aug)
     # 2. Split into train / validation partitions
     assert dataset is not None, f'the branch number is not set correctly: {branch}'
     n_val = int(len(dataset) * val_percent)
@@ -91,7 +92,7 @@ def train_model(
         dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
              val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale, amp=amp)
     )
-    wandb.run.name = "seed=" + str(seed) + " lr=" + str(learning_rate)
+    wandb.run.name = model.name + "seed=" + str(seed) + " lr=" + str(learning_rate) + "aug=" + str(aug)
     logging.info(f'''Starting training:
         Epochs:          {epochs}
         Batch size:      {batch_size}
@@ -208,6 +209,11 @@ def train_model(
             state_dict['mask_values'] = dataset.mask_values
             torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
             logging.info(f'Checkpoint {epoch} saved!')
+    Path(model.name+'epoch'+str(epochs)).mkdir(parents=True, exist_ok=True)
+    state_dict_final = model.state_dict()
+    state_dict_final['mask_values'] = dataset.mask_values
+    torch.save(state_dict_final, str('{}_final.pth'.format(model.name)))
+    logging.info(f'Checkpoint {model.name} training finished!')
 
 
 def get_args():
@@ -226,6 +232,7 @@ def get_args():
     parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
+    parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--desc', type=str)
     return parser.parse_args()
 
@@ -299,5 +306,6 @@ if __name__ == '__main__':
         val_percent=args.val / 100,
         amp=args.amp,
         branch=args.branch,
-        seed=args.seed
+        seed=args.seed,
+        aug=args.aug
     )
