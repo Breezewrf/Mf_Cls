@@ -53,7 +53,7 @@ def enhance_util(img1, img2, gt):
 
 
 class MSFDataset(Dataset):
-    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, mask_dir: str, scale: float = 1.0):
+    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, mask_dir: str, scale: float = 1.0, aug: int = 1):
         self.t2w_dir = Path(T2W_images_dir)
         self.adc_dir = Path(ADC_images_dir)
         self.mask_dir = Path(mask_dir)
@@ -61,6 +61,7 @@ class MSFDataset(Dataset):
         self.scale = scale
         self.ids = [splitext(file)[0] for file in listdir(T2W_images_dir) if
                     isfile(join(T2W_images_dir, file)) and not file.startswith('.')]
+        self.aug = aug
         if not self.ids:
             raise RuntimeError(f'No input file found in {T2W_images_dir}, make sure you put your images there')
         logging.info(f'Creating dataset with {len(self.ids)} examples')
@@ -129,7 +130,8 @@ class MSFDataset(Dataset):
         t2w_img = self.preprocess(self.mask_values, t2w_img, self.scale, is_mask=False)
         adc_img = self.preprocess(self.mask_values, adc_img, self.scale, is_mask=False)
         mask = self.preprocess(self.mask_values, mask, self.scale, is_mask=True)
-        t2w_img, adc_img, mask = enhance_util(t2w_img, adc_img, mask)
+        if self.aug:
+            t2w_img, adc_img, mask = enhance_util(t2w_img, adc_img, mask)
         return {
             't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
             'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
