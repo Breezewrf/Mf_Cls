@@ -11,6 +11,7 @@ from os.path import splitext, isfile, join
 from pathlib import Path
 from torch.utils.data import Dataset
 from tqdm import tqdm
+from torchvision import transforms
 
 
 def load_image(filename):
@@ -33,6 +34,22 @@ def unique_mask_values(idx, mask_dir, mask_suffix):
         return np.unique(mask, axis=0)
     else:
         raise ValueError(f'Loaded masks should have 2 or 3 dimensions, found {mask.ndim}')
+
+
+def enhance_util(img1, img2, gt):
+    # augmentation
+    trans = transforms.Compose([
+        transforms.CenterCrop(256),
+        transforms.RandomHorizontalFlip(),
+        transforms.GaussianBlur(1),
+        transforms.RandomAutocontrast(),
+        transforms.RandomEqualize(),
+        transforms.RandomRotation(15)
+    ])
+    image1 = trans(img1)
+    image2 = trans(img2)
+    gt = trans(gt)
+    return image1, image2, gt
 
 
 class MSFDataset(Dataset):
@@ -64,7 +81,7 @@ class MSFDataset(Dataset):
         newW = target_size
         newH = target_size
         assert newW > 0 and newH > 0, 'Scale is too small, resized images would have no pixel'
-        pil_img = pil_img.resize((newW, newH), resample=Image.NEAREST if is_mask else Image.BICUBIC)
+        # pil_img = pil_img.resize((newW, newH), resample=Image.NEAREST if is_mask else Image.BICUBIC)
         img = np.asarray(pil_img)
 
         if is_mask:
@@ -112,7 +129,7 @@ class MSFDataset(Dataset):
         t2w_img = self.preprocess(self.mask_values, t2w_img, self.scale, is_mask=False)
         adc_img = self.preprocess(self.mask_values, adc_img, self.scale, is_mask=False)
         mask = self.preprocess(self.mask_values, mask, self.scale, is_mask=True)
-
+        t2w_img, adc_img, mask = enhance_util(t2w_img, adc_img, mask)
         return {
             't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
             'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
