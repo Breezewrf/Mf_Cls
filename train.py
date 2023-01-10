@@ -210,10 +210,11 @@ def train_model(
             state_dict['mask_values'] = dataset.mask_values
             torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
             logging.info(f'Checkpoint {epoch} saved!')
+
     Path(model.name+'epoch'+str(epochs)).mkdir(parents=True, exist_ok=True)
     state_dict_final = model.state_dict()
     state_dict_final['mask_values'] = dataset.mask_values
-    torch.save(state_dict_final, str('{}_final.pth'.format(model.name)))
+    torch.save(state_dict_final, str(Path(model.name+'epoch'+str(epochs)) / '{}_{}_final.pth'.format(model.name, desc)))
     logging.info(f'Checkpoint {model.name} training finished!')
 
 
