@@ -92,7 +92,7 @@ def train_model(
         dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
              val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale, amp=amp)
     )
-    wandb.run.name = model.name + "seed=" + str(seed) + " lr=" + str(learning_rate) + "aug=" + str(aug) + desc
+    wandb.run.name = model.name + "seed=" + str(seed) + " lr=" + str(learning_rate) + "aug=" + str(aug) + str(desc)
     logging.info(f'''Starting training:
         Epochs:          {epochs}
         Batch size:      {batch_size}
