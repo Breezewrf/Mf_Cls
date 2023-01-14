@@ -41,7 +41,6 @@ def enhance_util(img1, img2, gt):
     seed = np.random.randint(57749867)
     trans = transforms.Compose([
         transforms.ToPILImage(mode='F'),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         transforms.CenterCrop(256),
         transforms.RandomHorizontalFlip(),
         transforms.GaussianBlur(1),
@@ -109,8 +108,8 @@ class MSFDataset(Dataset):
             else:
                 img = img.transpose((2, 0, 1))
 
-            # if (img > 1).any():
-            #     img = img / 255.0
+            if (img > 1).any():
+                img = img / 255.0
 
             return img
 
