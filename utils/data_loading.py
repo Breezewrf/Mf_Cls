@@ -38,18 +38,26 @@ def unique_mask_values(idx, mask_dir, mask_suffix):
 
 def enhance_util(img1, img2, gt):
     # augmentation
+    seed = np.random.randint(57749867)
     trans = transforms.Compose([
+        transforms.ToPILImage(mode='F'),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         transforms.CenterCrop(256),
         transforms.RandomHorizontalFlip(),
         transforms.GaussianBlur(1),
-        transforms.RandomAutocontrast(),
-        transforms.RandomEqualize(),
+        # transforms.RandomAutocontrast(),
+        # transforms.RandomEqualize(),
         transforms.RandomRotation(15)
     ])
-    image1 = trans(img1)
-    image2 = trans(img2)
-    gt = trans(gt)
-    return image1, image2, gt
+    torch.manual_seed(seed)
+    image1 = trans(img1.astype(np.float32).transpose(1, 2, 0))
+
+    torch.manual_seed(seed)
+    image2 = trans(img2.astype(np.float32).transpose(1, 2, 0))
+
+    torch.manual_seed(seed)
+    gt = trans(gt.astype(np.float32))
+    return np.array(image1).reshape(img1.shape), np.array(image2).reshape(img1.shape), np.array(gt)
 
 
 class MSFDataset(Dataset):
@@ -101,8 +109,8 @@ class MSFDataset(Dataset):
             else:
                 img = img.transpose((2, 0, 1))
 
-            if (img > 1).any():
-                img = img / 255.0
+            # if (img > 1).any():
+            #     img = img / 255.0
 
             return img
 
@@ -130,8 +138,8 @@ class MSFDataset(Dataset):
         t2w_img = self.preprocess(self.mask_values, t2w_img, self.scale, is_mask=False)
         adc_img = self.preprocess(self.mask_values, adc_img, self.scale, is_mask=False)
         mask = self.preprocess(self.mask_values, mask, self.scale, is_mask=True)
-        # if self.aug:
-        #     t2w_img, adc_img, mask = enhance_util(t2w_img, adc_img, mask)
+        if self.aug:
+            t2w_img, adc_img, mask = enhance_util(t2w_img, adc_img, mask)
         return {
             't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
             'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
