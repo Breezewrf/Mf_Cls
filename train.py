@@ -51,6 +51,7 @@ def train_model(
         branch: int = 1,
         seed=12321,
         aug=1,
+        opt='adamw',
         desc=''
 ):
     # 1. Create dataset
@@ -106,8 +107,14 @@ def train_model(
     ''')
 
     # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
-    optimizer = optim.AdamW(model.parameters(), lr=learning_rate) #, weight_decay=weight_decay, momentum=momentum, foreach=True)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60, factor=0.5)  # goal: maximize Dice score
+    if opt == 'adamw':
+        optimizer = optim.AdamW(model.parameters(), lr=learning_rate) #, weight_decay=weight_decay, momentum=momentum, foreach=True)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60,
+                                                         factor=0.5)  # goal: maximize Dice score
+    else:
+        optimizer = optim.AdamW(model.parameters(),
+                                lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60)  # goal: maximize Dice score
     grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
     criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
     global_step = 0
@@ -233,6 +240,7 @@ def get_args():
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
+    parser.add_argument('--opt', type=str, default='adamw')
     parser.add_argument('--desc', type=str)
     return parser.parse_args()
 
@@ -308,5 +316,6 @@ if __name__ == '__main__':
         branch=args.branch,
         seed=args.seed,
         aug=args.aug,
+        opt=args.opt,
         desc=args.desc
     )
