@@ -13,9 +13,9 @@ from torch.utils.data import DataLoader
 from utils.data_loading import MSFDataset, CarvanaDataset, BasicDataset
 import tqdm
 
-t2w_test_dir = './data/train/T2W_images/'
-adc_test_dir = './data/train/ADC_images/'
-gt_test_dir = './data/T2W_labels/'
+t2w_test_dir = './data/test/T2W_images/'
+adc_test_dir = './data/test/ADC_images/'
+gt_test_dir = './data/test/labels/'
 
 
 def test():
