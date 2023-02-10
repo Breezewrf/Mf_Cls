@@ -112,8 +112,10 @@ def train_model(
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60,
                                                          factor=0.5)  # goal: maximize Dice score
     else:
-        optimizer = optim.AdamW(model.parameters(),
-                                lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
+        optimizer = optim.RMSprop(model.parameters(),
+                               lr=learning_rate, weight_decay=weight_decay, momentum=momentum, foreach=True)
+	#optimizer = optim.AdamW(model.parameters(),
+         #                       lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60)  # goal: maximize Dice score
     grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
     criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
