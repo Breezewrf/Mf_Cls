@@ -5,6 +5,36 @@
 from utils.dice_score import dice_loss
 from torch import nn
 import torch.nn.functional as F
+from torch.nn.functional import one_hot
+import torch
+
+
+def lw_loss(pred, gt):
+    pred = pred.squeeze()
+    gt = gt.squeeze()
+    gt = torch.tensor(gt, dtype=torch.int64)
+
+    gt = one_hot(gt, 4)
+    # print(gt)
+    loss = 0
+    criterion = nn.CrossEntropyLoss()
+    # for d in range(len(gt)):
+    #     # print("nonzero:", torch.nonzero(gt))
+    #     w = abs(d - torch.nonzero(gt))
+    #     # print("w", w)
+    #     print("pred:", pred)
+    #     print("gt:", gt)
+    #     loss += w * (pred[d] - gt[d])
+    # # loss += dice_loss(pred.unsqueeze(dim=0), gt.unsqueeze(dim=0), multiclass=False)
+    # epsilon = 1e-6
+    # set_inner = 2 * (pred * gt).sum()
+    # set_sum = pred.sum() + gt.sum()
+    # set_sum = torch.where(set_sum == 0, set_inner, set_sum)
+    # dice = (set_inner + epsilon) / (set_sum + epsilon)
+    # loss += (1 - dice)
+
+    loss += criterion(pred.float(), gt.float())
+    return loss
 
 
 def unet_loss(model, masks_pred, true_masks):
@@ -37,3 +67,26 @@ def unetpp_loss(model, masks_pred, true_masks):
                 multiclass=True
             )
     return loss/len(masks_pred)
+
+
+class TverskyLoss(nn.Module):
+    def __init__(self, weight=None, size_average=True):
+        super(TverskyLoss, self).__init__()
+
+    def forward(self, inputs, targets, smooth=1, alpha=0.5, beta=0.5):
+        # comment out if your model contains a sigmoid or equivalent activation layer
+        inputs = F.sigmoid(inputs)
+        bn = inputs.shape[0]
+
+        # flatten label and prediction tensors
+        inputs = inputs.view(bn, -1)
+        targets = targets.view(bn, -1)
+
+        # True Positives, False Positives & False Negatives
+        TP = (inputs * targets).sum()
+        FP = ((1 - targets) * inputs).sum()
+        FN = (targets * (1 - inputs)).sum()
+
+        Tversky = (TP + smooth) / (TP + alpha * FP + beta * FN + smooth)
+
+        return 1 - Tversky

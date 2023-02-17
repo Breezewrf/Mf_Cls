@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 from utils.dice_score import multiclass_dice_coeff, dice_coeff
+from loss import lw_loss
 
 
 @torch.inference_mode()
@@ -47,3 +48,29 @@ def evaluate(net, dataloader, device, amp):
 
     net.train()
     return dice_score / max(num_val_batches, 1)
+
+
+@torch.inference_mode()
+def evaluate_cls(net, dataloader, device, amp):
+    net.eval()
+    num_val_batches = len(dataloader)
+    true = 0
+
+    # iterate over the validation set
+    with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
+        for batch in tqdm(dataloader, total=num_val_batches, desc='Validation round', unit='batch', leave=False):
+            image, grade = batch[0], batch[1]
+
+            # move images and labels to correct device and type
+            image = image.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+            grade = grade.to(device=device, dtype=torch.long)
+
+            # predict
+            # softmax = torch.nn.Softmax(dim=1)
+            # pred = softmax(net(image)).argmax(dim=1)
+            pred = net(image)
+            if pred.argmax(dim=1) == grade:
+                true += 1
+            print("pred: ", pred.data, "\ngt: ", grade.data)
+    net.train()
+    return true / max(num_val_batches, 1)

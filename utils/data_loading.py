@@ -12,6 +12,109 @@ from pathlib import Path
 from torch.utils.data import Dataset
 from tqdm import tqdm
 from torchvision import transforms
+import os
+from glob import glob
+from utils.rumour_crop import Slice
+
+
+class Lesion():
+    def __init__(self, img: np.array, p_id: int, s_id: int, grade: int):
+        self.image_np = img
+        self.patient_id = p_id
+        self.slice_id = s_id
+        self.grade = grade
+
+    def __repr__(self):
+        s = self.__class__.__name__ + "("
+        s += "patient_id={}, ".format(self.patient_id)
+        s += "slice_id={}, ".format(self.slice_id)
+        s += "grade={}), ".format(self.grade)
+        return s
+
+
+def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt"):
+    Lesion_list = []
+    with open(path) as f:
+        lines = f.readlines()
+        for line in lines:
+            """
+            each line denotes a patient,
+            slices include the MRI slices of the patient
+            """
+            patient_id = int(float(line.split(" ")[0]))
+            print(patient_id)
+            slices = glob('/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_' + str(patient_id) + '_*')
+            print(slices)
+            """
+            13
+            ['/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_1.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_2.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_3.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_4.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_5.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_6.png']
+    
+            Lesion_13_1.png, where 13 denotes patient id is 13, slice id is 1
+            In "13", len(list) == 6 == max(slice_id), denotes patient_13 has 6 slices
+            """
+            grades = []
+            for i in line.split(" ")[1:]:
+                grades.append(int(float(i)))
+            print(grades)
+            """
+            patient_id, grade1, grade2
+            13,         2,      3
+                        (127)   (255)
+            denotes No.13 patient has totally two lesions
+            the grade of white one is 3, the grade of gray(127) one is 2.
+            Statically, there are only two lesions at most in one slice.
+            """
+            for s_id, s in enumerate(slices):
+                sli = Slice(s)
+                for t_id, tumour in enumerate(sli.binary_imgs):
+                    if len(grades) == 1:
+                        grade = grades[0]
+                    elif len(grades) == 2:
+                        # 127, 255
+                        assert sli.tumour_gray[0] != 255 / 3 and sli.tumour_gray[0] != 2 * 255 / 3
+                        if sli.tumour_gray[t_id] == 127:
+                            grade = grades[0]
+                        if sli.tumour_gray[t_id] == 255:
+                            grade = grades[1]
+                    else:
+                        assert len(grades) == 3
+                        if sli.tumour_gray[t_id] == 255 / 3:
+                            grade = grades[0]
+                        if sli.tumour_gray[t_id] == 2 * 255 / 3:
+                            grade = grades[1]
+                        if sli.tumour_gray[t_id] == 255:
+                            grade = grades[2]
+
+                    # le = Lesion(tumour, patient_id, s_id + 1, grade)  # s_id should start from 1
+                    le = Lesion(sli.tumour_imgs[t_id], patient_id, s_id + 1, grade)  # max(0, grade-1)
+                    Lesion_list.append(le)
+                    print("added")
+    print("loaded!")
+    return Lesion_list
+
+
+class Cls_Dataset(Dataset):
+    def __init__(self, label_dir: str = 'data/cls_label', transform=None):
+        self.label_path = glob(label_dir + "/*.txt")
+        print(self.label_path)
+        assert len(self.label_path) == 3
+        self.transform = transform
+        self.lesions = []  # list of lesions in format of Lesion() object
+        for path in self.label_path:
+            self.lesions += load_cls_label(path)
+
+    def __getitem__(self, idx):
+        if self.transform:
+            # todo implement in future
+            pass
+        im = self.lesions[idx].image_np
+        im = enhance_cls(im)
+        im = torch.as_tensor(np.asarray(im).copy()).unsqueeze(dim=0)
+
+        return im.float().contiguous(), self.lesions[idx].grade
+
+    def __len__(self):
+        return len(self.lesions)
 
 
 def load_image(filename):
@@ -34,6 +137,23 @@ def unique_mask_values(idx, mask_dir, mask_suffix):
         return np.unique(mask, axis=0)
     else:
         raise ValueError(f'Loaded masks should have 2 or 3 dimensions, found {mask.ndim}')
+
+
+def enhance_cls(img):
+    # augmentation
+    seed = np.random.randint(57749867)
+    trans = transforms.Compose([
+        transforms.ToPILImage(mode='L'),
+        transforms.Resize((64, 64)),
+        transforms.RandomHorizontalFlip(),
+        transforms.GaussianBlur(1),
+        # transforms.RandomAutocontrast(),
+        # transforms.RandomEqualize(),
+        transforms.RandomRotation(15),
+        transforms.RandomVerticalFlip()
+    ])
+    torch.manual_seed(seed)
+    return trans(img)
 
 
 def enhance_util(img1, img2, gt):
