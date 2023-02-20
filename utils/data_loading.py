@@ -86,7 +86,7 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt"):
                             grade = grades[2]
 
                     # le = Lesion(tumour, patient_id, s_id + 1, grade)  # s_id should start from 1
-                    le = Lesion(sli.tumour_imgs[t_id], patient_id, s_id + 1, grade)  # max(0, grade-1)
+                    le = Lesion(sli.tumour_imgs[t_id], patient_id, s_id + 1, max(0, grade-1))  # max(0, grade-1)
                     Lesion_list.append(le)
                     print("added")
     print("loaded!")
@@ -102,6 +102,7 @@ class Cls_Dataset(Dataset):
         self.lesions = []  # list of lesions in format of Lesion() object
         for path in self.label_path:
             self.lesions += load_cls_label(path)
+        self.labels = [l.grade for l in self.lesions]
 
     def __getitem__(self, idx):
         if self.transform:

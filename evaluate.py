@@ -69,6 +69,7 @@ def evaluate_cls(net, dataloader, device, amp):
             # softmax = torch.nn.Softmax(dim=1)
             # pred = softmax(net(image)).argmax(dim=1)
             pred = net(image)
+            # for vgg, dim=0
             if pred.argmax(dim=1) == grade:
                 true += 1
             print("pred: ", pred.data, "\ngt: ", grade.data)
