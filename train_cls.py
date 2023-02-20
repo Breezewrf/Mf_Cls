@@ -7,10 +7,11 @@ import logging
 import torch
 from msf_cls.backbone.resnet import resnet34, resnet18, resnet50, resnet101
 from msf_cls.backbone.convnext import ConvNeXt
+from msf_cls.backbone.vgg import Vgg_16
 from utils.data_loading import Cls_Dataset
 import os
 import random
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
 import numpy as np
 from torch import optim
 from tqdm import tqdm
@@ -59,10 +60,27 @@ def train_model(
 
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
     # 3. Create data loaders
+    # re-weight
+    class_weight = np.zeros(4)
+    train_labels = []
+    for im, label in train_set:
+        l, t = np.unique(label, return_counts=True)
+        class_weight[l] += t
+        train_labels.append(label)
+    exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
+    example_weight = [exp_weight[e] for e in train_labels]
+    sampler = WeightedRandomSampler(example_weight, len(train_labels))
     loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
-    train_loader = DataLoader(train_set, shuffle=True, **loader_args)
+    train_loader = DataLoader(train_set, sampler=sampler, **loader_args)
     val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
 
+    # exp_weight = [1, 0, 0, 0]
+
+    class_weight = np.zeros(4)
+    for im, label in train_loader:
+        l, t = np.unique(label, return_counts=True)
+        class_weight[l] += t
+    print("class weight after re_weight: ", class_weight)
     # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
     optimizer = optim.AdamW(model.parameters(),
                             lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
