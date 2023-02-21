@@ -162,7 +162,7 @@ class ResNet(nn.Module):
             self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                            dilate=replace_stride_with_dilation[2])
 
-        self.out_layer = nn.Conv2d(512, num_classes, kernel_size=2, stride=1, bias=False)
+        self.out_layer = nn.Conv2d(self.layer4[-1].conv1.in_channels, num_classes, kernel_size=2, stride=1, bias=False)
         self.softmax = torch.nn.Softmax(dim=1)
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
