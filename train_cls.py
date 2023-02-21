@@ -132,7 +132,7 @@ def train_model(
                         #     if not torch.isinf(value.grad).any():
                         #         histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
 
-                        score = evaluate_cls(model, val_loader, device, amp)
+                        score = evaluate_cls(model, val_loader, device, amp, args.model)
                         scheduler.step(score)
                         logging.info('Score: {}'.format(score))
                         if log:
@@ -168,8 +168,8 @@ def get_args():
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
-    parser.add_argument('--model', type=str, default='resnet18',
-                        help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg18, convnext, mfcls')
+    parser.add_argument('--model', type=str, default='vgg16',
+                        help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg16, convnext, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
     logging.info("classification model: {}".format(args.model))
     model_list = {'resnet18': resnet18(), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
-                  'vgg16': Vgg_16, 'convnext': ConvNeXt()}
+                  'vgg16': Vgg_16(), 'convnext': ConvNeXt()}
     device = torch.device('cpu')
     logging.info(f'Using device {device}')
     assert args.model in model_list

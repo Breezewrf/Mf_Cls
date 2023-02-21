@@ -51,7 +51,7 @@ def evaluate(net, dataloader, device, amp):
 
 
 @torch.inference_mode()
-def evaluate_cls(net, dataloader, device, amp):
+def evaluate_cls(net, dataloader, device, amp, model_name):
     net.eval()
     num_val_batches = len(dataloader)
     true = 0
@@ -70,7 +70,10 @@ def evaluate_cls(net, dataloader, device, amp):
             # pred = softmax(net(image)).argmax(dim=1)
             pred = net(image)
             # for vgg, dim=0
-            if pred.argmax(dim=1) == grade:
+            dim = 1
+            if model_name == 'vgg16':
+                dim = 0
+            if pred.argmax(dim=dim) == grade:
                 true += 1
             print("pred: ", pred.data, "\ngt: ", grade.data)
     net.train()
