@@ -17,7 +17,8 @@ from torch import optim
 from tqdm import tqdm
 from evaluate import evaluate_cls
 from pathlib import Path
-
+import wandb
+os.environ["WANDB_MODE"]="offline"
 dir_checkpoint = Path('./checkpoints/classification/')
 from loss import lw_loss
 
@@ -40,8 +41,13 @@ def train_model(
         seed=12321,
         aug=1,
         opt='adamw',
-        desc=''
+        desc='',
+        log=True
 ):
+    if log:
+        config = {'epoch': epochs, 'batch_size': batch_size, 'lr': learning_rate, 'seed': seed, 'opt': opt}
+        run = wandb.init(project='classification', config=config)
+
     # 1. create dataset
     dataset = Cls_Dataset()
     n_val = int(len(dataset) * val_percent)
@@ -80,7 +86,7 @@ def train_model(
     for im, label in train_loader:
         l, t = np.unique(label, return_counts=True)
         class_weight[l] += t
-    print("class weight after re_weight: ", class_weight)
+    logging.info("class weight after re_weight: {}".format(class_weight))
     # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
     optimizer = optim.AdamW(model.parameters(),
                             lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
@@ -113,6 +119,8 @@ def train_model(
                 global_step += 1
                 epoch_loss += loss.item()
                 pbar.set_postfix(**{'loss (batch)': loss.item()})
+                if log:
+                    wandb.log({'loss': loss.item()})
                 division_step = (n_train // (5 * batch_size))
                 if division_step > 0:
                     if global_step % division_step == 0:
@@ -127,6 +135,8 @@ def train_model(
                         score = evaluate_cls(model, val_loader, device, amp)
                         scheduler.step(score)
                         logging.info('Score: {}'.format(score))
+                        if log:
+                            wandb.log({'score': score})
         if save_checkpoint and epoch % save_interval == 0:
             Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
             state_dict = model.state_dict()
@@ -137,6 +147,11 @@ def train_model(
     state_dict_final = model.state_dict()
     torch.save(state_dict_final,
                str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
+    if log:
+        model_wandb = wandb.Artifact('classification-model', type='model')
+        model_wandb.add_file(str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
+        run.log_artifact(model_wandb)
+
     logging.info(f'Checkpoint  training finished!')
 
 
@@ -153,11 +168,13 @@ def get_args():
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
-    parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
+    parser.add_argument('--model', type=str, default='resnet18',
+                        help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg18, convnext, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
+    parser.add_argument('--log', type=bool, default=True)
     parser.add_argument('--desc', type=str)
     return parser.parse_args()
 
@@ -165,9 +182,13 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
     logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    logging.info("classification model: {}".format(args.model))
+    model_list = {'resnet18': resnet18(), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
+                  'vgg16': Vgg_16, 'convnext': ConvNeXt()}
+    device = torch.device('cpu')
     logging.info(f'Using device {device}')
-    model = resnet18()
+    assert args.model in model_list
+    model = model_list[args.model]
     model = model.to(device)
     train_model(
         model=model,
@@ -182,5 +203,6 @@ if __name__ == '__main__':
         seed=args.seed,
         aug=args.aug,
         opt=args.opt,
-        desc=args.desc
+        desc=args.desc,
+        log=True
     )
