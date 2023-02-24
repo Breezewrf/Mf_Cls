@@ -151,7 +151,10 @@ def enhance_cls(img):
         # transforms.RandomAutocontrast(),
         # transforms.RandomEqualize(),
         transforms.RandomRotation(15),
-        transforms.RandomVerticalFlip()
+        transforms.RandomVerticalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize([0.5], [0.5]),
+        transforms.ToPILImage(mode='L')
     ])
     torch.manual_seed(seed)
     return trans(img)

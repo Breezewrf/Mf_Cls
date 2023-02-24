@@ -18,9 +18,11 @@ from tqdm import tqdm
 from evaluate import evaluate_cls
 from pathlib import Path
 import wandb
-os.environ["WANDB_MODE"]="offline"
+
+os.environ["WANDB_MODE"] = "offline"
 dir_checkpoint = Path('./checkpoints/classification/')
 from loss import lw_loss
+from msf_cls.backbone.pretrained import Resnet_18
 
 
 def train_model(
@@ -159,7 +161,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Train the Classification')
     parser.add_argument('--epochs', '-e', metavar='E', type=int, default=100, help='Number of epochs')
     parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=1, help='Batch size')
-    parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-7,
+    parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-4,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str, default=False, help='Load model from a .pth file')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
@@ -183,9 +185,9 @@ if __name__ == '__main__':
     args = get_args()
     logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
     logging.info("classification model: {}".format(args.model))
-    model_list = {'resnet18': resnet18(), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
+    model_list = {'resnet18': Resnet_18(), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
                   'vgg16': Vgg_16(), 'convnext': ConvNeXt()}
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
     assert args.model in model_list
     model = model_list[args.model]
