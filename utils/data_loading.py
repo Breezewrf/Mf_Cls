@@ -43,7 +43,7 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt"):
             """
             patient_id = int(float(line.split(" ")[0]))
             print(patient_id)
-            slices = glob('/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_' + str(patient_id) + '_*')
+            slices = glob('./data/labeled_GT_colored/Lesion_' + str(patient_id) + '_*')
             print(slices)
             """
             13
