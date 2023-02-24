@@ -187,7 +187,7 @@ if __name__ == '__main__':
     logging.info("classification model: {}".format(args.model))
     model_list = {'resnet18': Resnet_18(), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
                   'vgg16': Vgg_16(), 'convnext': ConvNeXt()}
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
     assert args.model in model_list
     model = model_list[args.model]
