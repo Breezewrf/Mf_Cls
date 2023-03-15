@@ -49,6 +49,7 @@ def train_model(
         aug=1,
         opt='adamw',
         desc='',
+        num_classes=2,
         log=True
 ):
     if log:
@@ -56,7 +57,7 @@ def train_model(
         run = wandb.init(project='classification', config=config)
 
     # 1. create dataset
-    dataset = Cls_Dataset()
+    dataset = Cls_Dataset(num_classes=num_classes)
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
     # (1) Set `os env`
@@ -187,8 +188,8 @@ def get_args():
                         help='Percent of the data that is used as validation (0-100)')
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
-    parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
-    parser.add_argument('--model', type=str, default='vgg16',
+    parser.add_argument('--classes', '-c', type=int, default=4, help='Number of classes')
+    parser.add_argument('--model', type=str, default='resnet18',
                         help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg16, convnext, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
@@ -203,13 +204,9 @@ if __name__ == '__main__':
     args = get_args()
     logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
     logging.info("classification model: {}".format(args.model))
-    model_list = {'resnet18': Resnet_18(), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
-                  'vgg16': Vgg_16(), 'convnext': ConvNeXt()}
+    logging.info("classes number: {}".format(args.classes))
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    logging.info(f'Using device {device}')
-    assert args.model in model_list
-    model = model_list[args.model]
-    model = model.to(device)
+
     train_model(
         model_name=args.model,
         epochs=args.epochs,
@@ -224,5 +221,6 @@ if __name__ == '__main__':
         aug=args.aug,
         opt=args.opt,
         desc=args.desc,
+        num_classes=args.classes,
         log=True
     )
