@@ -32,7 +32,7 @@ class Lesion():
         return s
 
 
-def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt"):
+def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt", num_classes=2):
     Lesion_list = []
     with open(path) as f:
         lines = f.readlines()
@@ -86,7 +86,16 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt"):
                             grade = grades[2]
 
                     # le = Lesion(tumour, patient_id, s_id + 1, grade)  # s_id should start from 1
-                    le = Lesion(sli.tumour_imgs[t_id], patient_id, s_id + 1, max(0, grade-1))  # max(0, grade-1)
+                    # 0, 1 - > 0; 2, 3, 4 -> 1
+                    assert num_classes in (2, 4)
+                    if num_classes == 2:
+                        if grade in (0, 1):
+                            grade = 0
+                        if grade in (2, 3, 4):
+                            grade = 1
+                        le = Lesion(sli.tumour_imgs[t_id], patient_id, s_id + 1, grade)
+                    else:
+                        le = Lesion(sli.tumour_imgs[t_id], patient_id, s_id + 1, max(0, grade - 1))  # max(0, grade-1)
                     Lesion_list.append(le)
                     print("added")
     print("loaded!")
@@ -94,14 +103,15 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt"):
 
 
 class Cls_Dataset(Dataset):
-    def __init__(self, label_dir: str = 'data/cls_label', transform=None):
+    def __init__(self, label_dir: str = 'data/cls_label', transform=None, num_classes=2):
         self.label_path = glob(label_dir + "/*.txt")
         print(self.label_path)
         assert len(self.label_path) == 3
         self.transform = transform
         self.lesions = []  # list of lesions in format of Lesion() object
+        self.num_classes = num_classes
         for path in self.label_path:
-            self.lesions += load_cls_label(path)
+            self.lesions += load_cls_label(path, num_classes=num_classes)
         self.labels = [l.grade for l in self.lesions]
 
     def __getitem__(self, idx):
@@ -110,8 +120,8 @@ class Cls_Dataset(Dataset):
             pass
         im = self.lesions[idx].image_np
         im = enhance_cls(im)
-        im = torch.as_tensor(np.asarray(im).copy()).unsqueeze(dim=0)
-
+        # im = torch.as_tensor(np.asarray(im).copy()).unsqueeze(dim=0)
+        im = torch.as_tensor(np.asarray(im).copy())
         return im.float().contiguous(), self.lesions[idx].grade
 
     def __len__(self):
