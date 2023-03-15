@@ -31,7 +31,7 @@ focalLoss = FocalLoss(alpha=1, gamma=2)
 
 
 def train_model(
-        model,
+        model_name,
         device,
         epochs: int = 2,
         batch_size: int = 1,
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     model = model_list[args.model]
     model = model.to(device)
     train_model(
-        model=model,
+        model_name=args.model,
         epochs=args.epochs,
         batch_size=args.batch_size,
         learning_rate=args.lr,
