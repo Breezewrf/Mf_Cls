@@ -71,8 +71,6 @@ def train_model(
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-
-    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
     # 3. Create data loaders
     for fold, (train_idx, val_idx) in enumerate(kf.split(dataset)):
         model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
