@@ -37,6 +37,29 @@ def lw_loss(pred, gt):
     return loss
 
 
+# Define the Focal Loss function
+class FocalLoss(torch.nn.Module):
+    def __init__(self, alpha=1, gamma=2, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.alpha = torch.tensor(alpha)
+        self.gamma = gamma
+        self.reduction = reduction
+
+    def forward(self, logits, labels):
+        logits = logits.float()  # Convert to torch.float32
+        labels = labels.long()  # Convert to torch.int64
+        ce_loss = F.cross_entropy(logits, labels, reduction='none')
+        pt = torch.exp(-ce_loss)
+        focal_loss = self.alpha * (1 - pt) ** self.gamma * ce_loss
+        if self.reduction == 'mean':
+            focal_loss = torch.mean(focal_loss)
+        elif self.reduction == 'sum':
+            focal_loss = torch.sum(focal_loss)
+
+        return focal_loss
+
+
+
 def unet_loss(model, masks_pred, true_masks):
     criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
     if model.n_classes == 1:
