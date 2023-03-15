@@ -23,4 +23,6 @@ class Vgg_16(nn.Module):
                 nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
-        return self.softmax(self.out_layer(self.backbone(self.in_layer(x)).transpose(0, 1)))
+        res = self.backbone(self.in_layer(x))
+        res = self.out_layer(res).transpose(0, 1)
+        return self.softmax(res)
