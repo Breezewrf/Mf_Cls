@@ -52,14 +52,23 @@ def train_model(
         num_classes=2,
         log=True
 ):
+    global best_acc
+    best_epoch = 0
+    best_model_path = 'best.pth'
     if log:
         config = {'epoch': epochs, 'batch_size': batch_size, 'lr': learning_rate, 'seed': seed, 'opt': opt}
         run = wandb.init(project='classification', config=config)
 
     # 1. create dataset
     dataset = Cls_Dataset(num_classes=num_classes)
-    n_val = int(len(dataset) * val_percent)
-    n_train = len(dataset) - n_val
+    test_percent = 0.2
+    n_test = int(len(dataset) * test_percent)
+    n_train_val = len(dataset) - n_test
+    train_val_set, test_set = random_split(dataset, [n_train_val, n_test],
+                                           generator=torch.Generator().manual_seed(seed))
+    # n_val = int(len(dataset) * val_percent)
+    # n_train = len(dataset) - n_val
+
     # (1) Set `os env`
     os.environ['PYTHONHASHSEED'] = str(seed)
     # (2) Set `python` built-in pseudo-random generator at a fixed value
@@ -72,8 +81,9 @@ def train_model(
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     # 3. Create data loaders
-    for fold, (train_idx, val_idx) in enumerate(kf.split(dataset)):
-        model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
+    for fold, (train_idx, val_idx) in enumerate(kf.split(train_val_set)):
+        model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(),
+                      'resnet101': resnet101(),
                       'vgg16': VGG16(), 'convnext': ConvNeXt()}
         logging.info(f'Using device {device}')
         assert model_name in model_list
@@ -82,8 +92,7 @@ def train_model(
 
         train_set = torch.utils.data.Subset(dataset, train_idx)
         val_set = torch.utils.data.Subset(dataset, val_idx)
-        # train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
-
+        n_train = len(train_set)
         # re-weight
         class_weight = np.zeros(num_classes)
         train_labels = []
@@ -97,7 +106,7 @@ def train_model(
         loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
         train_loader = DataLoader(train_set, sampler=sampler, **loader_args)
         val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
-
+        test_lodaer = DataLoader(test_set, shuffle=False, **loader_args)
         # exp_weight = [1, 0, 0, 0]
         class_weight = np.zeros(num_classes)
         for im, label in train_loader:
@@ -157,19 +166,25 @@ def train_model(
                             if log:
                                 wandb.log({'score': score})
             if save_checkpoint and epoch % save_interval == 0:
+                test_acc = evaluate_cls(model, test_lodaer, device, amp, args.model, batch_size=batch_size)
+                print("test_score:{}".format(test_acc))
                 Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
                 state_dict = model.state_dict()
                 torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
                 logging.info(f'Checkpoint {epoch} saved!')
+                wandb.log({"test_acc": test_acc})
+                if test_acc > best_acc:
+                    best_acc = test_acc
+                    best_epoch = epoch
+                    torch.save(state_dict,
+                               str(Path('epoch' + str(epochs)) / '{}'.format(best_model_path)))
+                    if log:
+                        model_wandb = wandb.Artifact('classification-model', type='model')
+                        model_wandb.add_file(str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
+                        run.log_artifact(model_wandb)
 
-        Path('epoch' + str(epochs)).mkdir(parents=True, exist_ok=True)
-        state_dict_final = model.state_dict()
-        torch.save(state_dict_final,
-                   str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
-        if log:
-            model_wandb = wandb.Artifact('classification-model', type='model')
-            model_wandb.add_file(str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
-            run.log_artifact(model_wandb)
+        logging.info("best model is trained with {} epochs, best acc is {}".format(best_epoch, best_acc))
+
 
         logging.info(f'Checkpoint  training finished!')
 
