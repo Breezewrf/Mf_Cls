@@ -51,7 +51,7 @@ def evaluate(net, dataloader, device, amp):
 
 
 @torch.inference_mode()
-def evaluate_cls(net, dataloader, device, amp, model_name):
+def evaluate_cls(net, dataloader, device, amp, model_name, batch_size):
     net.eval()
     num_val_batches = len(dataloader)
     true = 0
@@ -77,4 +77,4 @@ def evaluate_cls(net, dataloader, device, amp, model_name):
                 true += 1
             print("pred: ", pred.data, "\ngt: ", grade.data)
     net.train()
-    return true / max(num_val_batches, 1)
+    return true / max(num_val_batches * batch_size, 1)
