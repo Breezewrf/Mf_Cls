@@ -71,10 +71,12 @@ def evaluate_cls(net, dataloader, device, amp, model_name, batch_size):
             pred = net(image)
             # for vgg, dim=0
             dim = 1
-            if model_name == 'vgg16':
-                dim = 0
-            if pred.argmax(dim=dim) == grade:
-                true += 1
-            print("pred: ", pred.data, "\ngt: ", grade.data)
+            # if model_name == 'vgg16':
+            #     dim = 0
+            print(pred, grade)
+            true += (pred.argmax(dim=dim) == grade).sum()
+            # if pred.argmax(dim=dim) == grade:
+            #     true += 1
+            # print("pred: ", pred.data, "\ngt: ", grade.data)
     net.train()
     return true / max(num_val_batches * batch_size, 1)
