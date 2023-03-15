@@ -22,7 +22,10 @@ import wandb
 os.environ["WANDB_MODE"] = "offline"
 dir_checkpoint = Path('./checkpoints/classification/')
 from loss import lw_loss
-from msf_cls.backbone.pretrained import Resnet_18
+from msf_cls.backbone.pretrained import Resnet_18, VGG16
+from loss import FocalLoss
+
+focalLoss = FocalLoss(alpha=1, gamma=2)
 
 
 def train_model(
@@ -110,7 +113,8 @@ def train_model(
                     # print("pred: ", pred.shape)
                     # print("pred: ", pred)
                     # print("res: ", res)
-                    loss = lw_loss(pred, grade)
+                    # loss = lw_loss(pred, grade)
+                    loss = focalLoss(pred, grade)
 
                 optimizer.zero_grad(set_to_none=True)
                 grad_scaler.scale(loss).backward()
