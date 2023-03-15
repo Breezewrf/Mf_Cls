@@ -18,6 +18,7 @@ from tqdm import tqdm
 from evaluate import evaluate_cls
 from pathlib import Path
 import wandb
+from sklearn.model_selection import KFold
 
 os.environ["WANDB_MODE"] = "offline"
 dir_checkpoint = Path('./checkpoints/classification/')
@@ -25,6 +26,7 @@ from loss import lw_loss
 from msf_cls.backbone.pretrained import Resnet_18, VGG16
 from loss import FocalLoss
 
+kf = KFold(n_splits=5, shuffle=True, random_state=57749867)
 focalLoss = FocalLoss(alpha=1, gamma=2)
 
 
@@ -71,94 +73,106 @@ def train_model(
 
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
     # 3. Create data loaders
-    # re-weight
-    class_weight = np.zeros(4)
-    train_labels = []
-    for im, label in train_set:
-        l, t = np.unique(label, return_counts=True)
-        class_weight[l] += t
-        train_labels.append(label)
-    exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
-    example_weight = [exp_weight[e] for e in train_labels]
-    sampler = WeightedRandomSampler(example_weight, len(train_labels))
-    loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
-    train_loader = DataLoader(train_set, sampler=sampler, **loader_args)
-    val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
+    for fold, (train_idx, val_idx) in enumerate(kf.split(dataset)):
+        model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(), 'resnet101': resnet101(),
+                      'vgg16': VGG16(), 'convnext': ConvNeXt()}
+        logging.info(f'Using device {device}')
+        assert model_name in model_list
+        model = model_list[model_name]
+        model = model.to(device)
 
-    # exp_weight = [1, 0, 0, 0]
+        train_set = torch.utils.data.Subset(dataset, train_idx)
+        val_set = torch.utils.data.Subset(dataset, val_idx)
+        # train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
 
-    class_weight = np.zeros(4)
-    for im, label in train_loader:
-        l, t = np.unique(label, return_counts=True)
-        class_weight[l] += t
-    logging.info("class weight after re_weight: {}".format(class_weight))
-    # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
-    optimizer = optim.AdamW(model.parameters(),
-                            lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60,
-                                                     factor=0.5)
-    grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
-    global_step = 0
-    # 5. Begin training
-    for epoch in range(1, epochs + 1):
-        model.train()
-        epoch_loss = 0
-        with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
-            for img, grade in train_loader:
-                img = img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                grade = grade.to(device=device, dtype=torch.float32)
-                model.train()
-                with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
-                    pred = model(img)
-                    # print("pred: ", pred.shape)
-                    # print("pred: ", pred)
-                    # print("res: ", res)
-                    # loss = lw_loss(pred, grade)
-                    loss = focalLoss(pred, grade)
+        # re-weight
+        class_weight = np.zeros(num_classes)
+        train_labels = []
+        for im, label in train_set:
+            l, t = np.unique(label, return_counts=True)
+            class_weight[l] += t
+            train_labels.append(label)
+        exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
+        example_weight = [exp_weight[e] for e in train_labels]
+        sampler = WeightedRandomSampler(example_weight, len(train_labels))
+        loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
+        train_loader = DataLoader(train_set, sampler=sampler, **loader_args)
+        val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
 
-                optimizer.zero_grad(set_to_none=True)
-                grad_scaler.scale(loss).backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
-                grad_scaler.step(optimizer)
-                grad_scaler.update()
-                pbar.update(img.shape[0])
-                global_step += 1
-                epoch_loss += loss.item()
-                pbar.set_postfix(**{'loss (batch)': loss.item()})
-                if log:
-                    wandb.log({'loss': loss.item()})
-                division_step = (n_train // (5 * batch_size))
-                if division_step > 0:
-                    if global_step % division_step == 0:
-                        # histograms = {}
-                        # for tag, value in model.named_parameters():
-                        #     tag = tag.replace('/', '.')
-                        #     if not torch.isinf(value).any():
-                        #         histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
-                        #     if not torch.isinf(value.grad).any():
-                        #         histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
+        # exp_weight = [1, 0, 0, 0]
+        class_weight = np.zeros(num_classes)
+        for im, label in train_loader:
+            l, t = np.unique(label, return_counts=True)
+            class_weight[l] += t
+        logging.info("class weight after re_weight: {}".format(class_weight))
 
-                        score = evaluate_cls(model, val_loader, device, amp, args.model, batch_size=batch_size)
-                        scheduler.step(score)
-                        logging.info('Score: {}'.format(score))
-                        if log:
-                            wandb.log({'score': score})
-        if save_checkpoint and epoch % save_interval == 0:
-            Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
-            state_dict = model.state_dict()
-            torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
-            logging.info(f'Checkpoint {epoch} saved!')
+        # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
+        optimizer = optim.AdamW(model.parameters(),
+                                lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60,
+                                                         factor=0.5)
+        grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
+        global_step = 0
+        # 5. Begin training
+        for epoch in range(1, epochs + 1):
+            model.train()
+            epoch_loss = 0
+            with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
+                for img, grade in train_loader:
+                    img = img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    grade = grade.to(device=device, dtype=torch.float32)
+                    model.train()
+                    with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
+                        pred = model(img)
+                        # print("pred: ", pred.shape)
+                        # print("pred: ", pred)
+                        # print("res: ", res)
+                        # loss = lw_loss(pred, grade)
+                        loss = focalLoss(pred, grade)
 
-    Path('epoch' + str(epochs)).mkdir(parents=True, exist_ok=True)
-    state_dict_final = model.state_dict()
-    torch.save(state_dict_final,
-               str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
-    if log:
-        model_wandb = wandb.Artifact('classification-model', type='model')
-        model_wandb.add_file(str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
-        run.log_artifact(model_wandb)
+                    optimizer.zero_grad(set_to_none=True)
+                    grad_scaler.scale(loss).backward()
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
+                    grad_scaler.step(optimizer)
+                    grad_scaler.update()
+                    pbar.update(img.shape[0])
+                    global_step += 1
+                    epoch_loss += loss.item()
+                    pbar.set_postfix(**{'loss (batch)': loss.item()})
+                    if log:
+                        wandb.log({'loss': loss.item()})
+                    division_step = (n_train // (5 * batch_size))
+                    if division_step > 0:
+                        if global_step % division_step == 0:
+                            # histograms = {}
+                            # for tag, value in model.named_parameters():
+                            #     tag = tag.replace('/', '.')
+                            #     if not torch.isinf(value).any():
+                            #         histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
+                            #     if not torch.isinf(value.grad).any():
+                            #         histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
 
-    logging.info(f'Checkpoint  training finished!')
+                            score = evaluate_cls(model, val_loader, device, amp, args.model, batch_size=batch_size)
+                            scheduler.step(score)
+                            logging.info('Score: {}'.format(score))
+                            if log:
+                                wandb.log({'score': score})
+            if save_checkpoint and epoch % save_interval == 0:
+                Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
+                state_dict = model.state_dict()
+                torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
+                logging.info(f'Checkpoint {epoch} saved!')
+
+        Path('epoch' + str(epochs)).mkdir(parents=True, exist_ok=True)
+        state_dict_final = model.state_dict()
+        torch.save(state_dict_final,
+                   str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
+        if log:
+            model_wandb = wandb.Artifact('classification-model', type='model')
+            model_wandb.add_file(str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
+            run.log_artifact(model_wandb)
+
+        logging.info(f'Checkpoint  training finished!')
 
 
 def get_args():
