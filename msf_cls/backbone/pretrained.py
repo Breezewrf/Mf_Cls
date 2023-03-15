@@ -10,26 +10,58 @@ from torch import nn
 
 
 class Resnet_18(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=2):
         super(Resnet_18, self).__init__()
         weights = ResNet18_Weights.IMAGENET1K_V1
         self.model = resnet18(weights=weights)
         for param in self.model.parameters():
             param.requires_grad = False
-        self.model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         num_ftrs = self.model.fc.in_features
-        self.model.fc = nn.Linear(num_ftrs, 4)
-        self.model.add_module('softmax', nn.Softmax(dim=1))
+        self.model.fc = nn.Sequential(
+            nn.Linear(num_ftrs, 512),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(512, num_classes)
+        )
+        self.softmax = nn.Softmax(dim=1)
         print("use pretrained model")
+        for param in self.model.layer4.parameters():
+            param.requires_grad = True
 
     def forward(self, x):
-        return self.model(x)
+        x = self.model(x)
+        res = self.softmax(x)
+        return res
 
 
-class Vgg_16(nn.Module):
+class VGG16(nn.Module):
     def __init__(self):
-        super(Vgg_16, self).__init__()
-        weights = VGG16_Weights.IMAGENET1K_V1
-        self.model = vgg16(weights=weights)
+        super(VGG16, self).__init__()
+        weights = 'vgg16_bn'
+        self.model = vgg16(pretrained=True)
         for param in self.model.parameters():
             param.requires_grad = False
+        self.model.avgpool = nn.AdaptiveAvgPool2d(output_size=(1, 1))
+        num_ftrs = self.model.classifier[-1].in_features
+        self.model.classifier = nn.Sequential(
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            nn.Linear(512, 2),
+            nn.Dropout(0.5)
+        )
+        self.softmax = nn.Softmax(dim=1)
+        print("use pretrained model")
+        # for param in self.model.features.parameters():
+        #     param.requires_grad = True
+
+    def forward(self, x):
+        x = self.model(x)
+        res = self.softmax(x)
+        return res
+
+
+
+
+
+
