@@ -138,7 +138,7 @@ def train_model(
                         #     if not torch.isinf(value.grad).any():
                         #         histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
 
-                        score = evaluate_cls(model, val_loader, device, amp, args.model)
+                        score = evaluate_cls(model, val_loader, device, amp, args.model, batch_size=batch_size)
                         scheduler.step(score)
                         logging.info('Score: {}'.format(score))
                         if log:
@@ -164,8 +164,8 @@ def train_model(
 def get_args():
     parser = argparse.ArgumentParser(description='Train the Classification')
     parser.add_argument('--epochs', '-e', metavar='E', type=int, default=100, help='Number of epochs')
-    parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=1, help='Batch size')
-    parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-4,
+    parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=4, help='Batch size')
+    parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-5,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str, default=False, help='Load model from a .pth file')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
