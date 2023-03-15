@@ -152,10 +152,12 @@ def unique_mask_values(idx, mask_dir, mask_suffix):
 
 def enhance_cls(img):
     # augmentation
+    t_resize = transforms.Resize((224, 224), interpolation=Image.LANCZOS)
+    rgb_image = np.stack((t_resize(Image.fromarray(img)),) * 3, axis=-1)
     seed = np.random.randint(57749867)
     trans = transforms.Compose([
-        transforms.ToPILImage(mode='L'),
-        transforms.Resize((64, 64)),
+        transforms.ToPILImage(mode='RGB'),
+
         transforms.RandomHorizontalFlip(),
         transforms.GaussianBlur(1),
         # transforms.RandomAutocontrast(),
@@ -163,11 +165,11 @@ def enhance_cls(img):
         transforms.RandomRotation(15),
         transforms.RandomVerticalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize([0.5], [0.5]),
-        transforms.ToPILImage(mode='L')
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225]),
     ])
     torch.manual_seed(seed)
-    return trans(img)
+    return trans(rgb_image)
 
 
 def enhance_util(img1, img2, gt):
