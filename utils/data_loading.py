@@ -103,23 +103,41 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt", num_classes
 
 
 class Cls_Dataset(Dataset):
-    def __init__(self, label_dir: str = 'data/cls_label', transform=None, num_classes=2):
+    def __init__(self, label_dir: str = 'data/cls_label', num_classes=2, test_mode=False):
         self.label_path = glob(label_dir + "/*.txt")
         print(self.label_path)
         assert len(self.label_path) == 3
-        self.transform = transform
         self.lesions = []  # list of lesions in format of Lesion() object
         self.num_classes = num_classes
         for path in self.label_path:
             self.lesions += load_cls_label(path, num_classes=num_classes)
         self.labels = [l.grade for l in self.lesions]
+        seed = np.random.randint(57749867)
+        torch.manual_seed(seed)
+        trans = transforms.Compose([
+            transforms.ToPILImage(mode='RGB'),
+            transforms.RandomHorizontalFlip(),
+            transforms.GaussianBlur(1),
+            transforms.RandomRotation(15),
+            transforms.RandomVerticalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225]),
+        ])
+        trans_test = transforms.Compose([
+            transforms.ToPILImage(mode='RGB'),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225]),
+        ])
+        self.transform = trans if not test_mode else trans_test
 
     def __getitem__(self, idx):
         if self.transform:
             # todo implement in future
             pass
         im = self.lesions[idx].image_np
-        im = enhance_cls(im)
+        im = enhance_cls(self, im)
         # im = torch.as_tensor(np.asarray(im).copy()).unsqueeze(dim=0)
         im = torch.as_tensor(np.asarray(im).copy())
         return im.float().contiguous(), self.lesions[idx].grade
@@ -150,26 +168,12 @@ def unique_mask_values(idx, mask_dir, mask_suffix):
         raise ValueError(f'Loaded masks should have 2 or 3 dimensions, found {mask.ndim}')
 
 
-def enhance_cls(img):
+def enhance_cls(self, img):
     # augmentation
     t_resize = transforms.Resize((224, 224), interpolation=Image.LANCZOS)
     rgb_image = np.stack((t_resize(Image.fromarray(img)),) * 3, axis=-1)
-    seed = np.random.randint(57749867)
-    trans = transforms.Compose([
-        transforms.ToPILImage(mode='RGB'),
 
-        transforms.RandomHorizontalFlip(),
-        transforms.GaussianBlur(1),
-        # transforms.RandomAutocontrast(),
-        # transforms.RandomEqualize(),
-        transforms.RandomRotation(15),
-        transforms.RandomVerticalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225]),
-    ])
-    torch.manual_seed(seed)
-    return trans(rgb_image)
+    return self.transform(rgb_image)
 
 
 def enhance_util(img1, img2, gt):
