@@ -10,6 +10,7 @@ from utils.data_loading import Cls_Dataset
 from torch.utils.data import DataLoader, random_split
 import argparse
 import numpy as np
+from utils.utils import calculate_accuracy, calculate_sensitivity_specificity, draw_roc_curve, draw_pr_curve
 
 
 @torch.inference_mode()
@@ -19,6 +20,8 @@ def test_cls(net, dataloader, device, model_name, batch_size, amp):
     true = 0
     record = np.zeros((2, args.classes))
     # iterate over the validation set
+    pred_all = torch.zeros(0, device=device)
+    gt_all = torch.zeros(0, device=device)
     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
         for batch in tqdm(dataloader, total=num_val_batches, desc='Validation round', unit='batch', leave=False):
             image, grade = batch[0], batch[1]
@@ -37,7 +40,17 @@ def test_cls(net, dataloader, device, model_name, batch_size, amp):
             #     dim = 0
             print(pred, grade)
             true += (pred.argmax(dim=dim) == grade).sum()
+            pred_all = torch.concat((pred_all, pred))
+            gt_all = torch.concat((gt_all, grade))
     net.train()
+    pred_all = pred_all.detach() if pred_all.requires_grad is True else pred_all
+    gt_all = gt_all.detach() if gt_all.requires_grad is True else gt_all
+    print(pred_all, gt_all)
+    calculate_accuracy(pred_all, gt_all)
+    # calculate_auc(pred_all, gt_all)
+    calculate_sensitivity_specificity(pred_all, gt_all)
+    draw_pr_curve(pred_all, gt_all)
+    draw_roc_curve(pred_all, gt_all)
     return true / max(num_val_batches * batch_size, 1)
 
 
@@ -47,7 +60,8 @@ def get_args():
     parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=4, help='Batch size')
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-5,
                         help='Learning rate', dest='lr')
-    parser.add_argument('--load', '-f', type=str, default='/media/breeze/dev/Mf_Cls/checkpoints/classification/checkpoint_epoch85.pth',
+    parser.add_argument('--load', '-f', type=str,
+                        default='/media/breeze/dev/Mf_Cls/checkpoints/classification/checkpoint_epoch85.pth',
                         help='Load model from a .pth file')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
     parser.add_argument('--validation', '-v', dest='val', type=float, default=10.0,
@@ -68,17 +82,18 @@ def get_args():
 
 from evaluate import evaluate_cls
 import os
+
 if __name__ == '__main__':
     args = get_args()
     seed = args.seed
-    dataset = Cls_Dataset(num_classes=args.classes)
+    dataset = Cls_Dataset(num_classes=args.classes, test_mode=True)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test
     train_val_set, test_set = random_split(dataset, [n_train_val, n_test],
                                            generator=torch.Generator().manual_seed(seed))
     loader_args = dict(batch_size=args.batch_size, num_workers=os.cpu_count(), pin_memory=True)
-    test_loader = DataLoader(test_set, **loader_args)
+    test_loader = DataLoader(test_set, shuffle=False, **loader_args)
     assert args.load is not None
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model_list = {'resnet18': Resnet_18(num_classes=args.classes),
@@ -90,5 +105,5 @@ if __name__ == '__main__':
     state_dict = torch.load(args.load, map_location=device)
     model.load_state_dict(state_dict)
 
-    acc = evaluate_cls(model, test_loader, device=device, model_name=args.model, batch_size=args.batch_size, amp=args.amp)
+    acc = test_cls(model, test_loader, device=device, model_name=args.model, batch_size=args.batch_size, amp=args.amp)
     print("average accuracy is {}".format(acc))
