@@ -18,18 +18,46 @@ from util.rumour_crop import Slice
 
 
 class Lesion():
-    def __init__(self, img: np.array, p_id: int, s_id: int, grade: int):
+    def __init__(self, img: np.array, p_id: int, s_id: int, grade: int, bbox: [int]):
         self.image_np = img
         self.patient_id = p_id
         self.slice_id = s_id
         self.grade = grade
+        self.bbox = bbox
 
     def __repr__(self):
         s = self.__class__.__name__ + "("
         s += "patient_id={}, ".format(self.patient_id)
         s += "slice_id={}, ".format(self.slice_id)
         s += "grade={}), ".format(self.grade)
+        s += "bbox={}".format(self.bbox)
         return s
+
+
+def load_cls_prostatex_label(path='data/ProstateX/labeled_GT_colored/', num_classes=2):
+    Lesion_list = []
+    slices = glob(path + "*.png")
+    grades = []
+    assert len(slices) != 0, 'error path:{}'.format(path)
+    for _, s in enumerate(slices):
+        sli = Slice(s)
+        patient_id = int(s.split('.')[0].split('-')[1])
+        slice_id = int(s.split('.')[0].split('-')[2])
+        grade = int(s.split('.')[0].split('-')[-1]) - 1  # for ProstateX, the grade is [1-5]
+        for t_id, tumour in enumerate(sli.binary_imgs):
+            assert num_classes in (2, 4)
+            if num_classes == 2:
+                if grade in (0, 1):
+                    grade = 0
+                if grade in (2, 3, 4):
+                    grade = 1
+                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, grade, sli.bbox_ex)
+            else:
+                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, max(0, grade - 1), sli.bbox_ex)  # max(0, grade-1)
+            Lesion_list.append(le)
+            print("added")
+    print("loaded!")
+    return Lesion_list
 
 
 def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt", num_classes=2):
@@ -100,6 +128,47 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt", num_classes
                     print("added")
     print("loaded!")
     return Lesion_list
+
+
+class Cls_ProstateX_Dataset(Dataset):
+    # specified for ProstateX dataset to load the GGG label
+    def __init__(self, label_dir: str = 'data/ProstateX/labeled_GT_colored/', num_classes=2, test_mode=False):
+        self.lesions = []
+        self.num_classes = num_classes
+        self.lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes)
+        self.labels = [l.grade for l in self.lesions]
+        trans = transforms.Compose([
+            transforms.ToPILImage(mode='RGB'),
+            transforms.RandomHorizontalFlip(),
+            transforms.GaussianBlur(1),
+            transforms.RandomRotation(15),
+            transforms.RandomVerticalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225]),
+        ])
+        trans_test = transforms.Compose([
+            transforms.ToPILImage(mode='RGB'),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225]),
+        ])
+        self.transform = trans if not test_mode else trans_test
+        assert len(self.labels) != 0, 'error dir:{}'.format(label_dir)
+
+
+    def __getitem__(self, idx):
+        if self.transform:
+            # todo implement in future
+            pass
+        im = self.lesions[idx].image_np
+        im = enhance_cls(self, im)
+        # im = torch.as_tensor(np.asarray(im).copy()).unsqueeze(dim=0)
+        im = torch.as_tensor(np.asarray(im).copy())
+        return im.float().contiguous(), self.lesions[idx].grade
+
+    def __len__(self):
+        return len(self.lesions)
 
 
 class Cls_Dataset(Dataset):
@@ -200,7 +269,8 @@ def enhance_util(img1, img2, gt):
 
 
 class MSFDataset(Dataset):
-    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, mask_dir: str, scale: float = 1.0, aug: int = 1):
+    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, mask_dir: str, scale: float = 1.0, aug: int = 1,
+                 ProstateX=False):
         self.t2w_dir = Path(T2W_images_dir)
         self.adc_dir = Path(ADC_images_dir)
         self.mask_dir = Path(mask_dir)
@@ -209,13 +279,14 @@ class MSFDataset(Dataset):
         self.ids = [splitext(file)[0] for file in listdir(T2W_images_dir) if
                     isfile(join(T2W_images_dir, file)) and not file.startswith('.')]
         self.aug = aug
+        self.suffix = "*" if ProstateX else ""
         if not self.ids:
             raise RuntimeError(f'No input file found in {T2W_images_dir}, make sure you put your images there')
         logging.info(f'Creating dataset with {len(self.ids)} examples')
         logging.info('Scanning mask files to determine unique values')
         with Pool() as p:
             unique = list(tqdm(
-                p.imap(partial(unique_mask_values, mask_dir=self.mask_dir, mask_suffix=''), self.ids),
+                p.imap(partial(unique_mask_values, mask_dir=self.mask_dir, mask_suffix='*'), self.ids),
                 total=len(self.ids)
             ))
 
@@ -258,10 +329,12 @@ class MSFDataset(Dataset):
 
     def __getitem__(self, idx):
         name = self.ids[idx]
-        mask_file = list(self.mask_dir.glob(name + '.*'))
+        mask_file = list(self.mask_dir.glob(name + self.suffix + '.*'))
         t2w_file = list(self.t2w_dir.glob(name + '.*'))
         adc_file = list(self.adc_dir.glob(name + '.*'))
-
+        GGG = -1
+        if self.suffix != "":
+            GGG = int(str(mask_file).split('.')[0].split('-')[-1]) - 1  # GGG is range in [0, 1, 2, 3]
         assert len(t2w_file) == 1, f'Either no image or multiple images found for the ID {name} in t2w: {t2w_file}'
         assert len(adc_file) == 1, f'Either no image or multiple images found for the ID {name} in adc: {adc_file}'
         assert len(mask_file) == 1, f'Either no mask or multiple masks found for the ID {name}: {mask_file}'
@@ -270,7 +343,7 @@ class MSFDataset(Dataset):
         adc_img = load_image(adc_file[0])
 
         assert adc_img.size == mask.size, \
-            f'adc Image and mask {name} should be the same size, but are {adc_img.size} and {mask.size}'
+            f'adc Image and mask {name} should be the same size, but are {adc_img.size} and {mask.size}, adc_img path:{adc_file[0]}'
         assert t2w_img.size == mask.size, \
             f't2w Image and mask {name} should be the same size, but are {t2w_img.size} and {mask.size}'
 
@@ -279,11 +352,19 @@ class MSFDataset(Dataset):
         mask = self.preprocess(self.mask_values, mask, self.scale, is_mask=True)
         if self.aug:
             t2w_img, adc_img, mask = enhance_util(t2w_img, adc_img, mask)
-        return {
-            't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
-            'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
-            'mask': torch.as_tensor(mask.copy()).long().contiguous()
-        }
+        if self.suffix != "*":
+            return {
+                't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
+                'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
+                'mask': torch.as_tensor(mask.copy()).long().contiguous()
+            }
+        else:
+            return {
+                't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
+                'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
+                'mask': torch.as_tensor(mask.copy()).long().contiguous(),
+                'GGG': GGG
+            }
 
 
 class BasicDataset(Dataset):

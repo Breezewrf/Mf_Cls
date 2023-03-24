@@ -6,11 +6,11 @@ import torch
 import logging
 from msf_cls.backbone.pretrained import Resnet_18, VGG16
 from tqdm import tqdm
-from utils.data_loading import Cls_Dataset
+from util.data_loading import Cls_Dataset
 from torch.utils.data import DataLoader, random_split
 import argparse
 import numpy as np
-from utils.utils import calculate_accuracy, calculate_sensitivity_specificity, draw_roc_curve, draw_pr_curve
+from util.utils import calculate_accuracy, calculate_sensitivity_specificity, draw_roc_curve, draw_pr_curve
 
 
 @torch.inference_mode()
@@ -61,7 +61,7 @@ def get_args():
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-5,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str,
-                        default='/media/breeze/dev/Mf_Cls/checkpoints/classification/checkpoint_epoch85.pth',
+                        default='/media/breeze/dev/Mf_Cls/checkpoints/classification/checkpoint_epoch100.pth',
                         help='Load model from a .pth file')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
     parser.add_argument('--validation', '-v', dest='val', type=float, default=10.0,
@@ -82,11 +82,12 @@ def get_args():
 
 from evaluate import evaluate_cls
 import os
+from util.data_loading import Cls_ProstateX_Dataset
 
 if __name__ == '__main__':
     args = get_args()
     seed = args.seed
-    dataset = Cls_Dataset(num_classes=args.classes, test_mode=True)
+    dataset = Cls_ProstateX_Dataset(num_classes=args.classes, test_mode=True)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test

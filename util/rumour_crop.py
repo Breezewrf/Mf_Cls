@@ -31,8 +31,12 @@ class Slice():
         self.path = path  # labeled_GT_colored images
         self.t2w_path = path.replace("labeled_GT_colored", "T2W_images").replace("png", "jpg")
         self.adc_path = path.replace("labeled_GT_colored", "ADC_images").replace("png", "jpg")
+        if 'ProstateX' in path:
+            self.t2w_path = '-'.join(self.t2w_path.split('.')[0].split('-')[:-1]) + '.jpg'
+            self.adc_path = '-'.join(self.adc_path.split('.')[0].split('-')[:-1]) + '.jpg'
         self.patient_id = path.split("//")[-1].split("_")[1]  # todo some bugs here
         self.np_arr = np.array(Image.open(self.path))  # gt label
+        self.de_normolize()
         self.np_arr_ = None
         self.t2w_np = np.array(Image.open(self.t2w_path))
         # self.adc_np = np.array(Image.open(self.adc_path))  # todo tobe implement
@@ -47,6 +51,12 @@ class Slice():
         self.generate_tumour_img()
         self.generate_gray()
         # self.self_filled()
+
+    def de_normolize(self):
+        if 1 in np.unique(self.np_arr) or 2 in np.unique(self.np_arr) or 3 in np.unique(self.np_arr) or 4 in np.unique(
+                self.np_arr):
+            self.np_arr *= 255
+        self.np_arr = np.where(self.np_arr>255, 255, self.np_arr)
 
     def generate_gray(self):
         assert len(self.binary_imgs) != 0

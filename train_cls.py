@@ -52,15 +52,14 @@ def train_model(
         num_classes=2,
         log=True
 ):
-    global best_acc
-    best_epoch = 0
+
     best_model_path = 'best.pth'
     if log:
         config = {'epoch': epochs, 'batch_size': batch_size, 'lr': learning_rate, 'seed': seed, 'opt': opt}
         run = wandb.init(project='classification', config=config)
 
     # 1. create dataset
-    dataset = Cls_Dataset(num_classes=num_classes)
+    dataset = Cls_ProstateX_Dataset(num_classes=num_classes)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test
@@ -80,6 +79,10 @@ def train_model(
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
+    global best_acc
+    best_acc = 0
+    best_epoch = 0
     # 3. Create data loaders
     for fold, (train_idx, val_idx) in enumerate(kf.split(train_val_set)):
         model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(),
