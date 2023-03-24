@@ -8,7 +8,7 @@ import torch
 from msf_cls.backbone.resnet import resnet34, resnet18, resnet50, resnet101
 from msf_cls.backbone.convnext import ConvNeXt
 from msf_cls.backbone.vgg import Vgg_16
-from utils.data_loading import Cls_Dataset
+from util.data_loading import Cls_Dataset, Cls_ProstateX_Dataset
 import os
 import random
 from torch.utils.data import DataLoader, random_split, WeightedRandomSampler

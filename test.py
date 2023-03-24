@@ -10,7 +10,7 @@ from msf_cls.msfusion import MSFusionNet
 from unetpp.unetpp_model import Nested_UNet
 from unet.unet_model import UNet
 from torch.utils.data import DataLoader
-from utils.data_loading import MSFDataset, CarvanaDataset, BasicDataset
+from util.data_loading import MSFDataset, CarvanaDataset, BasicDataset
 import tqdm
 
 t2w_test_dir = './data/test/T2W_images/'

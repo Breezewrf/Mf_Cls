@@ -9,9 +9,9 @@ import wandb
 from PIL import Image
 from torchvision import transforms
 
-from utils.data_loading import BasicDataset
+from util.data_loading import BasicDataset
 from unet import UNet
-from utils.utils import plot_img_and_mask
+from util.utils import plot_img_and_mask
 
 
 def predict_img(net,

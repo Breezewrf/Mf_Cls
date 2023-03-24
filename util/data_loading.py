@@ -14,7 +14,7 @@ from tqdm import tqdm
 from torchvision import transforms
 import os
 from glob import glob
-from utils.rumour_crop import Slice
+from util.rumour_crop import Slice
 
 
 class Lesion():

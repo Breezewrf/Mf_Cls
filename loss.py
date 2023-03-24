@@ -2,7 +2,7 @@
 # @Time    : 27/12/2022 4:33 PM
 # @Author  : Breeze
 # @Email   : breezewrf@gmail.com
-from utils.dice_score import dice_loss
+from util.dice_score import dice_loss
 from torch import nn
 import torch.nn.functional as F
 from torch.nn.functional import one_hot
