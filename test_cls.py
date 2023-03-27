@@ -61,7 +61,7 @@ def get_args():
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-5,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str,
-                        default='/media/breeze/dev/Mf_Cls/checkpoints/classification/checkpoint_epoch100.pth',
+                        default='./checkpoints/classification/checkpoint_epoch100.pth',
                         help='Load model from a .pth file')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
     parser.add_argument('--validation', '-v', dest='val', type=float, default=10.0,

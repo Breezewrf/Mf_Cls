@@ -22,7 +22,7 @@ from sklearn.model_selection import KFold
 from msf_cls.backbone.gain import GAIN
 
 os.environ["WANDB_MODE"] = "offline"
-dir_checkpoint = Path('./checkpoints/classification/')
+dir_checkpoint = Path('./checkpoints/classification/cam/3e-7/')
 from loss import lw_loss
 from msf_cls.backbone.pretrained import Resnet_18, VGG16
 from loss import FocalLoss
@@ -39,7 +39,7 @@ def train_model(
         learning_rate: float = 3e-4,
         val_percent: float = 0.1,
         save_checkpoint: bool = True,
-        save_interval: int = 50,
+        save_interval: int = 10,
         img_scale: float = 0.5,
         amp: bool = False,
         weight_decay: float = 1e-8,
@@ -85,6 +85,9 @@ def train_model(
     best_epoch = 0
     # 3. Create data loaders
     for fold, (train_idx, val_idx) in enumerate(kf.split(train_val_set)):
+        if fold != 1:
+            print("Empirical the fold = 1 is the best in ProstateX")
+            continue
         model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(),
                       'resnet101': resnet101(),
                       'vgg16': VGG16(), 'convnext': ConvNeXt()}
@@ -103,7 +106,8 @@ def train_model(
             l, t = np.unique(label, return_counts=True)
             class_weight[l] += t
             train_labels.append(label)
-        exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
+        # exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
+        exp_weight = (class_weight.sum() / class_weight) / ((class_weight.sum() / class_weight).sum())
         example_weight = [exp_weight[e] for e in train_labels]
         sampler = WeightedRandomSampler(example_weight, len(train_labels))
         loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
@@ -157,7 +161,7 @@ def train_model(
                             if log:
                                 wandb.log({'score': score})
             if save_checkpoint and epoch % save_interval == 0:
-                test_acc = evaluate_cls(model, test_lodaer, device, amp, args.model, batch_size=batch_size)
+                test_acc = evaluate_cls(model.model, test_lodaer, device, amp, args.model, batch_size=batch_size)
                 print("test_score:{}".format(test_acc))
                 Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
                 state_dict = model.state_dict()

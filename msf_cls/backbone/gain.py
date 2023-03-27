@@ -72,7 +72,7 @@ class CAMs:
 
 class GAIN(nn.Module):
     def __init__(self, num_classes, backbone_name='resnet18',
-                 load_dir='/media/breeze/dev/Mf_Cls/checkpoints/classification/checkpoint_epoch100.pth'):
+                 load_dir='./checkpoints/classification/checkpoint_epoch100.pth'):
         super().__init__()
         if backbone_name == 'resnet18':
             backbone = Resnet_18(num_classes=num_classes)

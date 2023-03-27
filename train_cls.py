@@ -21,7 +21,7 @@ import wandb
 from sklearn.model_selection import KFold
 
 os.environ["WANDB_MODE"] = "offline"
-dir_checkpoint = Path('./checkpoints/classification/')
+dir_checkpoint = Path('./checkpoints/classification/cls/2c')
 from loss import lw_loss
 from msf_cls.backbone.pretrained import Resnet_18, VGG16
 from loss import FocalLoss
@@ -103,7 +103,8 @@ def train_model(
             l, t = np.unique(label, return_counts=True)
             class_weight[l] += t
             train_labels.append(label)
-        exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
+        # exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
+        exp_weight = (class_weight.sum() / class_weight) / ((class_weight.sum() / class_weight).sum())
         example_weight = [exp_weight[e] for e in train_labels]
         sampler = WeightedRandomSampler(example_weight, len(train_labels))
         loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
