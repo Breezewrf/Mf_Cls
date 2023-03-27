@@ -14,7 +14,7 @@ from util.utils import calculate_accuracy, calculate_sensitivity_specificity, dr
 
 
 @torch.inference_mode()
-def test_cls(net, dataloader, device, model_name, batch_size, amp):
+def test_cls(net, dataloader, device, args, model_name, batch_size, amp, wandb=None):
     net.eval()
     num_val_batches = len(dataloader)
     true = 0
@@ -46,11 +46,20 @@ def test_cls(net, dataloader, device, model_name, batch_size, amp):
     pred_all = pred_all.detach() if pred_all.requires_grad is True else pred_all
     gt_all = gt_all.detach() if gt_all.requires_grad is True else gt_all
     print(pred_all, gt_all)
-    calculate_accuracy(pred_all, gt_all)
-    # calculate_auc(pred_all, gt_all)
-    calculate_sensitivity_specificity(pred_all, gt_all)
-    draw_pr_curve(pred_all, gt_all)
-    draw_roc_curve(pred_all, gt_all)
+    acc = calculate_accuracy(pred_all, gt_all, c=args.classes)
+    metrics = calculate_sensitivity_specificity(pred_all, gt_all, c=args.classes)
+    pr = draw_pr_curve(pred_all, gt_all, c=args.classes)
+    if wandb is not None:
+        wandb.log({"pr_curve": pr})
+    rc = draw_roc_curve(pred_all, gt_all, c=args.classes)
+    if wandb is not None:
+        wandb.log({"roc_curve": rc})
+    columns = ['accuracy', 'precision', 'f1_score', 'sensitivity', 'specificity']
+    data = [acc, metrics['precision'], metrics['f1_score'], metrics['sensitivity'], metrics['specificity']]
+    data = [[str(i) for i in data]]
+    table = wandb.Table(data=data, columns=columns)
+    if wandb is not None:
+        wandb.log({"metrics table": table})
     return true / max(num_val_batches * batch_size, 1)
 
 
@@ -106,5 +115,6 @@ if __name__ == '__main__':
     state_dict = torch.load(args.load, map_location=device)
     model.load_state_dict(state_dict)
 
-    acc = test_cls(model, test_loader, device=device, model_name=args.model, batch_size=args.batch_size, amp=args.amp)
+    acc = test_cls(model, test_loader, device=device, args=args, model_name=args.model, batch_size=args.batch_size,
+                   amp=args.amp)
     print("average accuracy is {}".format(acc))

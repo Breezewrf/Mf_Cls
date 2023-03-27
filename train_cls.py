@@ -19,6 +19,7 @@ from evaluate import evaluate_cls
 from pathlib import Path
 import wandb
 from sklearn.model_selection import KFold
+from test_cls import test_cls
 
 os.environ["WANDB_MODE"] = "offline"
 dir_checkpoint = Path('./checkpoints/classification/cls/2c')
@@ -170,7 +171,9 @@ def train_model(
                             if log:
                                 wandb.log({'score': score})
             if save_checkpoint and epoch % save_interval == 0:
-                test_acc = evaluate_cls(model, test_lodaer, device, amp, args.model, batch_size=batch_size)
+                # test:
+                test_acc = test_cls(model, test_lodaer, device, args=args, amp=amp, model_name=args.model,
+                                    batch_size=batch_size, wandb=wandb)
                 print("test_score:{}".format(test_acc))
                 Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
                 state_dict = model.state_dict()
@@ -181,10 +184,10 @@ def train_model(
                     best_acc = test_acc
                     best_epoch = epoch
                     torch.save(state_dict,
-                               str(Path('epoch' + str(epochs)) / '{}'.format(best_model_path)))
+                               str(dir_checkpoint / 'best_epoch{}.pth'.format(epoch)))
                     if log:
                         model_wandb = wandb.Artifact('classification-model', type='model')
-                        model_wandb.add_file(str(Path('epoch' + str(epochs)) / '{}_final.pth'.format(desc)))
+                        model_wandb.add_file(str(dir_checkpoint / 'best_epoch{}.pth'.format(epoch)))
                         run.log_artifact(model_wandb)
 
         logging.info("best model is trained with {} epochs, best acc is {}".format(best_epoch, best_acc))
