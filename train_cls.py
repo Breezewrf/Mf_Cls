@@ -112,6 +112,16 @@ def train_model(
                 if 'encode' in key or 'inc' in key:
                     new_state_dict[key] = state_dict_seg[key]
             model.load_state_dict(new_state_dict, strict=False)
+            for param in model.inc.parameters():
+                param.requires_grad = False
+            for param in model.encoder1.parameters():
+                param.requires_grad = False
+            for param in model.encoder2.parameters():
+                param.requires_grad = False
+            for param in model.encoder3.parameters():
+                param.requires_grad = False
+            for param in model.encoder4.parameters():
+                param.requires_grad = False
 
         train_set = torch.utils.data.Subset(dataset, train_idx)
         val_set = torch.utils.data.Subset(dataset, val_idx)
