@@ -243,6 +243,7 @@ def get_args():
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
+    parser.add_argument('--task', type=str, default='seg')
     parser.add_argument('--desc', type=str)
     return parser.parse_args()
 
@@ -263,7 +264,7 @@ if __name__ == '__main__':
     elif args.model == 'unetpp':
         model = Nested_UNet(in_ch=1, out_ch=args.classes)
     elif args.model == 'msf':
-        model = MSFusionNet(input_c=2, output_c=args.classes)
+        model = MSFusionNet(input_c=2, output_c=args.classes, task=args.task)
     model = model.to(device)
 
     logging.info(f'Network:\n'

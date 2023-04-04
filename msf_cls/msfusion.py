@@ -103,6 +103,30 @@ class OutConv(nn.Module):
         return self.conv(x)
 
 
+class cls_head(nn.Module):
+    def __init__(self, input_c, kernel_num, output_c):
+        super(cls_head, self).__init__()
+        self.conv = OutConv(in_channels=input_c * kernel_num << 4, out_channels=output_c)
+        self.linear = nn.Sequential(
+            nn.Linear(output_c * 14 * 14, 512),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(512, output_c)
+        )
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        #  x -> [2, 4(1), 1024, 14, 14]
+        x = x.transpose(0, 1)
+        x = x.reshape(x.shape[0], -1, x.shape[-2], x.shape[-1])
+        x = self.conv(x)
+        # x -> [4(1), 2, 14, 14]
+        x = x.reshape(x.shape[0], -1)
+        x = self.linear(x)
+        res = self.softmax(x)
+        return res
+
+
 class MSFusionBlock(nn.Module):
     def __init__(self, in_channels, out_channels, branch_num, kernel_size=3, padding=1,
                  normalization: int = 0, leaky_relu=False, pooling=False, bias=True):
@@ -169,7 +193,7 @@ class MSFusionBlock(nn.Module):
 
 class MSFusionNet(nn.Module):
     def __init__(self, input_c, output_c, kernel_num=64, normalization=0, leaky_relu=False,
-                 bayesian=False, p=0.2, **kwargs):
+                 bayesian=False, p=0.2, task='seg', **kwargs):
         """
         Update on 12/04/2021:
         MSFusionNet for prostate cancer segmentation.
@@ -199,6 +223,9 @@ class MSFusionNet(nn.Module):
         self.n_channels = 1
         self.n_classes = output_c
         self.bilinear = True
+        self.task = task
+        assert task in ['seg', 'cls']
+        print("specified for {}".format("segmentation" if task == 'seg' else "classification"))
         # pooling is performed between stages manually to make decoding process easier.
         self.inc = MSFusionBlock(1, kernel_num, input_c, kernel_size=3, padding=1,
                                  normalization=normalization, leaky_relu=leaky_relu)
@@ -211,7 +238,7 @@ class MSFusionNet(nn.Module):
         self.encoder4 = MSFusionBlock(kernel_num << 3, kernel_num << 4, input_c, kernel_size=3, padding=1,
                                       normalization=normalization, leaky_relu=leaky_relu)
         self.pooling = nn.MaxPool2d(2)
-
+        self.cls_head = cls_head(input_c, kernel_num, output_c)
         kernel_num <<= 4
 
         self.decoder1 = nn.ModuleList([
@@ -256,6 +283,10 @@ class MSFusionNet(nn.Module):
 
     def forward(self, x: torch.Tensor):
         # The input should follow the format of BCHW
+        # print("shape:", x.shape)
+        if x.shape[1] == 3:
+            assert self.task == 'cls', "image channel should not be 3 when 'task' parameter is {}".format(self.task)
+            x = x.transpose(0, 1)[0:2].unsqueeze(dim=2)
         input_device = 'cuda:%s' % x.get_device() if x.is_cuda else 'cpu'
 
         # x = torch.transpose(x, 0, 1).unsqueeze(2)
@@ -268,7 +299,8 @@ class MSFusionNet(nn.Module):
         if self.bayesian:
             for i in range(x_encoder4.shape[0]):
                 x_encoder4[i] = self.drop(x_encoder4[i])
-
+        if self.task == 'cls':
+            return self.cls_head(x_encoder4)
         feat_decoded1 = torch.tensor([], device=input_device)
         feat_decoded2 = torch.tensor([], device=input_device)
         feat_decoded3 = torch.tensor([], device=input_device)

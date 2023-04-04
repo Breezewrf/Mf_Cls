@@ -34,13 +34,13 @@ class Lesion():
         return s
 
 
-def load_cls_prostatex_label(path='data/ProstateX/labeled_GT_colored/', num_classes=2):
+def load_cls_prostatex_label(path='data/ProstateX/labeled_GT_colored/', num_classes=2, modal='t2w'):
     Lesion_list = []
     slices = glob(path + "*.png")
     grades = []
     assert len(slices) != 0, 'error path:{}'.format(path)
     for _, s in enumerate(slices):
-        sli = Slice(s)
+        sli = Slice(s, modal=modal)
         patient_id = int(s.split('.')[0].split('-')[1])
         slice_id = int(s.split('.')[0].split('-')[2])
         grade = int(s.split('.')[0].split('-')[-1]) - 1  # for ProstateX, the grade is [1-5]
@@ -132,10 +132,11 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt", num_classes
 
 class Cls_ProstateX_Dataset(Dataset):
     # specified for ProstateX dataset to load the GGG label
-    def __init__(self, label_dir: str = 'data/ProstateX/labeled_GT_colored/', num_classes=2, test_mode=False):
+    def __init__(self, label_dir: str = 'data/ProstateX/labeled_GT_colored/', num_classes=2, branch_name='t2w', test_mode=False):
         self.lesions = []
         self.num_classes = num_classes
-        self.lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes)
+        self.modal = branch_name
+        self.lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal=self.modal)
         self.labels = [l.grade for l in self.lesions]
         trans = transforms.Compose([
             transforms.ToPILImage(mode='RGB'),
@@ -240,8 +241,16 @@ def unique_mask_values(idx, mask_dir, mask_suffix):
 def enhance_cls(self, img):
     # augmentation
     t_resize = transforms.Resize((224, 224), interpolation=Image.LANCZOS)
-    rgb_image = np.stack((t_resize(Image.fromarray(img)),) * 3, axis=-1)
-
+    if 1 == img.shape[0]:
+        rgb_image = np.stack((t_resize(Image.fromarray(img)),) * 3, axis=-1)
+    elif 2 == img.shape[0]:
+        img = [t_resize(Image.fromarray(c)) for c in img]
+        img.append(Image.fromarray((np.array(img[0])+np.array(img[1]))/2))
+        rgb_image = np.stack(img, axis=-1)
+    else:
+        assert img.shape[0] == 3
+        img = [t_resize(Image.fromarray(c)) for c in img]
+        rgb_image = np.stack(img, axis=-1)
     return self.transform(rgb_image)
 
 

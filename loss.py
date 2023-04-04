@@ -93,10 +93,13 @@ def unetpp_loss(model, masks_pred, true_masks):
 
 
 class TverskyLoss(nn.Module):
-    def __init__(self, weight=None, size_average=True):
+    def __init__(self, alpha=0.5, beta=0.5, smooth=1, weight=None, size_average=True):
         super(TverskyLoss, self).__init__()
+        self.alpha = alpha
+        self.beta = beta
+        self.smooth = smooth
 
-    def forward(self, inputs, targets, smooth=1, alpha=0.5, beta=0.5):
+    def forward(self, inputs, targets ):
         # comment out if your model contains a sigmoid or equivalent activation layer
         inputs = F.sigmoid(inputs)
         bn = inputs.shape[0]
@@ -110,6 +113,6 @@ class TverskyLoss(nn.Module):
         FP = ((1 - targets) * inputs).sum()
         FN = (targets * (1 - inputs)).sum()
 
-        Tversky = (TP + smooth) / (TP + alpha * FP + beta * FN + smooth)
+        Tversky = (TP + self.smooth) / (TP + self.alpha * FP + self.beta * FN + self.smooth)
 
         return 1 - Tversky

@@ -27,19 +27,23 @@ def _iou(org, bbox1, bbox2, size_average=True):
 
 
 class Slice():
-    def __init__(self, path: str = '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_37_4.png'):
+    def __init__(self, path: str = '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_37_4.png', modal='t2w'):
         self.path = path  # labeled_GT_colored images
         self.t2w_path = path.replace("labeled_GT_colored", "T2W_images").replace("png", "jpg")
         self.adc_path = path.replace("labeled_GT_colored", "ADC_images").replace("png", "jpg")
+        self.dwi_path = path.replace("labeled_GT_colored", "DWI_images").replace("png", "jpg")
         if 'ProstateX' in path:
             self.t2w_path = '-'.join(self.t2w_path.split('.')[0].split('-')[:-1]) + '.jpg'
             self.adc_path = '-'.join(self.adc_path.split('.')[0].split('-')[:-1]) + '.jpg'
+            self.dwi_path = '-'.join(self.dwi_path.split('.')[0].split('-')[:-1]) + '.jpg'
         self.patient_id = path.split("//")[-1].split("_")[1]  # todo some bugs here
         self.np_arr = np.array(Image.open(self.path))  # gt label
         self.de_normolize()
         self.np_arr_ = None
+        self.modal = modal  # controller of data modal -> ['t2w', 'adc', '']
         self.t2w_np = np.array(Image.open(self.t2w_path))
-        # self.adc_np = np.array(Image.open(self.adc_path))  # todo tobe implement
+        self.adc_np = np.array(Image.open(self.adc_path))
+        self.dwi_np = np.array(Image.open(self.dwi_path))
         self.tumour_n = len(np.unique(self.np_arr))
         self.bbox = []  #: list[bbox: list]
         self.bbox_ex = []  #: list[bbox: list]
@@ -50,6 +54,7 @@ class Slice():
         self.min_search_wh = 20
         self.generate_tumour_img()
         self.generate_gray()
+        assert self.modal in ['t2w', 'adc', 'dwi', 'pre_fuse'], "check out your modal name, only t2w and adc are available now"
         # self.self_filled()
 
     def de_normolize(self):
@@ -90,7 +95,18 @@ class Slice():
         bbox = self.generate_tumour_bbox()
         for box in bbox:
             self.binary_imgs.append(self.np_arr[box[0]:box[2], box[1]:box[3]])
-            self.tumour_imgs.append(self.t2w_np[box[0]:box[2], box[1]:box[3]])
+            if self.modal == 't2w':
+                self.tumour_imgs.append(self.t2w_np[box[0]:box[2], box[1]:box[3]])
+            if self.modal == 'adc':
+                self.tumour_imgs.append(self.adc_np[box[0]:box[2], box[1]:box[3]])
+            if self.modal == 'dwi':
+                self.tumour_imgs.append(self.dwi_np[box[0]:box[2], box[1]:box[3]])
+            if self.modal == 'pre_fuse':
+                fused = np.stack((self.t2w_np[box[0]:box[2], box[1]:box[3]],
+                                  self.adc_np[box[0]:box[2], box[1]:box[3]],
+                                  # self.dwi_np[box[0]:box[2], box[1]:box[3]]
+                                  ))
+                self.tumour_imgs.append(fused)
         ax1.imshow(self.np_arr)
         ax2.imshow(self.np_arr_)
         if len(self.binary_imgs) == 1:

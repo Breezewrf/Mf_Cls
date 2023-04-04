@@ -22,13 +22,13 @@ from sklearn.model_selection import KFold
 from test_cls import test_cls
 
 os.environ["WANDB_MODE"] = "offline"
-dir_checkpoint = Path('./checkpoints/classification/cls/2c')
 from loss import lw_loss
 from msf_cls.backbone.pretrained import Resnet_18, VGG16
-from loss import FocalLoss
-
+from loss import FocalLoss, TverskyLoss
+from msf_cls.msfusion import MSFusionNet
 kf = KFold(n_splits=5, shuffle=True, random_state=57749867)
 focalLoss = FocalLoss(alpha=1, gamma=2)
+tverskyLoss = TverskyLoss(alpha=0.5, beta=0.5)
 
 
 def train_model(
@@ -51,16 +51,23 @@ def train_model(
         opt='adamw',
         desc='',
         num_classes=2,
+        dataset_name='ProstateX',
+        branch_name='t2w',
+        loss_name='focal',
+        task='cls',
         log=True
 ):
-
+    p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}".format(epochs, batch_size, learning_rate, num_classes,
+                                                               dataset_name, branch_name, loss_name)
+    dir_checkpoint = Path('./checkpoints/classification/{}'.format(p))
     best_model_path = 'best.pth'
     if log:
-        config = {'epoch': epochs, 'batch_size': batch_size, 'lr': learning_rate, 'seed': seed, 'opt': opt}
+        config = {'epoch': epochs, 'batch_size': batch_size, 'lr': learning_rate, 'seed': seed, 'opt': opt,
+                  'num_classes': num_classes, 'dataset': dataset_name, 'branch': branch_name}
         run = wandb.init(project='classification', config=config)
 
     # 1. create dataset
-    dataset = Cls_ProstateX_Dataset(num_classes=num_classes)
+    dataset = Cls_ProstateX_Dataset(num_classes=num_classes, branch_name=branch_name)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test
@@ -86,8 +93,11 @@ def train_model(
     best_epoch = 0
     # 3. Create data loaders
     for fold, (train_idx, val_idx) in enumerate(kf.split(train_val_set)):
+        if fold != 3:
+            print("Empirical fold=3 gets best performance")
+            continue
         model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(),
-                      'resnet101': resnet101(),
+                      'resnet101': resnet101(), 'msfusion': MSFusionNet(input_c=2, output_c=args.classes, task=task),
                       'vgg16': VGG16(), 'convnext': ConvNeXt()}
         logging.info(f'Using device {device}')
         assert model_name in model_list
@@ -141,7 +151,9 @@ def train_model(
                         # print("pred: ", pred)
                         # print("res: ", res)
                         # loss = lw_loss(pred, grade)
-                        loss = focalLoss(pred, grade)
+                        assert loss_name in ['focal'], "loss specification error"
+                        if loss_name == 'focal':
+                            loss = focalLoss(pred, grade)
 
                     optimizer.zero_grad(set_to_none=True)
                     grad_scaler.scale(loss).backward()
@@ -184,10 +196,10 @@ def train_model(
                     best_acc = test_acc
                     best_epoch = epoch
                     torch.save(state_dict,
-                               str(dir_checkpoint / 'best_epoch{}.pth'.format(epoch)))
+                               str(dir_checkpoint / 'best_epoch.pth'))
                     if log:
                         model_wandb = wandb.Artifact('classification-model', type='model')
-                        model_wandb.add_file(str(dir_checkpoint / 'best_epoch{}.pth'.format(epoch)))
+                        model_wandb.add_file(str(dir_checkpoint / 'best_epoch.pth'))
                         run.log_artifact(model_wandb)
 
         logging.info("best model is trained with {} epochs, best acc is {}".format(best_epoch, best_acc))
@@ -208,13 +220,17 @@ def get_args():
                         help='Percent of the data that is used as validation (0-100)')
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
-    parser.add_argument('--classes', '-c', type=int, default=4, help='Number of classes')
-    parser.add_argument('--model', type=str, default='resnet18',
+    parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
+    parser.add_argument('--model', type=str, default='msfusion',
                         help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg16, convnext, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
+    parser.add_argument('--dataset_name', type=str, default='prostatex')
+    parser.add_argument('--branch_name', type=str, default='pre_fuse')
+    parser.add_argument('--loss_f', type=str, default='focal')
+    parser.add_argument('--task', type=str, default='cls')
     parser.add_argument('--log', type=bool, default=True)
     parser.add_argument('--desc', type=str)
     return parser.parse_args()
@@ -242,5 +258,9 @@ if __name__ == '__main__':
         opt=args.opt,
         desc=args.desc,
         num_classes=args.classes,
-        log=True
+        dataset_name=args.dataset_name,
+        branch_name=args.branch_name,
+        loss_name=args.loss_f,
+        task=args.task,
+        log=args.log
     )
