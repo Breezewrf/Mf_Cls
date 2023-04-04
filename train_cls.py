@@ -14,6 +14,7 @@ import random
 from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
 import numpy as np
 from torch import optim
+from collections import OrderedDict
 from tqdm import tqdm
 from evaluate import evaluate_cls
 from pathlib import Path
@@ -103,6 +104,14 @@ def train_model(
         assert model_name in model_list
         model = model_list[model_name]
         model = model.to(device)
+        if args.load is not None:
+            # Create a new dictionary with the desired parameters
+            new_state_dict = OrderedDict()
+            state_dict_seg = torch.load(args.load)
+            for key in state_dict_seg:
+                if 'encode' in key or 'inc' in key:
+                    new_state_dict[key] = state_dict_seg[key]
+            model.load_state_dict(new_state_dict, strict=False)
 
         train_set = torch.utils.data.Subset(dataset, train_idx)
         val_set = torch.utils.data.Subset(dataset, val_idx)
