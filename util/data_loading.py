@@ -247,10 +247,13 @@ def enhance_cls(self, img):
         img = [t_resize(Image.fromarray(c)) for c in img]
         img.append(Image.fromarray((np.array(img[0])+np.array(img[1]))/2))
         rgb_image = np.stack(img, axis=-1)
-    else:
-        assert img.shape[0] == 3
+    elif 3 == img.shape[0]:
+        assert img.shape[0] == 3, "img shape is {}".format(str(img.shape))
         img = [t_resize(Image.fromarray(c)) for c in img]
         rgb_image = np.stack(img, axis=-1)
+    else:
+        assert len(img.shape) == 2, "img shape is {}".format(str(img.shape))
+        rgb_image = np.stack((t_resize(Image.fromarray(img)),) * 3, axis=-1)
     return self.transform(rgb_image)
 
 
