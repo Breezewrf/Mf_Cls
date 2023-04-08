@@ -284,8 +284,9 @@ class MSFusionNet(nn.Module):
     def forward(self, x: torch.Tensor):
         # The input should follow the format of BCHW
         # print("shape:", x.shape)
-        if x.shape[1] == 3:
-            assert self.task == 'cls', "image channel should not be 3 when 'task' parameter is {}".format(self.task)
+        if x.shape[2] == 3:
+            assert self.task == 'cls', "image channel should not be 3 when 'task' parameter is {}" \
+                                       "with shape: {}".format(self.task, x.shape)
             x = x.transpose(0, 1)[0:2].unsqueeze(dim=2)
         input_device = 'cuda:%s' % x.get_device() if x.is_cuda else 'cpu'
 
