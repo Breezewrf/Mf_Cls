@@ -238,7 +238,8 @@ class MSFusionNet(nn.Module):
         self.encoder4 = MSFusionBlock(kernel_num << 3, kernel_num << 4, input_c, kernel_size=3, padding=1,
                                       normalization=normalization, leaky_relu=leaky_relu)
         self.pooling = nn.MaxPool2d(2)
-        self.cls_head = cls_head(input_c, kernel_num, output_c)
+        if self.task == 'cls':
+            self.cls_head = cls_head(input_c, kernel_num, output_c)
         kernel_num <<= 4
 
         self.decoder1 = nn.ModuleList([
