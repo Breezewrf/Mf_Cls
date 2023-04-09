@@ -45,15 +45,19 @@ def load_cls_prostatex_label(path='data/ProstateX/labeled_GT_colored/', num_clas
         slice_id = int(s.split('.')[0].split('-')[2])
         grade = int(s.split('.')[0].split('-')[-1]) - 1  # for ProstateX, the grade is [1-5]
         for t_id, tumour in enumerate(sli.binary_imgs):
-            assert num_classes in (2, 4)
+            assert num_classes in (2, 4, 5)
             if num_classes == 2:
                 if grade in (0, 1):
                     grade = 0
                 if grade in (2, 3, 4):
                     grade = 1
                 le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, grade, sli.bbox_ex)
+            elif num_classes == 4:
+                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, max(0, grade - 1),
+                            sli.bbox_ex)  # max(0, grade-1)
             else:
-                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, max(0, grade - 1), sli.bbox_ex)  # max(0, grade-1)
+                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, grade,
+                            sli.bbox_ex)  # max(0, grade-1)
             Lesion_list.append(le)
             print("added")
     print("loaded!")
@@ -316,13 +320,15 @@ class MSFDataset(Dataset):
         img = np.asarray(pil_img)
 
         if is_mask:
+            # normalize the mask value to integer like 0, 1, 2, 3
             mask = np.zeros((newH, newW), dtype=np.int64)
             for i, v in enumerate(mask_values):
                 if img.ndim == 2:
                     mask[img == v] = i
                 else:
                     mask[(img == v).all(-1)] = i
-
+            # only 0, 1 is needed here
+            mask = np.where(mask > 1, 1, 0)
             return mask
 
         else:

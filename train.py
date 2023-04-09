@@ -26,10 +26,10 @@ from msf_cls.msfusion import MSFusionNet
 import random
 import os
 
-dir_t2w = './data/train/T2W_images/'
-dir_adc = './data/train/ADC_images/'
-dir_img = './data/T2W_images/'
-dir_mask = './data/T2W_labels/'
+dir_t2w = './data/ProstateX/T2W_images/'
+dir_adc = './data/ProstateX/ADC_images/'
+dir_img = './data/ProstateX/T2W_images/'
+dir_mask = './data/ProstateX/labeled_GT_colored'
 dir_checkpoint = Path('./checkpoints/')
 os.environ["WANDB_MODE"] = "offline"
 
@@ -62,7 +62,7 @@ def train_model(
         except (AssertionError, RuntimeError):
             dataset = BasicDataset(dir_img, dir_mask, img_scale)
     elif branch == 2:
-        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale, aug=aug)
+        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale, aug=aug, ProstateX=True)
     # 2. Split into train / validation partitions
     assert dataset is not None, f'the branch number is not set correctly: {branch}'
     n_val = int(len(dataset) * val_percent)
