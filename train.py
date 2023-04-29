@@ -1,13 +1,18 @@
-import argparse
+# -*- coding: utf-8 -*-
+# @Time    : 29/4/2023 12:57 PM
+# @Author  : Breeze
+# @Email   : breezewrf@gmail.com
+from config import get_train_args as get_args
 import logging
-import os
-import random
-import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as TF
+from sklearn.model_selection import KFold
+from torch.utils.data import DataLoader, random_split, WeightedRandomSampler
+from collections import OrderedDict
+
 from pathlib import Path
 from torch import optim
 from torch.utils.data import DataLoader, random_split
@@ -17,8 +22,9 @@ from PIL import Image
 import wandb
 from evaluate import evaluate
 from unet import UNet
-from util.data_loading import BasicDataset, CarvanaDataset, MSFDataset
+from util.data_loader import MSFDataset
 from util.dice_score import dice_loss
+from loss import FocalLoss, TverskyLoss
 import cv2
 from unetpp.unetpp_model import Nested_UNet
 from loss import unet_loss, unetpp_loss
@@ -26,226 +32,213 @@ from msf_cls.msfusion import MSFusionNet
 import random
 import os
 
-dir_t2w = './data/train/T2W_images/'
-dir_adc = './data/train/ADC_images/'
-dir_img = './data/T2W_images/'
-dir_mask = './data/T2W_labels/'
-dir_checkpoint = Path('./checkpoints/')
+dir_t2w = 'data/ProstateX/T2W_images'
+dir_adc = 'data/ProstateX/ADC_images'
+dir_dwi = 'data/ProstateX/DWI_images'
+dir_mask = 'data/ProstateX/labeled_GT_colored'
 os.environ["WANDB_MODE"] = "offline"
+kf = KFold(n_splits=5, shuffle=True, random_state=57749867)
+focalLoss = FocalLoss(alpha=1, gamma=2)
+tverskyLoss = TverskyLoss(alpha=0.5, beta=0.5)
 
 
 def train_model(
-        model,
+        model_name,
         device,
-        epochs: int = 2,
-        batch_size: int = 1,
-        learning_rate: float = 1e-5,
-        val_percent: float = 0.1,
-        save_checkpoint: bool = True,
-        save_interval: int = 50,
-        img_scale: float = 0.5,
-        amp: bool = False,
-        weight_decay: float = 1e-8,
-        momentum: float = 0.999,
-        gradient_clipping: float = 1.0,
-        branch: int = 1,
-        seed=12321,
-        aug=1,
-        opt='adamw',
-        desc=''
+        epochs: int,
+        batch_size: int,
+        learning_rate: float,
+        val_percent: float,
+        save_checkpoint: bool,
+        save_interval: int,
+        img_scale: float,
+        amp: bool,
+        weight_decay: float,
+        momentum: float,
+        gradient_clipping: float,
+        branch: int,
+        seed,
+        aug,
+        opt,
+        desc,
+        num_classes,
+        dataset_name,
+        branch_name,
+        loss_name,
+        task,
+        log
 ):
-    # 1. Create dataset
-    dataset = None
-    if branch == 1:
-        try:
-            dataset = CarvanaDataset(dir_img, dir_mask, img_scale)
-        except (AssertionError, RuntimeError):
-            dataset = BasicDataset(dir_img, dir_mask, img_scale)
-    elif branch == 2:
-        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale, aug=aug)
-    # 2. Split into train / validation partitions
-    assert dataset is not None, f'the branch number is not set correctly: {branch}'
-    n_val = int(len(dataset) * val_percent)
-    n_train = len(dataset) - n_val
+    assert task in ['seg', 'cls', 'unified'], "{} is not a legal mode,please select a proper task in args".format(
+        args.task)
+    p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}".format(epochs, batch_size, learning_rate, num_classes,
+                                                                  dataset_name, branch_name, loss_name)
+    dir_checkpoint = Path('./checkpoints/unified/{}'.format(p))
+    best_model_path = 'best.pth'
+    if log:
+        config = {'epoch': epochs, 'batch_size': batch_size, 'lr': learning_rate, 'seed': seed, 'opt': opt,
+                  'num_classes': num_classes, 'dataset': dataset_name, 'branch': branch_name}
+        run = wandb.init(project='unified', config=config)
 
-    # 1. Set `os env`
+    # 1. create dataset
+    dataset = MSFDataset(dir_t2w, dir_adc, dir_dwi, dir_mask, num_classes=num_classes)
+    test_percent = 0.2
+    n_test = int(len(dataset) * test_percent)
+    n_train_val = len(dataset) - n_test
+    train_val_set, test_set = random_split(dataset, [n_train_val, n_test],
+                                           generator=torch.Generator().manual_seed(seed))
+    # n_val = int(len(dataset) * val_percent)
+    # n_train = len(dataset) - n_val
+
+    # (1) Set `os env`
     os.environ['PYTHONHASHSEED'] = str(seed)
-    # 2. Set `python` built-in pseudo-random generator at a fixed value
+    # (2) Set `python` built-in pseudo-random generator at a fixed value
     random.seed(seed)
-    # 3. Set `numpy` pseudo-random generator at a fixed value
+    # (3) Set `numpy` pseudo-random generator at a fixed value
     np.random.seed(seed)
-    # 4. Set `torch`
+    # (4) Set `torch`
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed))
-
+    global best_acc
+    best_acc = 0
+    best_epoch = 0
     # 3. Create data loaders
-    loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
-    train_loader = DataLoader(train_set, shuffle=True, **loader_args)
-    val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
+    for fold, (train_idx, val_idx) in enumerate(kf.split(train_val_set)):
+        if fold != 3:
+            print("Empirical fold=3 gets best performance")
+            continue
+        logging.info(f'Using device {device}')
+        model = MSFusionNet(3, 2, task=args.task)
+        model = model.to(device)
+        if args.load is not None:
+            # Create a new dictionary with the desired parameters
+            logging.info("checkpoint {} is loading!".format(args.load))
+            new_state_dict = OrderedDict()
+            state_dict_seg = torch.load(args.load)
+            for key in state_dict_seg:
+                if 'encode' in key or 'inc' in key:
+                    new_state_dict[key] = state_dict_seg[key]
+            model.load_state_dict(new_state_dict, strict=False)
+            for param in model.inc.parameters():
+                param.requires_grad = False
+            for param in model.encoder1.parameters():
+                param.requires_grad = False
+            for param in model.encoder2.parameters():
+                param.requires_grad = False
+            for param in model.encoder3.parameters():
+                param.requires_grad = False
+            for param in model.encoder4.parameters():
+                param.requires_grad = False
 
-    # (Initialize logging)
-    experiment = wandb.init(project='U-Net', resume='allow', anonymous='must')
-    experiment.config.update(
-        dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
-             val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale, amp=amp)
-    )
-    wandb.run.name = model.name + "seed=" + str(seed) + " lr=" + str(learning_rate) + "aug=" + str(aug) + str(desc)
-    logging.info(f'''Starting training:
-        Epochs:          {epochs}
-        Batch size:      {batch_size}
-        Learning rate:   {learning_rate}
-        Training size:   {n_train}
-        Validation size: {n_val}
-        Checkpoints:     {save_checkpoint}
-        Device:          {device.type}
-        Images scaling:  {img_scale}
-        Mixed Precision: {amp}
-    ''')
+        train_set = torch.utils.data.Subset(dataset, train_idx)
+        val_set = torch.utils.data.Subset(dataset, val_idx)
+        n_train = len(train_set)
+        if task != 'seg':
+            # re-weight
+            class_weight = np.zeros(num_classes)
+            train_labels = []
+            for data in train_set:
+                label = data['mask']  # the label is just used for segmentation, not equals to the GGG
+                grade = data['GGG']
+                # l, t = np.unique(label, return_counts=True)
+                class_weight[grade] += 1
+                train_labels.append(grade)
+            # exp_weight = [(1 - c / sum(class_weight)) ** 2 for c in class_weight]
 
-    # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
-    if opt == 'adamw':
-        optimizer = optim.AdamW(model.parameters(), lr=learning_rate) #, weight_decay=weight_decay, momentum=momentum, foreach=True)
+            exp_weight = (class_weight.sum() / class_weight) / ((class_weight.sum() / class_weight).sum())
+            example_weight = [exp_weight[e] for e in train_labels]
+            sampler = WeightedRandomSampler(example_weight, len(train_labels))
+            loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
+            train_loader = DataLoader(train_set, sampler=sampler, **loader_args)
+            val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
+            test_lodaer = DataLoader(test_set, shuffle=False, **loader_args)
+            # exp_weight = [1, 0, 0, 0]
+            class_weight = np.zeros(num_classes)
+            assert len(train_loader) != 0
+            for data in train_loader:
+                grade = data['GGG']
+                class_weight[grade] += 1
+            logging.info("class weight after re_weight: {}".format(class_weight))
+        else:
+            loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
+            train_loader = DataLoader(train_set, shuffle=True, **loader_args)
+            val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
+            test_lodaer = DataLoader(test_set, shuffle=False, **loader_args)
+        # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
+        optimizer = optim.AdamW(model.parameters(),
+                                lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60,
-                                                         factor=0.5)  # goal: maximize Dice score
-    else:
-        optimizer = optim.RMSprop(model.parameters(),
-                               lr=learning_rate, weight_decay=weight_decay, momentum=momentum, foreach=True)
-    #optimizer = optim.AdamW(model.parameters(),
-         #                       lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60)  # goal: maximize Dice score
-    grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
-    criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
-    global_step = 0
-
-    # 5. Begin training
-    for epoch in range(1, epochs + 1):
-        model.train()
-        epoch_loss = 0
-        with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
-            for batch in train_loader:
-                offset = 1 if model.name == 'msf' else 0
-                if model.name == 'msf':
-                    t2w_img, adc_img, true_masks = batch['t2w_image'], batch['adc_image'], batch['mask']
+                                                         factor=0.5)
+        grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
+        global_step = 0
+        # 5. Begin training
+        for epoch in range(1, epochs + 1):
+            model.train()
+            epoch_loss = 0
+            with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
+                for data in train_loader:
+                    t2w_img, adc_img, dwi_img, true_mask, grade = \
+                        data['t2w_image'], data['adc_image'], data['dwi_image'], data['mask'], data['GGG']
                     t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                    images = torch.stack((t2w_img, adc_img))
-                    # if msf: branch x B x C x W x H
-                else:
-                    images, true_masks = batch['image'], batch['mask']
-                    # if msf: branch x B x C x W x H
-                    assert images.shape[1 + offset] == model.n_channels, \
-                        f'Network has been defined with {model.n_channels} input channels, ' \
-                        f'but loaded images have {images.shape[1 + offset]} channels. Please check that ' \
-                        'the images are loaded correctly.'
-                    images = images.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    true_mask = true_mask.to(device=device, dtype=torch.long)
+                    images = torch.stack((t2w_img, adc_img, dwi_img))
+                    grade = grade.to(device=device, dtype=torch.float32)
+                    model.train()
+                    with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
+                        pred = model(images)
+                        # print("pred: ", pred.shape)
+                        # print("pred: ", pred)
+                        # print("res: ", res)
+                        # loss = lw_loss(pred, grade)
+                        assert loss_name in ['focal'], "loss specification error"
+                        if loss_name == 'focal':
+                            loss = focalLoss(pred, true_mask)
 
-                # images = images.to(device=device, dtype=torch.float32)
-                true_masks = true_masks.to(device=device, dtype=torch.long)
+                    optimizer.zero_grad(set_to_none=True)
+                    grad_scaler.scale(loss).backward()
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
+                    grad_scaler.step(optimizer)
+                    grad_scaler.update()
+                    pbar.update(adc_img.shape[0])
+                    global_step += 1
+                    epoch_loss += loss.item()
+                    pbar.set_postfix(**{'loss (batch)': loss.item()})
+                    if log:
+                        wandb.log({'loss': loss.item()})
+                    division_step = (n_train // (5 * batch_size))
+                    if division_step > 0:
+                        if global_step % division_step == 0:
+                            score = evaluate(model, val_loader, device, amp)
+                            scheduler.step(score)
+                            logging.info('Score: {}'.format(score))
+                            if log:
+                                wandb.log({'score': score})
+            if save_checkpoint and epoch % save_interval == 0:
+                # test:
+                test_acc = evaluate(model, test_lodaer, device, amp)
+                print("test_score:{}".format(test_acc))
+                Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
+                state_dict = model.state_dict()
+                torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
+                logging.info(f'Checkpoint {epoch} saved!')
+                wandb.log({"test_acc": test_acc})
+                if test_acc > best_acc:
+                    best_acc = test_acc
+                    best_epoch = epoch
+                    torch.save(state_dict,
+                               str(dir_checkpoint / 'best_epoch.pth'))
+                    if log:
+                        model_wandb = wandb.Artifact('classification-model', type='model')
+                        model_wandb.add_file(str(dir_checkpoint / 'best_epoch.pth'))
+                        run.log_artifact(model_wandb)
 
-                with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
-                    masks_pred = model(images)
-                    if model.name == 'unet':
-                        loss = unet_loss(model, masks_pred, true_masks)
-                    elif model.name == 'unetpp':
-                        loss = unetpp_loss(model, masks_pred, true_masks)
-                        masks_pred = masks_pred[0]
-                    else:
-                        loss = unet_loss(model, masks_pred, true_masks)
+        logging.info("best model is trained with {} epochs, best acc is {}".format(best_epoch, best_acc))
 
-                optimizer.zero_grad(set_to_none=True)
-                grad_scaler.scale(loss).backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
-                grad_scaler.step(optimizer)
-                grad_scaler.update()
-
-                pbar.update(images.shape[0 + offset])
-                global_step += 1
-                epoch_loss += loss.item()
-                experiment.log({
-                    'train loss': loss.item(),
-                    'step': global_step,
-                    'epoch': epoch
-                })
-                pbar.set_postfix(**{'loss (batch)': loss.item()})
-                if global_step % 50 == 0:
-                    res = wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu())
-                    res.image.show('output')
-                    mask = wandb.Image(true_masks.float().cpu())
-                    mask.image.show('gt')
-                # cv2.waitKey(10000)
-                # Evaluation round
-                division_step = (n_train // (5 * batch_size))
-                if division_step > 0:
-                    if global_step % division_step == 0:
-                        # histograms = {}
-                        # for tag, value in model.named_parameters():
-                        #     tag = tag.replace('/', '.')
-                        #     if not torch.isinf(value).any():
-                        #         histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
-                        #     if not torch.isinf(value.grad).any():
-                        #         histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
-
-                        val_score = evaluate(model, val_loader, device, amp)
-                        scheduler.step(val_score)
-
-                        logging.info('Validation Dice score: {}'.format(val_score))
-                        try:
-                            experiment.log({
-                                'learning rate': optimizer.param_groups[0]['lr'],
-                                'validation Dice': val_score,
-                                'images': wandb.Image(images[0 + offset].cpu()),
-                                'masks': {
-                                    'true': wandb.Image(true_masks[0].float().cpu()),
-                                    'pred': wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu()),
-                                },
-                                'step': global_step,
-                                'epoch': epoch,
-                                # **histograms
-                            })
-                            # res = wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu())
-                            # res.image.show()
-                        except:
-                            pass
-
-        if save_checkpoint and epoch % save_interval == 0:
-            Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
-            state_dict = model.state_dict()
-            state_dict['mask_values'] = dataset.mask_values
-            torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
-            logging.info(f'Checkpoint {epoch} saved!')
-
-    Path(model.name+'epoch'+str(epochs)).mkdir(parents=True, exist_ok=True)
-    state_dict_final = model.state_dict()
-    state_dict_final['mask_values'] = dataset.mask_values
-    torch.save(state_dict_final, str(Path(model.name+'epoch'+str(epochs)) / '{}_{}_final.pth'.format(model.name, desc)))
-    logging.info(f'Checkpoint {model.name} training finished!')
-
-
-def get_args():
-    parser = argparse.ArgumentParser(description='Train the UNet on images and target masks')
-    parser.add_argument('--epochs', '-e', metavar='E', type=int, default=5, help='Number of epochs')
-    parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=1, help='Batch size')
-    parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=1e-5,
-                        help='Learning rate', dest='lr')
-    parser.add_argument('--load', '-f', type=str, default="/media/breeze/dev/Mf_Cls/checkpoints/msfusion/msf_AdamW_final.pth", help='Load model from a .pth file')
-    parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
-    parser.add_argument('--validation', '-v', dest='val', type=float, default=10.0,
-                        help='Percent of the data that is used as validation (0-100)')
-    parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
-    parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
-    parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
-    parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
-    parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
-    parser.add_argument('--seed', type=int, default=12321)
-    parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
-    parser.add_argument('--opt', type=str, default='adamw')
-    parser.add_argument('--task', type=str, default='seg')
-    parser.add_argument('--desc', type=str)
-    return parser.parse_args()
+        logging.info(f'Checkpoint  training finished!')
 
 
 if __name__ == '__main__':
@@ -282,7 +275,7 @@ if __name__ == '__main__':
     model.to(device=device)
 
     train_model(
-        model=model,
+        model_name=args.model,
         epochs=args.epochs,
         batch_size=args.batch_size,
         learning_rate=args.lr,
@@ -294,5 +287,16 @@ if __name__ == '__main__':
         seed=args.seed,
         aug=args.aug,
         opt=args.opt,
-        desc=args.desc
+        save_checkpoint=True,
+        save_interval=args.save_interval,
+        weight_decay=args.weight_decay,
+        momentum=args.momentum,
+        gradient_clipping=args.gradient_clipping,
+        desc=args.desc,
+        num_classes=args.classes,
+        dataset_name=args.dataset_name,
+        branch_name=args.branch_name,
+        loss_name=args.loss_f,
+        task=args.task,
+        log=args.log
     )
