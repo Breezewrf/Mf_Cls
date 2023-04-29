@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
-from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve
+from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve, cohen_kappa_score
 import numpy as np
 import cv2
 from PIL import Image
@@ -74,6 +74,7 @@ def calculate_accuracy(output: torch.Tensor, target: torch.Tensor, c=2):
                              torch.tensor([0.], device=output.device))
         target = torch.where(target >= 2, torch.tensor([1.], device=target.device),
                              torch.tensor([0.], device=target.device))
+    print("cohen kappa score:{}".format(cohen_kappa_score(output.cpu(), target.cpu())))
     correct = output.eq(target).sum().item()
     total = target.size(0)
     accuracy = correct / total
@@ -127,7 +128,7 @@ def draw_pr_curve(output, target, c=2):
     plt.ylim([0.0, 1.05])
     plt.xlim([0.0, 1.0])
     plt.title('Precision-Recall Curve')
-    # plt.show()
+    plt.show()
     return plt
 
 
@@ -149,7 +150,7 @@ def draw_roc_curve(output, target, c=2):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver operating characteristic curve')
     plt.legend(loc="lower right")
-    # plt.show()
+    plt.show()
     return plt
 
 

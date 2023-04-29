@@ -57,7 +57,8 @@ def test_cls(net, dataloader, device, args, model_name, batch_size, amp, wandb=N
     columns = ['accuracy', 'precision', 'f1_score', 'sensitivity', 'specificity']
     data = [acc, metrics['precision'], metrics['f1_score'], metrics['sensitivity'], metrics['specificity']]
     data = [[str(i) for i in data]]
-    table = wandb.Table(data=data, columns=columns)
+    if wandb is not None:
+        table = wandb.Table(data=data, columns=columns)
     if wandb is not None:
         wandb.log({"metrics table": table})
     return true / max(num_val_batches * batch_size, 1)
@@ -81,6 +82,7 @@ def get_args():
     parser.add_argument('--model', type=str, default='resnet18',
                         help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg16, convnext, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
+    parser.add_argument('--branch_name', type=str, default='pre_fuse')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
@@ -96,7 +98,7 @@ from util.data_loading import Cls_ProstateX_Dataset
 if __name__ == '__main__':
     args = get_args()
     seed = args.seed
-    dataset = Cls_ProstateX_Dataset(num_classes=args.classes, test_mode=True)
+    dataset = Cls_ProstateX_Dataset(num_classes=args.classes, branch_name=args.branch_name, test_mode=True)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test

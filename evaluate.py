@@ -4,6 +4,26 @@ from tqdm import tqdm
 
 from util.dice_score import multiclass_dice_coeff, dice_coeff
 from loss import lw_loss
+import numpy as np
+import wandb
+# wandb.init("experiments test")
+
+
+def visualize_images(t2w_img, mask_true, mask_pred, name):
+    # Convert images and masks to numpy arrays
+    t2w_img = t2w_img.cpu().numpy().squeeze()
+    mask_true = wandb.Image(mask_true.float().cpu())
+    mask_pred = wandb.Image(mask_pred.argmax(dim=1)[0].float().cpu())
+    t2w_img = (t2w_img * 255).astype(np.uint8)
+
+    t2w_img = np.stack((t2w_img,) * 3, axis=-1)
+
+    # Visualize the images and masks
+    # wandb.log({
+    #     f"t2w_image": wandb.Image(t2w_img),
+    #     f"true_mask": mask_true,
+    #     f"predicted_mask": mask_pred
+    # })
 
 
 @torch.inference_mode()
@@ -24,7 +44,7 @@ def evaluate(net, dataloader, device, amp):
             else:
                 image, mask_true = batch['image'], batch['mask']
 
-            # move images and labels to correct device and type
+                # move images and labels to correct device and type
                 image = image.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
             mask_true = mask_true.to(device=device, dtype=torch.long)
 
@@ -32,7 +52,10 @@ def evaluate(net, dataloader, device, amp):
             mask_pred = net(image)
             if net.name == 'unetpp':
                 mask_pred = mask_pred[0]
-
+            if net.name == 'msf':
+                visualize_images(t2w_img, mask_true, mask_pred, net.name)
+            else:
+                visualize_images(image, mask_true, mask_pred, net.name)
             if net.n_classes == 1:
                 assert mask_true.min() >= 0 and mask_true.max() <= 1, 'True mask indices should be in [0, 1]'
                 mask_pred = (F.sigmoid(mask_pred) > 0.5).float()

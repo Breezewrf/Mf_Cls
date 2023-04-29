@@ -53,9 +53,9 @@ def test():
         except (AssertionError, RuntimeError):
             dataset = BasicDataset(t2w_test_dir, gt_test_dir, args.scale)
     elif args.branch == 2:
-        dataset = MSFDataset(t2w_test_dir, adc_test_dir, gt_test_dir, args.scale)
+        dataset = MSFDataset(t2w_test_dir, adc_test_dir, gt_test_dir, args.scale, aug=0)
     loader_args = dict(batch_size=1, num_workers=2, pin_memory=True)
-    test_loader = DataLoader(dataset, shuffle=True, **loader_args)
+    test_loader = DataLoader(dataset, shuffle=False, **loader_args)
 
     # Evaluation round
     val_score = evaluate(model, test_loader, device, args.amp)

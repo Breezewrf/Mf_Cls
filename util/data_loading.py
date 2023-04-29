@@ -45,15 +45,19 @@ def load_cls_prostatex_label(path='data/ProstateX/labeled_GT_colored/', num_clas
         slice_id = int(s.split('.')[0].split('-')[2])
         grade = int(s.split('.')[0].split('-')[-1]) - 1  # for ProstateX, the grade is [1-5]
         for t_id, tumour in enumerate(sli.binary_imgs):
-            assert num_classes in (2, 4)
+            assert num_classes in (2, 4, 5)
             if num_classes == 2:
                 if grade in (0, 1):
                     grade = 0
                 if grade in (2, 3, 4):
                     grade = 1
                 le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, grade, sli.bbox_ex)
+            elif num_classes == 4:
+                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, max(0, grade - 1),
+                            sli.bbox_ex)  # max(0, grade-1)
             else:
-                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, max(0, grade - 1), sli.bbox_ex)  # max(0, grade-1)
+                le = Lesion(sli.tumour_imgs[t_id], patient_id, slice_id, grade,
+                            sli.bbox_ex)  # max(0, grade-1)
             Lesion_list.append(le)
             print("added")
     print("loaded!")
@@ -76,7 +80,7 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt", num_classes
             """
             13
             ['/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_1.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_2.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_3.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_4.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_5.png', '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_13_6.png']
-    
+
             Lesion_13_1.png, where 13 denotes patient id is 13, slice id is 1
             In "13", len(list) == 6 == max(slice_id), denotes patient_13 has 6 slices
             """
@@ -132,7 +136,8 @@ def load_cls_label(path: str = "data/cls_label/twoLesion_label.txt", num_classes
 
 class Cls_ProstateX_Dataset(Dataset):
     # specified for ProstateX dataset to load the GGG label
-    def __init__(self, label_dir: str = 'data/ProstateX/labeled_GT_colored/', num_classes=2, branch_name='t2w', test_mode=False):
+    def __init__(self, label_dir: str = 'data/ProstateX/labeled_GT_colored/', num_classes=2, branch_name='t2w',
+                 test_mode=False):
         self.lesions = []
         self.num_classes = num_classes
         self.modal = branch_name
@@ -156,7 +161,6 @@ class Cls_ProstateX_Dataset(Dataset):
         ])
         self.transform = trans if not test_mode else trans_test
         assert len(self.labels) != 0, 'error dir:{}'.format(label_dir)
-
 
     def __getitem__(self, idx):
         if self.transform:
@@ -245,12 +249,15 @@ def enhance_cls(self, img):
         rgb_image = np.stack((t_resize(Image.fromarray(img)),) * 3, axis=-1)
     elif 2 == img.shape[0]:
         img = [t_resize(Image.fromarray(c)) for c in img]
-        img.append(Image.fromarray((np.array(img[0])+np.array(img[1]))/2))
+        img.append(Image.fromarray((np.array(img[0]) + np.array(img[1])) / 2))
         rgb_image = np.stack(img, axis=-1)
-    else:
-        assert img.shape[0] == 3
+    elif 3 == img.shape[0]:
+        assert img.shape[0] == 3, "img shape is {}".format(str(img.shape))
         img = [t_resize(Image.fromarray(c)) for c in img]
         rgb_image = np.stack(img, axis=-1)
+    else:
+        assert len(img.shape) == 2, "img shape is {}".format(str(img.shape))
+        rgb_image = np.stack((t_resize(Image.fromarray(img)),) * 3, axis=-1)
     return self.transform(rgb_image)
 
 
@@ -278,7 +285,7 @@ def enhance_util(img1, img2, gt):
 
 
 class MSFDataset(Dataset):
-    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, mask_dir: str, scale: float = 1.0, aug: int = 1,
+    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, DWI_images_dir: str, mask_dir: str, scale: float = 1.0, aug: int = 1,
                  ProstateX=False):
         self.t2w_dir = Path(T2W_images_dir)
         self.adc_dir = Path(ADC_images_dir)
@@ -313,13 +320,15 @@ class MSFDataset(Dataset):
         img = np.asarray(pil_img)
 
         if is_mask:
+            # normalize the mask value to integer like 0, 1, 2, 3
             mask = np.zeros((newH, newW), dtype=np.int64)
             for i, v in enumerate(mask_values):
                 if img.ndim == 2:
                     mask[img == v] = i
                 else:
                     mask[(img == v).all(-1)] = i
-
+            # only 0, 1 is needed here
+            mask = np.where(mask > 1, 1, 0)
             return mask
 
         else:

@@ -159,7 +159,7 @@ class MSFusionBlock(nn.Module):
         encoder_outputs = []
         # x_tensor = torch.tensor(x)
         for idx, branch in enumerate(self.encoders):
-            encoder_outputs.append(branch(x[idx]))
+            encoder_outputs.append(branch(x[idx]))  # the conv output after encoder
 
         conv_maps = torch.Tensor()
         conv_maps = conv_maps.cuda('cuda:%s' % x.get_device()) if x.is_cuda else conv_maps.cpu()
@@ -238,7 +238,6 @@ class MSFusionNet(nn.Module):
         self.encoder4 = MSFusionBlock(kernel_num << 3, kernel_num << 4, input_c, kernel_size=3, padding=1,
                                       normalization=normalization, leaky_relu=leaky_relu)
         self.pooling = nn.MaxPool2d(2)
-        self.cls_head = cls_head(input_c, kernel_num, output_c)
         kernel_num <<= 4
 
         self.decoder1 = nn.ModuleList([
@@ -299,8 +298,6 @@ class MSFusionNet(nn.Module):
         if self.bayesian:
             for i in range(x_encoder4.shape[0]):
                 x_encoder4[i] = self.drop(x_encoder4[i])
-        if self.task == 'cls':
-            return self.cls_head(x_encoder4)
         feat_decoded1 = torch.tensor([], device=input_device)
         feat_decoded2 = torch.tensor([], device=input_device)
         feat_decoded3 = torch.tensor([], device=input_device)
