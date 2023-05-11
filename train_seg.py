@@ -26,10 +26,10 @@ from msf_cls.msfusion import MSFusionNet
 import random
 import os
 
-dir_t2w = './data/train/T2W_images/'
-dir_adc = './data/train/ADC_images/'
-dir_img = './data/T2W_images/'
-dir_mask = './data/T2W_labels/'
+dir_t2w = 'data/ProstateX/T2W_images'
+dir_adc = 'data/ProstateX/ADC_images'
+dir_dwi = 'data/ProstateX/DWI_images'
+dir_mask = 'data/ProstateX/labeled_GT_colored'
 dir_checkpoint = Path('./checkpoints/')
 os.environ["WANDB_MODE"] = "offline"
 
@@ -58,11 +58,12 @@ def train_model(
     dataset = None
     if branch == 1:
         try:
-            dataset = CarvanaDataset(dir_img, dir_mask, img_scale)
+            dataset = CarvanaDataset(dir_t2w, dir_mask, img_scale)
         except (AssertionError, RuntimeError):
-            dataset = BasicDataset(dir_img, dir_mask, img_scale)
+            dataset = BasicDataset(dir_t2w, dir_mask, img_scale)
     elif branch == 2:
-        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale, aug=aug)
+        dataset = MSFDataset(T2W_images_dir=dir_t2w, ADC_images_dir=dir_adc, DWI_images_dir=dir_t2w, mask_dir=dir_mask,
+                             scale=img_scale, aug=aug, ProstateX=True)
     # 2. Split into train / validation partitions
     assert dataset is not None, f'the branch number is not set correctly: {branch}'
     n_val = int(len(dataset) * val_percent)
@@ -108,14 +109,15 @@ def train_model(
 
     # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
     if opt == 'adamw':
-        optimizer = optim.AdamW(model.parameters(), lr=learning_rate) #, weight_decay=weight_decay, momentum=momentum, foreach=True)
+        optimizer = optim.AdamW(model.parameters(),
+                                lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60,
                                                          factor=0.5)  # goal: maximize Dice score
     else:
         optimizer = optim.RMSprop(model.parameters(),
-                               lr=learning_rate, weight_decay=weight_decay, momentum=momentum, foreach=True)
-    #optimizer = optim.AdamW(model.parameters(),
-         #                       lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
+                                  lr=learning_rate, weight_decay=weight_decay, momentum=momentum, foreach=True)
+        # optimizer = optim.AdamW(model.parameters(),
+        #                       lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=60)  # goal: maximize Dice score
     grad_scaler = torch.cuda.amp.GradScaler(enabled=amp)
     criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
@@ -189,7 +191,7 @@ def train_model(
                         #     if not torch.isinf(value.grad).any():
                         #         histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
 
-                        val_score = evaluate(model, val_loader, device, amp)
+                        val_score = evaluate(model, val_loader, device, amp, num_branch=args.branch)
                         scheduler.step(val_score)
 
                         logging.info('Validation Dice score: {}'.format(val_score))
@@ -218,10 +220,11 @@ def train_model(
             torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
             logging.info(f'Checkpoint {epoch} saved!')
 
-    Path(model.name+'epoch'+str(epochs)).mkdir(parents=True, exist_ok=True)
+    Path(model.name + 'epoch' + str(epochs)).mkdir(parents=True, exist_ok=True)
     state_dict_final = model.state_dict()
     state_dict_final['mask_values'] = dataset.mask_values
-    torch.save(state_dict_final, str(Path(model.name+'epoch'+str(epochs)) / '{}_{}_final.pth'.format(model.name, desc)))
+    torch.save(state_dict_final,
+               str(Path(model.name + 'epoch' + str(epochs)) / '{}_{}_final.pth'.format(model.name, desc)))
     logging.info(f'Checkpoint {model.name} training finished!')
 
 
@@ -231,7 +234,9 @@ def get_args():
     parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=1, help='Batch size')
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=1e-5,
                         help='Learning rate', dest='lr')
-    parser.add_argument('--load', '-f', type=str, default="/media/breeze/dev/Mf_Cls/checkpoints/msfusion/msf_AdamW_final.pth", help='Load model from a .pth file')
+    parser.add_argument('--load', '-f', type=str,
+                        default="",
+                        help='Load model from a .pth file')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
     parser.add_argument('--validation', '-v', dest='val', type=float, default=10.0,
                         help='Percent of the data that is used as validation (0-100)')

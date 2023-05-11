@@ -27,7 +27,7 @@ def visualize_images(t2w_img, mask_true, mask_pred, name):
 
 
 @torch.inference_mode()
-def evaluate(net, dataloader, device, amp):
+def evaluate(net, dataloader, device, amp, num_branch):
     net.eval()
     num_val_batches = len(dataloader)
     dice_score = 0
@@ -36,11 +36,20 @@ def evaluate(net, dataloader, device, amp):
     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
         for batch in tqdm(dataloader, total=num_val_batches, desc='Validation round', unit='batch', leave=False):
             if net.name == 'msf':
-                t2w_img, adc_img, mask_true = batch['t2w_image'], batch['adc_image'], batch['mask']
-                # move images and labels to correct device and type
-                t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                image = torch.stack((t2w_img, adc_img))
+                assert num_branch in (2, 3)
+                if num_branch == 2:
+                    t2w_img, adc_img, mask_true = batch['t2w_image'], batch['adc_image'], batch['mask']
+                    # move images and labels to correct device and type
+                    t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    image = torch.stack((t2w_img, adc_img))
+                if num_branch == 3:
+                    t2w_img, adc_img, dwi_img, mask_true = batch['t2w_image'], batch['adc_image'], batch['dwi_image'], batch['mask']
+                    # move images and labels to correct device and type
+                    t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    image = torch.stack((t2w_img, adc_img, dwi_img))
             else:
                 image, mask_true = batch['image'], batch['mask']
 
