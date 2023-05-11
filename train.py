@@ -212,14 +212,14 @@ def train_model(
                     division_step = (n_train // (5 * batch_size))
                     if division_step > 0:
                         if global_step % division_step == 0:
-                            score = evaluate(model, val_loader, device, amp)
+                            score = evaluate(model, val_loader, device, amp, num_branch=args.branch)
                             scheduler.step(score)
                             logging.info('Score: {}'.format(score))
                             if log:
                                 wandb.log({'score': score})
             if save_checkpoint and epoch % save_interval == 0:
                 # test:
-                test_acc = evaluate(model, test_lodaer, device, amp)
+                test_acc = evaluate(model, test_lodaer, device, amp, num_branch=args.branch)
                 print("test_score:{}".format(test_acc))
                 Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
                 state_dict = model.state_dict()
