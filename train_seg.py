@@ -31,32 +31,40 @@ dir_t2w = 'data/ProstateX/T2W_images'
 dir_adc = 'data/ProstateX/ADC_images'
 dir_dwi = 'data/ProstateX/DWI_images'
 dir_mask = 'data/ProstateX/labeled_GT_colored'
-dir_checkpoint = Path('./checkpoints/')
 os.environ["WANDB_MODE"] = "offline"
 
 
 def train_model(
-        model,
+        model_name,
         device,
-        epochs: int = 2,
-        batch_size: int = 1,
-        learning_rate: float = 1e-5,
-        val_percent: float = 0.1,
-        save_checkpoint: bool = True,
-        save_interval: int = 50,
-        img_scale: float = 0.5,
-        amp: bool = False,
-        weight_decay: float = 1e-8,
-        momentum: float = 0.999,
-        gradient_clipping: float = 1.0,
-        branch: int = 1,
-        seed=12321,
-        aug=1,
-        opt='adamw',
-        desc=''
+        epochs: int,
+        batch_size: int,
+        learning_rate: float,
+        val_percent: float,
+        save_checkpoint: bool,
+        save_interval: int,
+        img_scale: float,
+        amp: bool,
+        weight_decay: float,
+        momentum: float,
+        gradient_clipping: float,
+        branch: int,
+        seed,
+        aug,
+        opt,
+        desc,
+        num_classes,
+        dataset_name,
+        branch_name,
+        loss_name,
+        task,
+        log
 ):
     # 1. Create dataset
     dataset = None
+    p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}".format(epochs, batch_size, learning_rate, num_classes,
+                                                                  dataset_name, branch_name, loss_name)
+    dir_checkpoint = Path('./checkpoints/unified/{}'.format(p))
     if branch == 1:
         try:
             dataset = CarvanaDataset(dir_t2w, dir_mask, img_scale)
@@ -245,7 +253,7 @@ def get_args():
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
     parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
-    parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
+    parser.add_argument('--branch', type=int, default=3, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
@@ -288,7 +296,7 @@ if __name__ == '__main__':
     model.to(device=device)
 
     train_model(
-        model=model,
+        model_name=args.model,
         epochs=args.epochs,
         batch_size=args.batch_size,
         learning_rate=args.lr,
@@ -300,5 +308,16 @@ if __name__ == '__main__':
         seed=args.seed,
         aug=args.aug,
         opt=args.opt,
-        desc=args.desc
+        save_checkpoint=True,
+        save_interval=args.save_interval,
+        weight_decay=args.weight_decay,
+        momentum=args.momentum,
+        gradient_clipping=args.gradient_clipping,
+        desc=args.desc,
+        num_classes=args.classes,
+        dataset_name=args.dataset_name,
+        branch_name=args.branch_name,
+        loss_name=args.loss_f,
+        task=args.task,
+        log=args.log
     )
