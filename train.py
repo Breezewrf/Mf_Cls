@@ -32,10 +32,18 @@ from msf_cls.msfusion import MSFusionNet
 import random
 import os
 
+<<<<<<< HEAD
 dir_t2w = 'data/ProstateX/T2W_images'
 dir_adc = 'data/ProstateX/ADC_images'
 dir_dwi = 'data/ProstateX/DWI_images'
 dir_mask = 'data/ProstateX/labeled_GT_colored'
+=======
+dir_t2w = './data/ProstateX/T2W_images/'
+dir_adc = './data/ProstateX/ADC_images/'
+dir_img = './data/ProstateX/T2W_images/'
+dir_mask = './data/ProstateX/labeled_GT_colored'
+dir_checkpoint = Path('./checkpoints/')
+>>>>>>> eb72c49a3d11a3f74e4981b6de00775f57a04b4d
 os.environ["WANDB_MODE"] = "offline"
 kf = KFold(n_splits=5, shuffle=True, random_state=57749867)
 focalLoss = FocalLoss(alpha=1, gamma=2)
@@ -68,6 +76,7 @@ def train_model(
         task,
         log
 ):
+<<<<<<< HEAD
     assert task in ['seg', 'cls', 'unified'], "{} is not a legal mode,please select a proper task in args".format(
         args.task)
     p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}".format(epochs, batch_size, learning_rate, num_classes,
@@ -88,6 +97,21 @@ def train_model(
                                            generator=torch.Generator().manual_seed(seed))
     # n_val = int(len(dataset) * val_percent)
     # n_train = len(dataset) - n_val
+=======
+    # 1. Create dataset
+    dataset = None
+    if branch == 1:
+        try:
+            dataset = CarvanaDataset(dir_img, dir_mask, img_scale)
+        except (AssertionError, RuntimeError):
+            dataset = BasicDataset(dir_img, dir_mask, img_scale)
+    elif branch == 2:
+        dataset = MSFDataset(dir_t2w, dir_adc, dir_mask, img_scale, aug=aug, ProstateX=True)
+    # 2. Split into train / validation partitions
+    assert dataset is not None, f'the branch number is not set correctly: {branch}'
+    n_val = int(len(dataset) * val_percent)
+    n_train = len(dataset) - n_val
+>>>>>>> eb72c49a3d11a3f74e4981b6de00775f57a04b4d
 
     # (1) Set `os env`
     os.environ['PYTHONHASHSEED'] = str(seed)

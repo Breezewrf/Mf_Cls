@@ -238,6 +238,11 @@ class MSFusionNet(nn.Module):
         self.encoder4 = MSFusionBlock(kernel_num << 3, kernel_num << 4, input_c, kernel_size=3, padding=1,
                                       normalization=normalization, leaky_relu=leaky_relu)
         self.pooling = nn.MaxPool2d(2)
+<<<<<<< HEAD
+=======
+        if self.task == 'cls':
+            self.cls_head = cls_head(input_c, kernel_num, output_c)
+>>>>>>> eb72c49a3d11a3f74e4981b6de00775f57a04b4d
         kernel_num <<= 4
 
         self.decoder1 = nn.ModuleList([
@@ -283,8 +288,9 @@ class MSFusionNet(nn.Module):
     def forward(self, x: torch.Tensor):
         # The input should follow the format of BCHW
         # print("shape:", x.shape)
-        if x.shape[1] == 3:
-            assert self.task == 'cls', "image channel should not be 3 when 'task' parameter is {}".format(self.task)
+        if x.shape[2] == 3:
+            assert self.task == 'cls', "image channel should not be 3 when 'task' parameter is {}" \
+                                       "with shape: {}".format(self.task, x.shape)
             x = x.transpose(0, 1)[0:2].unsqueeze(dim=2)
         input_device = 'cuda:%s' % x.get_device() if x.is_cuda else 'cpu'
 

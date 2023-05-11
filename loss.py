@@ -62,6 +62,8 @@ class FocalLoss(torch.nn.Module):
 
 def unet_loss(model, masks_pred, true_masks):
     criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
+    if true_masks.shape[0] != 1:
+        true_masks = true_masks.unsqueeze(0)
     if model.n_classes == 1:
         loss = criterion(masks_pred.squeeze(1), true_masks.float())
         loss += dice_loss(F.sigmoid(masks_pred.squeeze(1)), true_masks.float(), multiclass=False)
