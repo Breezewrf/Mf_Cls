@@ -24,7 +24,7 @@ def get_train_args():
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
     parser.add_argument('--model', type=str, default='msf', help='choose model from: unet, unetpp, msfunet, mfcls')
-    parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
+    parser.add_argument('--branch', type=int, default=3, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
