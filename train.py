@@ -225,7 +225,8 @@ def train_model(
                 state_dict = model.state_dict()
                 torch.save(state_dict, str(dir_checkpoint / 'checkpoint_epoch{}.pth'.format(epoch)))
                 logging.info(f'Checkpoint {epoch} saved!')
-                wandb.log({"test_acc": test_acc})
+                if log:
+                    wandb.log({"test_acc": test_acc})
                 if test_acc > best_acc:
                     best_acc = test_acc
                     best_epoch = epoch
