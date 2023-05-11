@@ -251,7 +251,7 @@ if __name__ == '__main__':
     # Change here to adapt to your data
     # n_channels=3 for RGB images
     # n_classes is the number of probabilities you want to get per pixel
-    assert (args.branch == 1 and args.model != 'msf') or (args.branch == 2 and args.model == 'msf')
+    assert (args.branch == 1 and args.model != 'msf') or (args.branch in [2, 3] and args.model == 'msf')
     if args.model == 'unet':
         model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
     elif args.model == 'unetpp':

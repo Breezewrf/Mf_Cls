@@ -62,7 +62,7 @@ def train_model(
             dataset = CarvanaDataset(dir_t2w, dir_mask, img_scale)
         except (AssertionError, RuntimeError):
             dataset = BasicDataset(dir_t2w, dir_mask, img_scale)
-    elif branch == 2:
+    elif branch in [2, 3]:
         dataset = MSFDataset(T2W_images_dir=dir_t2w, ADC_images_dir=dir_adc, DWI_images_dir=dir_t2w, mask_dir=dir_mask,
                              scale=img_scale, aug=aug, ProstateX=True)
     # 2. Split into train / validation partitions
