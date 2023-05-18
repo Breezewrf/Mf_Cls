@@ -258,7 +258,7 @@ if __name__ == '__main__':
     elif args.model == 'unetpp':
         model = Nested_UNet(in_ch=1, out_ch=args.classes)
     elif args.model == 'msf':
-        model = MSFusionNet(input_c=2, output_c=args.classes, task=args.task)
+        model = MSFusionNet(input_c=args.branch, output_c=args.classes, task=args.task)
     model = model.to(device)
 
     logging.info(f'Network:\n'
