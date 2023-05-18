@@ -61,7 +61,7 @@ def test():
         except (AssertionError, RuntimeError):
             dataset = BasicDataset(dir_t2w, dir_mask, args.scale)
     elif args.branch in [2, 3]:
-        dataset = MSFDataset(T2W_images_dir=dir_t2w, ADC_images_dir=dir_adc, DWI_images_dir=dir_t2w, mask_dir=dir_mask,
+        dataset = MSFDataset(T2W_images_dir=dir_t2w, ADC_images_dir=dir_adc, DWI_images_dir=dir_dwi, mask_dir=dir_mask,
                              scale=args.scale, aug=args.aug, ProstateX=True)
     # 2. Split into train / validation partitions
     assert dataset is not None, f'the branch number is not set correctly: {args.branch}'
