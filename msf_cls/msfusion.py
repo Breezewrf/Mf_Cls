@@ -191,9 +191,46 @@ class MSFusionBlock(nn.Module):
         return output
 
 
+class TransposeConvModule(nn.Module):
+
+    def __init__(self, input_shape):
+        super(TransposeConvModule, self).__init__()
+        if input_shape[0] == 32:
+            self.conv = nn.Sequential(
+                nn.ConvTranspose2d(in_channels=2, out_channels=2, kernel_size=4, stride=2, padding=1),
+                nn.BatchNorm2d(2),
+                nn.ReLU(inplace=True),
+                nn.ConvTranspose2d(in_channels=2, out_channels=2, kernel_size=4, stride=2, padding=1),
+                nn.BatchNorm2d(2),
+                nn.ReLU(inplace=True),
+                nn.ConvTranspose2d(in_channels=2, out_channels=2, kernel_size=4, stride=2, padding=1),
+                nn.BatchNorm2d(2),
+                nn.ReLU(inplace=True),
+            )
+        elif input_shape[0] == 64:
+            self.conv = nn.Sequential(
+                nn.ConvTranspose2d(in_channels=2, out_channels=2, kernel_size=4, stride=2, padding=1),
+                nn.BatchNorm2d(2),
+                nn.ReLU(inplace=True),
+                nn.ConvTranspose2d(in_channels=2, out_channels=2, kernel_size=4, stride=2, padding=1),
+                nn.BatchNorm2d(2),
+                nn.ReLU(inplace=True),
+            )
+        else:
+            self.conv = nn.Sequential(
+                nn.ConvTranspose2d(in_channels=2, out_channels=2, kernel_size=4, stride=2, padding=1),
+                nn.BatchNorm2d(2),
+                nn.ReLU(inplace=True),
+            )
+
+    def forward(self, x):
+        x = self.conv(x)
+        return x
+
+
 class MSFusionNet(nn.Module):
     def __init__(self, input_c, output_c, kernel_num=64, normalization=0, leaky_relu=False,
-                 bayesian=False, p=0.2, task='seg', **kwargs):
+                 bayesian=False, p=0.2, task='seg', deep=False, **kwargs):
         """
         Update on 12/04/2021:
         MSFusionNet for prostate cancer segmentation.
@@ -224,6 +261,7 @@ class MSFusionNet(nn.Module):
         self.n_classes = output_c
         self.bilinear = True
         self.task = task
+        self.deep = deep
         assert task in ['seg', 'cls']
         print("specified for {}".format("segmentation" if task == 'seg' else "classification"))
         # pooling is performed between stages manually to make decoding process easier.
@@ -258,15 +296,48 @@ class MSFusionNet(nn.Module):
                normalization=normalization, leaky_relu=leaky_relu) for _ in range(input_c)
         ])
         kernel_num >>= 4
+        if deep:
+            self.branch_out1 = nn.ModuleList([nn.Sequential(
+                OrderedDict([
+                    ('branch_out_1', nn.Conv2d(512, output_c, kernel_size=3, stride=1, padding=1)),
+                    ('branch_out_2', obtain_normalization(choice=normalization, channels=output_c, groups=output_c)),
+                    ('branch_out_3', non_linear(inplace=True))
+                ])
+            ) for _ in range(input_c)])
+            self.branch_out2 = nn.ModuleList([nn.Sequential(
+                OrderedDict([
+                    ('branch_out_1', nn.Conv2d(256, output_c, kernel_size=3, stride=1, padding=1)),
+                    ('branch_out_2', obtain_normalization(choice=normalization, channels=output_c, groups=output_c)),
+                    ('branch_out_3', non_linear(inplace=True))
+                ])
+            ) for _ in range(input_c)])
+            self.branch_out3 = nn.ModuleList([nn.Sequential(
+                OrderedDict([
+                    ('branch_out_1', nn.Conv2d(128, output_c, kernel_size=3, stride=1, padding=1)),
+                    ('branch_out_2', obtain_normalization(choice=normalization, channels=output_c, groups=output_c)),
+                    ('branch_out_3', non_linear(inplace=True))
+                ])
+            ) for _ in range(input_c)])
+            self.branch_out4 = nn.ModuleList([nn.Sequential(
+                OrderedDict([
+                    ('branch_out_1', nn.Conv2d(64, output_c, kernel_size=3, stride=1, padding=1)),
+                    ('branch_out_2', obtain_normalization(choice=normalization, channels=output_c, groups=output_c)),
+                    ('branch_out_3', non_linear(inplace=True))
+                ])
+            ) for _ in range(input_c)])
+            self.scale_out1 = TransposeConvModule((32, 32))
+            self.scale_out2 = TransposeConvModule((64, 64))
+            self.scale_out3 = TransposeConvModule((128, 128))
+            # self.scale_out4
 
-        self.branch_out = nn.ModuleList([nn.Sequential(
-            OrderedDict([
-                ('branch_out_1', nn.Conv2d(kernel_num, output_c, kernel_size=3, stride=1, padding=1)),
-                ('branch_out_2', obtain_normalization(choice=normalization, channels=output_c, groups=output_c)),
-                ('branch_out_3', non_linear(inplace=True))
-            ])
-        ) for _ in range(input_c)])
-
+        else:
+            self.branch_out = nn.ModuleList([nn.Sequential(
+                OrderedDict([
+                    ('branch_out_1', nn.Conv2d(64, output_c, kernel_size=3, stride=1, padding=1)),
+                    ('branch_out_2', obtain_normalization(choice=normalization, channels=output_c, groups=output_c)),
+                    ('branch_out_3', non_linear(inplace=True))
+                ])
+            ) for _ in range(input_c)])
         self.merge_out = OutConv(output_c * input_c, output_c)
         # self.bn1 = obtain_normalization(choice=normalization, channels=kernel_num >> 1, groups=output_c)
         # self.bn2 = obtain_normalization(choice=normalization, channels=kernel_num >> 2, groups=output_c)
@@ -312,12 +383,46 @@ class MSFusionNet(nn.Module):
                                       dim=0)
             feat_decoded4 = torch.cat([feat_decoded4, self.decoder4[i](feat_decoded3[-1], x_inc[i]).unsqueeze(0)],
                                       dim=0)
+        if self.deep:
+            logits1 = torch.tensor([], device=input_device)
+            logits2 = torch.tensor([], device=input_device)
+            logits3 = torch.tensor([], device=input_device)
+            logits4 = torch.tensor([], device=input_device)
+            # print("shape of decoder1:{}".format(feat_decoded1.shape))
+            # print("shape of decoder2:{}".format(feat_decoded2.shape))
+            # print("shape of decoder3:{}".format(feat_decoded3.shape))
+            # print("shape of decoder4:{}".format(feat_decoded4.shape))
+            for i in range(x.shape[0]):
+                branch_out1 = self.branch_out1[i](self.drop(feat_decoded1[i]) if self.bayesian else feat_decoded1[i])
+                # print("shape of branch_out:{}".format(branch_out1.shape))
+                logits1 = torch.cat([logits1, branch_out1], dim=1)
+                branch_out2 = self.branch_out2[i](self.drop(feat_decoded2[i]) if self.bayesian else feat_decoded2[i])
+                # print("shape of branch_out:{}".format(branch_out2.shape))
+                logits2 = torch.cat([logits2, branch_out2], dim=1)
+                branch_out3 = self.branch_out3[i](self.drop(feat_decoded3[i]) if self.bayesian else feat_decoded3[i])
+                # print("shape of branch_out:{}".format(branch_out3.shape))
+                logits3 = torch.cat([logits3, branch_out3], dim=1)
+                branch_out4 = self.branch_out4[i](self.drop(feat_decoded4[i]) if self.bayesian else feat_decoded4[i])
+                # print("shape of branch_out:{}".format(branch_out4.shape))
+                logits4 = torch.cat([logits4, branch_out4], dim=1)
 
-        logits = torch.tensor([], device=input_device)
+            logits1 = self.scale_out1(self.merge_out(logits1))  # [1, 2, 32, 32]
+            logits2 = self.scale_out2(self.merge_out(logits2))  # [1, 2, 64, 64]
+            logits3 = self.scale_out3(self.merge_out(logits3))  # [1, 2, 128, 128]
+            logits4 = self.merge_out(logits4)  # [1, 2, 256, 256]
+            logits1 = logits1.to(input_device)
+            logits2 = logits2.to(input_device)
+            logits3 = logits3.to(input_device)
+            logits4 = logits4.to(input_device)
+            logits_fuse = torch.sum(torch.stack((logits1, logits2, logits3, logits4), dim=1), dim=1)
+            # print(logits1.shape, logits2.shape, logits3.shape, logits4.shape, logits_fuse.shape)
+            return logits1, logits2, logits3, logits4, logits_fuse
+        else:
+            logits = torch.tensor([], device=input_device)
 
-        for i in range(x.shape[0]):
-            branch_out = self.branch_out[i](self.drop(feat_decoded4[i]) if self.bayesian else feat_decoded4[i])
-            logits = torch.cat([logits, branch_out], dim=1)
-        logits = self.merge_out(logits)
-        logits = logits.to(input_device)
-        return logits
+            for i in range(x.shape[0]):
+                branch_out = self.branch_out[i](self.drop(feat_decoded4[i]) if self.bayesian else feat_decoded4[i])
+                logits = torch.cat([logits, branch_out], dim=1)
+            logits = self.merge_out(logits)
+            logits = logits.to(input_device)
+            return logits

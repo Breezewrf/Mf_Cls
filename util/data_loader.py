@@ -167,5 +167,6 @@ class MSFDataset(Dataset):
                 'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
                 'dwi_image': torch.as_tensor(dwi_img.copy()).float().contiguous(),
                 'mask': torch.as_tensor(mask.copy()).long().contiguous(),
-                'GGG': GGG
+                'GGG': GGG,
+                'name': [str(mask_file[0])]
             }

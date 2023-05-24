@@ -71,18 +71,18 @@ def get_args():
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-5,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str,
-                        default='./checkpoints/classification/checkpoint_epoch100.pth',
+                        default='/media/breeze/dev/Mf_Cls/checkpoints/classification/epochs[100]-bs[4]-lr[3e-05]-c2-ds[prostatex]-modal[adc]-focal/best_epoch100.pth',
                         help='Load model from a .pth file')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Downscaling factor of the images')
     parser.add_argument('--validation', '-v', dest='val', type=float, default=10.0,
                         help='Percent of the data that is used as validation (0-100)')
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
-    parser.add_argument('--classes', '-c', type=int, default=4, help='Number of classes')
+    parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
     parser.add_argument('--model', type=str, default='resnet18',
                         help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg16, convnext, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
-    parser.add_argument('--branch_name', type=str, default='pre_fuse')
+    parser.add_argument('--branch_name', type=str, default='adc')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
@@ -98,14 +98,14 @@ from util.data_loading import Cls_ProstateX_Dataset
 if __name__ == '__main__':
     args = get_args()
     seed = args.seed
-    dataset = Cls_ProstateX_Dataset(num_classes=args.classes, branch_name=args.branch_name, test_mode=True)
+    dataset = Cls_ProstateX_Dataset(label_dir="/media/breeze/dev/Mf_Cls/data/ProstateX/predict_mask_deep/", num_classes=args.classes, branch_name=args.branch_name, test_mode=True)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test
     train_val_set, test_set = random_split(dataset, [n_train_val, n_test],
                                            generator=torch.Generator().manual_seed(seed))
     loader_args = dict(batch_size=args.batch_size, num_workers=os.cpu_count(), pin_memory=True)
-    test_loader = DataLoader(test_set, shuffle=False, **loader_args)
+    test_loader = DataLoader(dataset, shuffle=False, **loader_args)
     assert args.load is not None
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model_list = {'resnet18': Resnet_18(num_classes=args.classes),

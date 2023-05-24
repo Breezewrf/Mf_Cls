@@ -7,17 +7,24 @@ from loss import lw_loss
 import numpy as np
 import wandb
 # wandb.init("experiments test")
+from PIL import Image
 
 
-def visualize_images(t2w_img, mask_true, mask_pred, name):
+def visualize_images(t2w_img, mask_true, mask_pred, name, img_name):
     # Convert images and masks to numpy arrays
     t2w_img = t2w_img.cpu().numpy().squeeze()
     mask_true = wandb.Image(mask_true.float().cpu())
-    mask_pred = wandb.Image(mask_pred.argmax(dim=1)[0].float().cpu())
+    # mask_pred = wandb.Image(mask_pred.argmax(dim=1)[0].float().cpu())
     t2w_img = (t2w_img * 255).astype(np.uint8)
 
     t2w_img = np.stack((t2w_img,) * 3, axis=-1)
-
+    print((img_name[0][0].replace('png', 'jpg')).split('/')[-1])
+    path = "/media/breeze/dev/Mf_Cls/data/ProstateX/predict_mask/" + img_name[0][0].split('/')[-1]
+    print(mask_pred.argmax(dim=1)[0].shape)
+    mask_pred_pil = Image.fromarray(np.array(mask_pred.argmax(dim=1)[0].float().cpu())*255)
+    mask_pred_pil = mask_pred_pil.convert("L")
+    # mask_pred_pil = mask_pred_pil.resize((384, 384))
+    mask_pred_pil.save(fp=path)
     # Visualize the images and masks
     # wandb.log({
     #     f"t2w_image": wandb.Image(t2w_img),
@@ -27,7 +34,7 @@ def visualize_images(t2w_img, mask_true, mask_pred, name):
 
 
 @torch.inference_mode()
-def evaluate(net, dataloader, device, amp, num_branch):
+def evaluate(net, dataloader, device, amp, num_branch, deep):
     net.eval()
     num_val_batches = len(dataloader)
     dice_score = 0
@@ -58,11 +65,14 @@ def evaluate(net, dataloader, device, amp, num_branch):
             mask_true = mask_true.to(device=device, dtype=torch.long)
 
             # predict the mask
-            mask_pred = net(image)
+            if deep:
+                _, _, _, _, mask_pred = net(image)
+            else:
+                mask_pred = net(image)
             if net.name == 'unetpp':
                 mask_pred = mask_pred[0]
             if net.name == 'msf':
-                visualize_images(t2w_img, mask_true, mask_pred, net.name)
+                visualize_images(t2w_img, mask_true, mask_pred, net.name, batch['name'])
             else:
                 visualize_images(image, mask_true, mask_pred, net.name)
             if net.n_classes == 1:

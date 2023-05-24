@@ -85,7 +85,7 @@ def test():
     test_loader = DataLoader(test_set, shuffle=False, **loader_args)
 
     # Evaluation round
-    val_score = evaluate(model, test_loader, device, args.amp, num_branch=args.branch)
+    val_score = evaluate(model, test_loader, device, args.amp, num_branch=args.branch, deep=args.deep)
     logging.info('Test Dice score: {}'.format(val_score))
 
 

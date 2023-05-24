@@ -189,15 +189,18 @@ def train_model(
                     grade = grade.to(device=device, dtype=torch.float32)
                     model.train()
                     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
-                        pred = model(images)
-                        # print("pred: ", pred.shape)
-                        # print("pred: ", pred)
-                        # print("res: ", res)
-                        # loss = lw_loss(pred, grade)
-                        assert loss_name in ['focal'], "loss specification error"
-                        if loss_name == 'focal':
-                            loss = focalLoss(pred, true_mask)
-
+                        if args.deep:
+                            pred1, pred2, pred3, pred4, pred_fuse = model(images)
+                            assert loss_name in ['focal'], "loss specification error"
+                            if loss_name == 'focal':
+                                loss = focalLoss(pred1, true_mask) + focalLoss(pred2, true_mask) \
+                                       + focalLoss(pred3, true_mask) + focalLoss(pred4, true_mask) \
+                                       + focalLoss(pred_fuse, true_mask)
+                        else:
+                            assert loss_name in ['focal'], "loss specification error"
+                            pred = model(images)
+                            if loss_name == 'focal':
+                                loss = focalLoss(pred)
                     optimizer.zero_grad(set_to_none=True)
                     grad_scaler.scale(loss).backward()
                     torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
@@ -212,14 +215,14 @@ def train_model(
                     division_step = (n_train // (5 * batch_size))
                     if division_step > 0:
                         if global_step % division_step == 0:
-                            score = evaluate(model, val_loader, device, amp, num_branch=args.branch)
+                            score = evaluate(model, val_loader, device, amp, num_branch=args.branch, deep=args.deep)
                             scheduler.step(score)
                             logging.info('Score: {}'.format(score))
                             if log:
                                 wandb.log({'score': score})
             if save_checkpoint and epoch % save_interval == 0:
                 # test:
-                test_acc = evaluate(model, test_lodaer, device, amp, num_branch=args.branch)
+                test_acc = evaluate(model, test_lodaer, device, amp, num_branch=args.branch, deep=args.deep)
                 print("test_score:{}".format(test_acc))
                 Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
                 state_dict = model.state_dict()
