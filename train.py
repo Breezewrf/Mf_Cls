@@ -70,7 +70,7 @@ def train_model(
 ):
     assert task in ['seg', 'cls', 'unified'], "{} is not a legal mode,please select a proper task in args".format(
         args.task)
-    p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}".format(epochs, batch_size, learning_rate, num_classes,
+    p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}-deep-sigmoid".format(epochs, batch_size, learning_rate, num_classes,
                                                                   dataset_name, branch_name, loss_name)
     dir_checkpoint = Path('./checkpoints/unified/{}'.format(p))
     best_model_path = 'best.pth'
@@ -110,7 +110,7 @@ def train_model(
             print("Empirical fold=3 gets best performance")
             continue
         logging.info(f'Using device {device}')
-        model = MSFusionNet(3, 2, task=args.task)
+        model = MSFusionNet(3, 2, task=args.task, deep=args.deep)
         model = model.to(device)
         if args.load is not None:
             # Create a new dictionary with the desired parameters

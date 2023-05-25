@@ -37,7 +37,7 @@ def test():
     elif args.model == 'unetpp':
         model = Nested_UNet(in_ch=1, out_ch=args.classes)
     elif args.model == 'msf':
-        model = MSFusionNet(input_c=args.branch, output_c=args.classes)
+        model = MSFusionNet(input_c=args.branch, output_c=args.classes, deep=args.deep)
     model = model.to(device)
 
     logging.info(f'Network:\n'

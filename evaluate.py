@@ -71,10 +71,10 @@ def evaluate(net, dataloader, device, amp, num_branch, deep):
                 mask_pred = net(image)
             if net.name == 'unetpp':
                 mask_pred = mask_pred[0]
-            if net.name == 'msf':
-                visualize_images(t2w_img, mask_true, mask_pred, net.name, batch['name'])
-            else:
-                visualize_images(image, mask_true, mask_pred, net.name)
+            # if net.name == 'msf':
+            #     visualize_images(t2w_img, mask_true, mask_pred, net.name, batch['name'])
+            # else:
+            #     visualize_images(image, mask_true, mask_pred, net.name)
             if net.n_classes == 1:
                 assert mask_true.min() >= 0 and mask_true.max() <= 1, 'True mask indices should be in [0, 1]'
                 mask_pred = (F.sigmoid(mask_pred) > 0.5).float()

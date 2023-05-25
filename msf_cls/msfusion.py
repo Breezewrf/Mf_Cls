@@ -7,7 +7,7 @@ import torch
 
 import torch.nn as nn
 import torch.nn.functional as F
-
+from torch import sigmoid
 from collections import OrderedDict
 
 
@@ -416,7 +416,7 @@ class MSFusionNet(nn.Module):
             logits4 = logits4.to(input_device)
             logits_fuse = torch.sum(torch.stack((logits1, logits2, logits3, logits4), dim=1), dim=1)
             # print(logits1.shape, logits2.shape, logits3.shape, logits4.shape, logits_fuse.shape)
-            return logits1, logits2, logits3, logits4, logits_fuse
+            return sigmoid(logits1), sigmoid(logits2), sigmoid(logits3), sigmoid(logits4), sigmoid(logits_fuse)
         else:
             logits = torch.tensor([], device=input_device)
 
