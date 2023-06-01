@@ -29,12 +29,12 @@ def _iou(org, bbox1, bbox2, size_average=True):
 class Slice():
     def __init__(self, path: str = '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_37_4.png', modal='t2w'):
         self.path = path  # labeled_GT_colored images
-        self.t2w_path = path.replace("predict_mask_deep", "T2W_images").replace("png", "jpg")
-        self.adc_path = path.replace("predict_mask_deep", "ADC_images").replace("png", "jpg")
-        self.dwi_path = path.replace("predict_mask_deep", "DWI_images").replace("png", "jpg")
-        # self.t2w_path = path.replace("labeled_GT_colored", "T2W_images").replace("png", "jpg")
-        # self.adc_path = path.replace("labeled_GT_colored", "ADC_images").replace("png", "jpg")
-        # self.dwi_path = path.replace("labeled_GT_colored", "DWI_images").replace("png", "jpg")
+        # self.t2w_path = path.replace("predict_mask_deep", "T2W_images").replace("png", "jpg")
+        # self.adc_path = path.replace("predict_mask_deep", "ADC_images").replace("png", "jpg")
+        # self.dwi_path = path.replace("predict_mask_deep", "DWI_images").replace("png", "jpg")
+        self.t2w_path = path.replace("labeled_GT_colored", "T2W_images").replace("png", "jpg")
+        self.adc_path = path.replace("labeled_GT_colored", "ADC_images").replace("png", "jpg")
+        self.dwi_path = path.replace("labeled_GT_colored", "DWI_images").replace("png", "jpg")
         if 'ProstateX' in path:
             self.t2w_path = '-'.join(self.t2w_path.split('.')[0].split('-')[:-1]) + '.jpg'
             self.adc_path = '-'.join(self.adc_path.split('.')[0].split('-')[:-1]) + '.jpg'

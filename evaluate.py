@@ -101,12 +101,14 @@ def evaluate_cls(net, dataloader, device, amp, model_name, batch_size):
     # iterate over the validation set
     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
         for batch in tqdm(dataloader, total=num_val_batches, desc='Validation round', unit='batch', leave=False):
-            image, grade = batch[0], batch[1]
+            t2w_img, adc_img, dwi_img, grade = batch
 
             # move images and labels to correct device and type
-            image = image.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+            t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+            adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+            dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
             grade = grade.to(device=device, dtype=torch.long)
-
+            image = torch.stack((t2w_img, adc_img, dwi_img))
             # predict
             # softmax = torch.nn.Softmax(dim=1)
             # pred = softmax(net(image)).argmax(dim=1)

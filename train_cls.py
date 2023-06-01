@@ -8,6 +8,7 @@ import torch
 from msf_cls.backbone.resnet import resnet34, resnet18, resnet50, resnet101
 from msf_cls.backbone.convnext import ConvNeXt
 from msf_cls.backbone.vgg import Vgg_16
+from msf_cls.ResMSF import ResMSFNet
 from util.data_loading import Cls_Dataset, Cls_ProstateX_Dataset
 import os
 import random
@@ -21,7 +22,7 @@ from pathlib import Path
 import wandb
 from sklearn.model_selection import KFold
 from test_cls import test_cls
-
+from util.data_loader import MSFClassifyDataset
 os.environ["WANDB_MODE"] = "offline"
 from loss import lw_loss
 from msf_cls.backbone.pretrained import Resnet_18, VGG16
@@ -68,7 +69,7 @@ def train_model(
         run = wandb.init(project='classification', config=config)
 
     # 1. create dataset
-    dataset = Cls_ProstateX_Dataset(num_classes=num_classes, branch_name=branch_name)
+    dataset = MSFClassifyDataset(num_classes=num_classes, branch_num=3)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test
@@ -99,7 +100,8 @@ def train_model(
             continue
         model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(),
                       'resnet101': resnet101(), 'msfusion': MSFusionNet(input_c=2, output_c=args.classes, task=task),
-                      'vgg16': VGG16(), 'convnext': ConvNeXt()}
+                      'vgg16': VGG16(), 'convnext': ConvNeXt(),
+                      'resmsf': ResMSFNet(in_c=3, out_c=2, num_branch=args.branch)}
         logging.info(f'Using device {device}')
         assert model_name in model_list
         model = model_list[model_name]
@@ -107,21 +109,12 @@ def train_model(
         if args.load is not None:
             # Create a new dictionary with the desired parameters
             new_state_dict = OrderedDict()
-            state_dict_seg = torch.load(args.load)
-            for key in state_dict_seg:
-                if 'encode' in key or 'inc' in key:
-                    new_state_dict[key] = state_dict_seg[key]
-            model.load_state_dict(new_state_dict, strict=False)
-            for param in model.inc.parameters():
-                param.requires_grad = False
-            for param in model.encoder1.parameters():
-                param.requires_grad = False
-            for param in model.encoder2.parameters():
-                param.requires_grad = False
-            for param in model.encoder3.parameters():
-                param.requires_grad = False
-            for param in model.encoder4.parameters():
-                param.requires_grad = False
+            if args.load:
+                state_dict_seg = torch.load(args.load)
+                for key in state_dict_seg:
+                    if 'encode' in key or 'inc' in key:
+                        new_state_dict[key] = state_dict_seg[key]
+                model.load_state_dict(new_state_dict, strict=False)
 
         train_set = torch.utils.data.Subset(dataset, train_idx)
         val_set = torch.utils.data.Subset(dataset, val_idx)
@@ -129,7 +122,7 @@ def train_model(
         # re-weight
         class_weight = np.zeros(num_classes)
         train_labels = []
-        for im, label in train_set:
+        for im, _, _, label in train_set:
             l, t = np.unique(label, return_counts=True)
             class_weight[l] += t
             train_labels.append(label)
@@ -143,7 +136,7 @@ def train_model(
         test_lodaer = DataLoader(test_set, shuffle=False, **loader_args)
         # exp_weight = [1, 0, 0, 0]
         class_weight = np.zeros(num_classes)
-        for im, label in train_loader:
+        for im, _, _, label in train_loader:
             l, t = np.unique(label, return_counts=True)
             class_weight[l] += t
         logging.info("class weight after re_weight: {}".format(class_weight))
@@ -160,8 +153,13 @@ def train_model(
             model.train()
             epoch_loss = 0
             with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
-                for img, grade in train_loader:
-                    img = img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                for t2w_img, adc_img, dwi_img, grade in train_loader:
+
+                    t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+
+                    img = torch.stack((t2w_img, adc_img, dwi_img))
                     grade = grade.to(device=device, dtype=torch.float32)
                     model.train()
                     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
@@ -203,8 +201,9 @@ def train_model(
                                 wandb.log({'score': score})
             if save_checkpoint and epoch % save_interval == 0:
                 # test:
-                test_acc = test_cls(model, test_lodaer, device, args=args, amp=amp, model_name=args.model,
-                                    batch_size=batch_size, wandb=wandb)
+                test_acc = 0
+                # test_acc = test_cls(model, test_lodaer, device, args=args, amp=amp, model_name=args.model,
+                #                     batch_size=batch_size, wandb=wandb)
                 print("test_score:{}".format(test_acc))
                 Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
                 state_dict = model.state_dict()
@@ -229,8 +228,8 @@ def train_model(
 
 def get_args():
     parser = argparse.ArgumentParser(description='Train the Classification')
-    parser.add_argument('--epochs', '-e', metavar='E', type=int, default=100, help='Number of epochs')
-    parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=4, help='Batch size')
+    parser.add_argument('--epochs', '-e', metavar='E', type=int, default=300, help='Number of epochs')
+    parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=1, help='Batch size')
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-5,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str, default=False, help='Load model from a .pth file')
@@ -240,7 +239,7 @@ def get_args():
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
-    parser.add_argument('--model', type=str, default='msfusion',
+    parser.add_argument('--model', type=str, default='resmsf',
                         help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg16, convnext, mfcls')
     parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)

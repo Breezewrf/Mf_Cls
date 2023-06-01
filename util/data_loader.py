@@ -21,6 +21,7 @@ from glob import glob
 from util.rumour_crop import Slice
 from util.utils import imshow
 from util.data_loading import unique_mask_values, load_image
+from util.data_loading import load_cls_prostatex_label, enhance_cls
 
 
 def enhance_util(img1, img2, img3, gt):
@@ -170,3 +171,58 @@ class MSFDataset(Dataset):
                 'GGG': GGG,
                 'name': [str(mask_file[0])]
             }
+
+
+class MSFClassifyDataset(Dataset):
+    def __init__(self, label_dir: str = 'data/ProstateX/labeled_GT_colored/', num_classes=2, branch_num=3,
+                 test_mode=False):
+        self.t2w_lesions = []
+        self.adc_lesions = []
+        self.dwi_lesions = []
+        self.num_classes = num_classes
+        self.num_branch = branch_num
+        assert branch_num == 3
+        self.t2w_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='t2w')
+        self.adc_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='adc')
+        self.dwi_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='dwi')
+        self.labels = [l.grade for l in self.t2w_lesions]
+        trans = transforms.Compose([
+            transforms.ToPILImage(mode='RGB'),
+            transforms.RandomHorizontalFlip(),
+            transforms.GaussianBlur(1),
+            transforms.RandomRotation(15),
+            transforms.RandomVerticalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225]),
+        ])
+        trans_test = transforms.Compose([
+            transforms.ToPILImage(mode='RGB'),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225]),
+        ])
+        self.transform = trans if not test_mode else trans_test
+        assert len(self.labels) != 0, 'error dir:{}'.format(label_dir)
+
+    def __getitem__(self, idx):
+        if self.transform:
+            # todo implement in future
+            pass
+        im_t2w = self.t2w_lesions[idx].image_np
+        im_t2w = enhance_cls(self, im_t2w)
+        # im = torch.as_tensor(np.asarray(im).copy()).unsqueeze(dim=0)
+        im_t2w = torch.as_tensor(np.asarray(im_t2w).copy())
+
+        im_adc = self.adc_lesions[idx].image_np
+        im_adc = enhance_cls(self, im_adc)
+        im_adc = torch.as_tensor(np.asarray(im_adc).copy())
+
+        im_dwi = self.dwi_lesions[idx].image_np
+        im_dwi = enhance_cls(self, im_dwi)
+        im_dwi = torch.as_tensor(np.asarray(im_dwi).copy())
+
+        return im_t2w.float().contiguous(), im_adc.float().contiguous(), im_dwi.float().contiguous(), self.t2w_lesions[idx].grade
+
+    def __len__(self):
+        return len(self.adc_lesions)
