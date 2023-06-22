@@ -21,6 +21,10 @@ dir_t2w = 'data/ProstateX/T2W_images'
 dir_adc = 'data/ProstateX/ADC_images'
 dir_dwi = 'data/ProstateX/DWI_images'
 dir_mask = 'data/ProstateX/labeled_GT_colored'
+dir_t2w_cam = 'data/ProstateX/cam_t2w'
+dir_adc_cam = 'data/ProstateX/cam_adc'
+dir_dwi_cam = 'data/ProstateX/cam_dwi'
+dir_mask = 'data/ProstateX/labeled_GT_colored'
 
 
 def test():
@@ -28,26 +32,28 @@ def test():
     test_percent = 0.2
     seed = args.seed
     logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
     logging.info(f'Using device {device}')
     logging.info(f'testing:')
-    assert (args.branch == 1 and args.model != 'msf') or (args.branch in [2, 3] and args.model == 'msf')
+    assert (args.branch == 1 and args.model != 'msf') or (args.branch in [2, 3, 6] and args.model == 'msf')
     if args.model == 'unet':
         model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
     elif args.model == 'unetpp':
         model = Nested_UNet(in_ch=1, out_ch=args.classes)
     elif args.model == 'msf':
-        model = MSFusionNet(input_c=args.branch, output_c=args.classes, deep=args.deep)
+        model = MSFusionNet(input_c=args.branch, output_c=args.classes, deep=args.deep,
+                            channels=3 if args.branch == 6 else 1)
     model = model.to(device)
 
     logging.info(f'Network:\n'
                  f'\t{args.model} model\n'
+                 f'\t{args.branch} branches number\n'
                  f'\t{model.n_channels} input channels\n'
                  f'\t{model.n_classes} output channels (classes)\n'
                  f'\t{"Bilinear" if model.bilinear else "Transposed conv"} upscaling')
     if args.load:
         state_dict = torch.load(args.load, map_location=device)
-        if args.branch != 3:
+        if args.branch not in [3, 6]:
             del state_dict['mask_values']
         model.load_state_dict(state_dict)
         logging.info(f'Model loaded from {args.load}')
@@ -60,9 +66,14 @@ def test():
             dataset = CarvanaDataset(dir_t2w, dir_mask, args.scale)
         except (AssertionError, RuntimeError):
             dataset = BasicDataset(dir_t2w, dir_mask, args.scale)
-    elif args.branch in [2, 3]:
-        dataset = MSFDataset(T2W_images_dir=dir_t2w, ADC_images_dir=dir_adc, DWI_images_dir=dir_dwi, mask_dir=dir_mask,
-                             scale=args.scale, aug=args.aug, ProstateX=True)
+    elif args.branch in [2, 3, 6]:
+        if args.branch != 6:
+            dataset = MSFDataset(T2W_images_dir=dir_t2w, ADC_images_dir=dir_adc, DWI_images_dir=dir_dwi,
+                                 mask_dir=dir_mask,
+                                 scale=args.scale, aug=args.aug, ProstateX=True)
+        else:
+            dataset = MSFDataset(dir_t2w, dir_adc, dir_dwi, dir_mask, dir_t2w_cam, dir_adc_cam, dir_dwi_cam,
+                                 num_classes=2, use_cam=True)
     # 2. Split into train / validation partitions
     assert dataset is not None, f'the branch number is not set correctly: {args.branch}'
     n_test = int(len(dataset) * test_percent)

@@ -230,7 +230,7 @@ class TransposeConvModule(nn.Module):
 
 class MSFusionNet(nn.Module):
     def __init__(self, input_c, output_c, kernel_num=64, normalization=0, leaky_relu=False,
-                 bayesian=False, p=0.2, task='seg', deep=False, **kwargs):
+                 bayesian=False, p=0.2, task='seg', deep=False, channels=3, **kwargs):
         """
         Update on 12/04/2021:
         MSFusionNet for prostate cancer segmentation.
@@ -257,7 +257,7 @@ class MSFusionNet(nn.Module):
         Some name problem with the input channel, it seems the parameter input_c denotes the branch number actually
         Here I set n_channels equals to 1 manually.
         """
-        self.n_channels = 1
+        self.n_channels = channels
         self.n_classes = output_c
         self.bilinear = True
         self.task = task
@@ -265,7 +265,7 @@ class MSFusionNet(nn.Module):
         assert task in ['seg', 'cls']
         print("specified for {}".format("segmentation" if task == 'seg' else "classification"))
         # pooling is performed between stages manually to make decoding process easier.
-        self.inc = MSFusionBlock(1, kernel_num, input_c, kernel_size=3, padding=1,
+        self.inc = MSFusionBlock(self.n_channels, kernel_num, input_c, kernel_size=3, padding=1,
                                  normalization=normalization, leaky_relu=leaky_relu)
         self.encoder1 = MSFusionBlock(kernel_num, kernel_num << 1, input_c, kernel_size=3, padding=1,
                                       normalization=normalization, leaky_relu=leaky_relu)

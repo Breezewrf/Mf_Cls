@@ -27,14 +27,24 @@ def _iou(org, bbox1, bbox2, size_average=True):
 
 
 class Slice():
-    def __init__(self, path: str = '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_37_4.png', modal='t2w'):
+    def __init__(self, path: str = '/media/breeze/dev/Mf_Cls/data/labeled_GT_colored/Lesion_37_4.png', modal='t2w',
+                 data_source=None, mode=None):
         self.path = path  # labeled_GT_colored images
-        # self.t2w_path = path.replace("predict_mask_deep", "T2W_images").replace("png", "jpg")
-        # self.adc_path = path.replace("predict_mask_deep", "ADC_images").replace("png", "jpg")
-        # self.dwi_path = path.replace("predict_mask_deep", "DWI_images").replace("png", "jpg")
-        self.t2w_path = path.replace("labeled_GT_colored", "T2W_images").replace("png", "jpg")
-        self.adc_path = path.replace("labeled_GT_colored", "ADC_images").replace("png", "jpg")
-        self.dwi_path = path.replace("labeled_GT_colored", "DWI_images").replace("png", "jpg")
+        self.mode = mode
+        assert data_source in ['labeled_GT_colored', 'predict_mask_deep', 'test_for_cam']
+        assert mode in ['test', 'train']
+        if data_source == 'predict_mask_deep':
+            self.t2w_path = path.replace("temp/predict_mask_deep", "T2W_images").replace("png", "jpg")
+            self.adc_path = path.replace("temp/predict_mask_deep", "ADC_images").replace("png", "jpg")
+            self.dwi_path = path.replace("temp/predict_mask_deep", "DWI_images").replace("png", "jpg")
+        elif data_source == 'labeled_GT_colored':
+            self.t2w_path = path.replace("labeled_GT_colored", "T2W_images").replace("png", "jpg")
+            self.adc_path = path.replace("labeled_GT_colored", "ADC_images").replace("png", "jpg")
+            self.dwi_path = path.replace("labeled_GT_colored", "DWI_images").replace("png", "jpg")
+        else:
+            self.t2w_path = path.replace("test_for_cam", "T2W_images").replace("png", "jpg")
+            self.adc_path = path.replace("test_for_cam", "ADC_images").replace("png", "jpg")
+            self.dwi_path = path.replace("test_for_cam", "DWI_images").replace("png", "jpg")
         if 'ProstateX' in path:
             self.t2w_path = '-'.join(self.t2w_path.split('.')[0].split('-')[:-1]) + '.jpg'
             self.adc_path = '-'.join(self.adc_path.split('.')[0].split('-')[:-1]) + '.jpg'
@@ -43,6 +53,7 @@ class Slice():
         self.np_arr = np.array(Image.open(self.path))  # gt label
         self.de_normolize()
         self.np_arr_ = None
+        self.detected = True
         self.modal = modal  # controller of data modal -> ['t2w', 'adc', '']
         self.t2w_np = np.array(Image.open(self.t2w_path))
         self.adc_np = np.array(Image.open(self.adc_path))
@@ -53,7 +64,7 @@ class Slice():
         self.tumour_gray = []  #: list[gray: int] corresponding to tumour_imgs, each tumour has a gray value.
         self.binary_imgs = []  #: list[img: np.array] by generate_tumour_img() -- gt binary mask
         self.tumour_imgs = []  #: list[img: np.array] by generate_tumour_img() -- tumour cropped
-        self.search_expansion = 1.5
+        self.search_expansion = 100000
         self.min_search_wh = 20
         self.generate_tumour_img()
         self.generate_gray()
@@ -132,14 +143,19 @@ class Slice():
             self.bbox.append(prop_.bbox)
             # if len(self.bbox) > 5:
             #     break
-        bbox_default = [[100, 100, 150, 150]]
-        if len(self.bbox) == 0:
-            cv2.rectangle(np_arr_, (bbox_default[0][1], bbox_default[0][0]), (bbox_default[0][3], bbox_default[0][2]),
-                          (255, 0, 0), 1)
-            self.bbox_ex.append(bbox_default[0])
-            self.bbox.append(bbox_default[0])
-            self.np_arr_ = np_arr_
-            return self.bbox_ex
+
+        # for testing:
+        if self.mode == 'test':
+            bbox_default = [[100, 100, 150, 150]]
+            if len(self.bbox) == 0:
+                cv2.rectangle(np_arr_, (bbox_default[0][1], bbox_default[0][0]), (bbox_default[0][3], bbox_default[0][2]),
+                              (255, 0, 0), 1)
+                self.bbox_ex.append(bbox_default[0])
+                self.bbox.append(bbox_default[0])
+                self.np_arr_ = np_arr_
+                self.detected = False
+                return self.bbox_ex
+
         if len(self.bbox) == 1:
             cv2.rectangle(np_arr_, (self.bbox_ex[0][1], self.bbox_ex[0][0]), (self.bbox_ex[0][3], self.bbox_ex[0][2]),
                           (255, 0, 0), 1)
@@ -152,11 +168,11 @@ class Slice():
             self.np_arr_ = np_arr_
             return self.bbox_ex
         else:
-            for box in self.bbox:
+            for box in self.bbox_ex:
                 cv2.rectangle(np_arr_, (box[1], box[0]), (box[3], box[2]), (255, 0, 0),
                               1)
             self.np_arr_ = np_arr_
-            return self.bbox
+            return self.bbox_ex
 
     def extend_bbox(self, in_box):
         """

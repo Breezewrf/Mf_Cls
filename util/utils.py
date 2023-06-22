@@ -68,7 +68,7 @@ def threshold_to_binary_class(tensor, c=2):
 
 
 def calculate_accuracy(output: torch.Tensor, target: torch.Tensor, c=2):
-    _, output = output.max(1)
+    _, output = output.max(0)
     if c == 4:
         output = torch.where(output >= 2, torch.tensor([1.], device=output.device),
                              torch.tensor([0.], device=output.device))

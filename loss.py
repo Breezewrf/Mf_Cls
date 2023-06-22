@@ -59,7 +59,6 @@ class FocalLoss(torch.nn.Module):
         return focal_loss
 
 
-
 def unet_loss(model, masks_pred, true_masks):
     criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
     if model.n_classes == 1:
@@ -89,7 +88,7 @@ def unetpp_loss(model, masks_pred, true_masks):
                 F.one_hot(true_masks, model.n_classes).permute(0, 3, 1, 2).float(),
                 multiclass=True
             )
-    return loss/len(masks_pred)
+    return loss / len(masks_pred)
 
 
 class TverskyLoss(nn.Module):
@@ -99,7 +98,7 @@ class TverskyLoss(nn.Module):
         self.beta = beta
         self.smooth = smooth
 
-    def forward(self, inputs, targets ):
+    def forward(self, inputs, targets):
         # comment out if your model contains a sigmoid or equivalent activation layer
         inputs = F.sigmoid(inputs)
         bn = inputs.shape[0]
@@ -116,3 +115,17 @@ class TverskyLoss(nn.Module):
         Tversky = (TP + self.smooth) / (TP + self.alpha * FP + self.beta * FN + self.smooth)
 
         return 1 - Tversky
+
+
+class TriModalSimilarityLoss(nn.Module):
+    def __init__(self, margin=1.0):
+        super(TriModalSimilarityLoss, self).__init__()
+        self.margin = margin
+
+    def forward(self, output1, output2, output3):
+        distance12 = F.pairwise_distance(output1, output2, keepdim=True)
+        distance13 = F.pairwise_distance(output1, output3, keepdim=True)
+        distance23 = F.pairwise_distance(output2, output3, keepdim=True)
+
+        loss_triplet = torch.mean(torch.clamp(self.margin - distance12 - distance13 - distance23, min=0.0))
+        return loss_triplet

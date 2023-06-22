@@ -24,7 +24,7 @@ from util.data_loading import unique_mask_values, load_image
 from util.data_loading import load_cls_prostatex_label, enhance_cls
 
 
-def enhance_util(img1, img2, img3, gt):
+def enhance_util(img1, img2, img3, gt, use_cam=False, t2w_cam=None, adc_cam=None, dwi_cam=None):
     # augmentation
     seed = np.random.randint(57749867)
     trans = transforms.Compose([
@@ -47,18 +47,30 @@ def enhance_util(img1, img2, img3, gt):
 
     torch.manual_seed(seed)
     gt = trans(gt.astype(np.float32))
+
+    torch.manual_seed(seed)
+    if use_cam:
+        t2w_cam = trans(t2w_cam.astype(np.float32).transpose(1, 2, 0))
+        adc_cam = trans(adc_cam.astype(np.float32).transpose(1, 2, 0))
+        dwi_cam = trans(dwi_cam.astype(np.float32).transpose(1, 2, 0))
+        return np.array(image1).reshape(img1.shape), np.array(image2).reshape(img1.shape), np.array(image3).reshape(
+            img1.shape), np.array(gt), np.array(t2w_cam), np.array(adc_cam), np.array(dwi_cam)
+
     return np.array(image1).reshape(img1.shape), np.array(image2).reshape(img1.shape), np.array(image3).reshape(
         img1.shape), np.array(gt)
 
 
 class MSFDataset(Dataset):
-    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, DWI_images_dir: str, mask_dir: str, num_classes = 2,
+    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, DWI_images_dir: str,
+                 mask_dir: str, T2W_cam_images_dir: str = None,
+                 ADC_cam_images_dir: str = None, DWI_cam_images_dir: str = None, num_classes=2,
                  scale: float = 1.0,
                  aug: int = 1,
                  ProstateX=True,
                  PWH: bool = True,
                  seg: bool = True,
-                 cls: bool = True):
+                 cls: bool = True,
+                 use_cam: bool = False):
         if seg:
             logging.info("segmentation is currently setting up")
         if cls:
@@ -69,6 +81,11 @@ class MSFDataset(Dataset):
         self.t2w_dir = Path(T2W_images_dir)
         self.adc_dir = Path(ADC_images_dir)
         self.dwi_dir = Path(DWI_images_dir)
+        self.use_cam = use_cam
+        if use_cam:
+            self.t2w_cam_dir = Path(T2W_cam_images_dir)
+            self.adc_cam_dir = Path(ADC_cam_images_dir)
+            self.dwi_cam_dir = Path(DWI_cam_images_dir)
         self.mask_dir = Path(mask_dir)
         assert 0 < scale <= 1, 'Scale must be between 0 and 1'
         self.scale = scale
@@ -131,6 +148,11 @@ class MSFDataset(Dataset):
         t2w_file = list(self.t2w_dir.glob(name + '.*'))
         adc_file = list(self.adc_dir.glob(name + '.*'))
         dwi_file = list(self.dwi_dir.glob(name + '.*'))
+        if self.use_cam:
+
+            t2w_cam_file = list(self.t2w_cam_dir.glob(name + '.*'))
+            adc_cam_file = list(self.adc_cam_dir.glob(name + '.*'))
+            dwi_cam_file = list(self.dwi_cam_dir.glob(name + '.*'))
         GGG = -1
         if self.suffix != "":
             GGG = int(str(mask_file).split('.')[0].split('-')[-1]) - 1  # GGG is range in [0, 1, 2, 3]
@@ -142,6 +164,10 @@ class MSFDataset(Dataset):
         t2w_img = load_image(t2w_file[0])
         adc_img = load_image(adc_file[0])
         dwi_img = load_image(dwi_file[0])
+        if self.use_cam:
+            t2w_cam_img = load_image(t2w_cam_file[0])
+            adc_cam_img = load_image(adc_cam_file[0])
+            dwi_cam_img = load_image(dwi_cam_file[0])
         assert adc_img.size == mask.size, \
             f'adc Image and mask {name} should be the same size, but are {adc_img.size} and {mask.size}, adc_img path:{adc_file[0]}'
         assert t2w_img.size == mask.size, \
@@ -152,9 +178,32 @@ class MSFDataset(Dataset):
         t2w_img = self.preprocess(self.mask_values, t2w_img, self.scale, is_mask=False)
         adc_img = self.preprocess(self.mask_values, adc_img, self.scale, is_mask=False)
         dwi_img = self.preprocess(self.mask_values, dwi_img, self.scale, is_mask=False)
+        if self.use_cam:
+            t2w_cam_img = self.preprocess(self.mask_values, t2w_cam_img, self.scale, is_mask=False)
+            adc_cam_img = self.preprocess(self.mask_values, adc_cam_img, self.scale, is_mask=False)
+            dwi_cam_img = self.preprocess(self.mask_values, dwi_cam_img, self.scale, is_mask=False)
         mask = self.preprocess(self.mask_values, mask, self.scale, is_mask=True)
-        if self.aug:
-            t2w_img, adc_img, dwi_img, mask = enhance_util(t2w_img, adc_img, dwi_img, mask)
+        # if self.aug:
+        #     t2w_img, adc_img, dwi_img, mask = enhance_util(t2w_img, adc_img, dwi_img, mask)
+        #     if self.use_cam:
+        #         t2w_img, adc_img, dwi_img, mask, t2w_cam_img, adc_cam_img, dwi_cam_img = enhance_util(t2w_img, adc_img,
+        #                                                                                               dwi_img, mask,
+        #                                                                                               use_cam=True,
+        #                                                                                               t2w_cam=t2w_cam_img,
+        #                                                                                               adc_cam=adc_cam_img,
+        #                                                                                               dwi_cam=dwi_cam_img)
+        if self.use_cam:
+            return {
+                't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
+                'adc_image': torch.as_tensor(adc_img.copy()).float().contiguous(),
+                'dwi_image': torch.as_tensor(dwi_img.copy()).float().contiguous(),
+                'mask': torch.as_tensor(mask.copy()).long().contiguous(),
+                't2w_cam_image': torch.as_tensor(t2w_cam_img.copy()).float().contiguous(),
+                'adc_cam_image': torch.as_tensor(adc_cam_img.copy()).float().contiguous(),
+                'dwi_cam_image': torch.as_tensor(dwi_cam_img.copy()).float().contiguous(),
+                'GGG': GGG,
+                'name': [str(mask_file[0])]
+            }
         if self.suffix != "*":
             return {
                 't2w_image': torch.as_tensor(t2w_img.copy()).float().contiguous(),
@@ -182,9 +231,18 @@ class MSFClassifyDataset(Dataset):
         self.num_classes = num_classes
         self.num_branch = branch_num
         assert branch_num == 3
-        self.t2w_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='t2w')
-        self.adc_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='adc')
-        self.dwi_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='dwi')
+        self.t2w_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='t2w',
+                                                     data_source=label_dir.split('/')[-2],
+                                                     mode='test' if test_mode else 'train'
+                                                     )
+        self.adc_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='adc',
+                                                     data_source=label_dir.split('/')[-2],
+                                                     mode='test' if test_mode else 'train'
+                                                     )
+        self.dwi_lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal='dwi',
+                                                     data_source=label_dir.split('/')[-2],
+                                                     mode='test' if test_mode else 'train'
+                                                     )
         self.labels = [l.grade for l in self.t2w_lesions]
         trans = transforms.Compose([
             transforms.ToPILImage(mode='RGB'),
@@ -222,7 +280,10 @@ class MSFClassifyDataset(Dataset):
         im_dwi = enhance_cls(self, im_dwi)
         im_dwi = torch.as_tensor(np.asarray(im_dwi).copy())
 
-        return im_t2w.float().contiguous(), im_adc.float().contiguous(), im_dwi.float().contiguous(), self.t2w_lesions[idx].grade
+        name = 'ProstateX-' + '-'.join(
+            ["%04d" % self.t2w_lesions[idx].patient_id, str(self.t2w_lesions[idx].slice_id)]) + '.jpg'
+        return im_t2w.float().contiguous(), im_adc.float().contiguous(), im_dwi.float().contiguous(), self.t2w_lesions[
+            idx].grade, name
 
     def __len__(self):
         return len(self.adc_lesions)

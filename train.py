@@ -35,8 +35,11 @@ import os
 dir_t2w = 'data/ProstateX/T2W_images'
 dir_adc = 'data/ProstateX/ADC_images'
 dir_dwi = 'data/ProstateX/DWI_images'
+dir_t2w_cam = 'data/ProstateX/cam_t2w_v2'
+dir_adc_cam = 'data/ProstateX/cam_adc_v2'
+dir_dwi_cam = 'data/ProstateX/cam_dwi_v2'
 dir_mask = 'data/ProstateX/labeled_GT_colored'
-os.environ["WANDB_MODE"] = "offline"
+# os.environ["WANDB_MODE"] = "offline"
 kf = KFold(n_splits=5, shuffle=True, random_state=57749867)
 focalLoss = FocalLoss(alpha=1, gamma=2)
 tverskyLoss = TverskyLoss(alpha=0.5, beta=0.5)
@@ -70,7 +73,7 @@ def train_model(
 ):
     assert task in ['seg', 'cls', 'unified'], "{} is not a legal mode,please select a proper task in args".format(
         args.task)
-    p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}-deep-sigmoid".format(epochs, batch_size, learning_rate, num_classes,
+    p = "streams6-epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}-deep-sigmoid-v2".format(epochs, batch_size, learning_rate, num_classes,
                                                                   dataset_name, branch_name, loss_name)
     dir_checkpoint = Path('./checkpoints/unified/{}'.format(p))
     best_model_path = 'best.pth'
@@ -80,7 +83,7 @@ def train_model(
         run = wandb.init(project='unified', config=config)
 
     # 1. create dataset
-    dataset = MSFDataset(dir_t2w, dir_adc, dir_dwi, dir_mask, num_classes=num_classes)
+    dataset = MSFDataset(dir_t2w, dir_adc, dir_dwi, dir_mask, dir_t2w_cam, dir_adc_cam, dir_dwi_cam, num_classes=num_classes, use_cam=True)
     test_percent = 0.2
     n_test = int(len(dataset) * test_percent)
     n_train_val = len(dataset) - n_test
@@ -110,7 +113,8 @@ def train_model(
             print("Empirical fold=3 gets best performance")
             continue
         logging.info(f'Using device {device}')
-        model = MSFusionNet(3, 2, task=args.task, deep=args.deep)
+        model = MSFusionNet(args.branch, 2, task=args.task, deep=args.deep,
+                            channels=3 if args.branch == 6 else 1)
         model = model.to(device)
         if args.load is not None:
             # Create a new dictionary with the desired parameters
@@ -179,13 +183,20 @@ def train_model(
             epoch_loss = 0
             with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
                 for data in train_loader:
-                    t2w_img, adc_img, dwi_img, true_mask, grade = \
-                        data['t2w_image'], data['adc_image'], data['dwi_image'], data['mask'], data['GGG']
+                    t2w_img, adc_img, dwi_img, true_mask, grade, t2w_cam_img, adc_cam_img, dwi_cam_img = \
+                        data['t2w_image'], data['adc_image'], data['dwi_image'], data['mask'], data['GGG'], \
+                            data['t2w_cam_image'], data['adc_cam_image'], data['dwi_cam_image']
                     t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    t2w_cam_img = t2w_cam_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    adc_cam_img = adc_cam_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    dwi_cam_img = dwi_cam_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     true_mask = true_mask.to(device=device, dtype=torch.long)
-                    images = torch.stack((t2w_img, adc_img, dwi_img))
+                    t2w_img = torch.cat([t2w_img, t2w_img, t2w_img], dim=1)
+                    adc_img = torch.cat([adc_img, adc_img, adc_img], dim=1)
+                    dwi_img = torch.cat([dwi_img, dwi_img, dwi_img], dim=1)
+                    images = torch.stack((t2w_img, adc_img, dwi_img, t2w_cam_img, adc_cam_img, dwi_cam_img))
                     grade = grade.to(device=device, dtype=torch.float32)
                     model.train()
                     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
@@ -200,7 +211,7 @@ def train_model(
                             assert loss_name in ['focal'], "loss specification error"
                             pred = model(images)
                             if loss_name == 'focal':
-                                loss = focalLoss(pred)
+                                loss = focalLoss(pred, true_mask)
                     optimizer.zero_grad(set_to_none=True)
                     grad_scaler.scale(loss).backward()
                     torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
@@ -255,13 +266,14 @@ if __name__ == '__main__':
     # Change here to adapt to your data
     # n_channels=3 for RGB images
     # n_classes is the number of probabilities you want to get per pixel
-    assert (args.branch == 1 and args.model != 'msf') or (args.branch in [2, 3] and args.model == 'msf')
+    assert (args.branch == 1 and args.model != 'msf') or (args.branch in [2, 3, 6] and args.model == 'msf')
     if args.model == 'unet':
         model = UNet(n_channels=1, n_classes=args.classes, bilinear=args.bilinear)
     elif args.model == 'unetpp':
         model = Nested_UNet(in_ch=1, out_ch=args.classes)
     elif args.model == 'msf':
-        model = MSFusionNet(input_c=args.branch, output_c=args.classes, task=args.task)
+        model = MSFusionNet(input_c=args.branch, output_c=args.classes, task=args.task,
+                            channels=3 if args.branch == 6 else 1)
     model = model.to(device)
 
     logging.info(f'Network:\n'

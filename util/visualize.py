@@ -18,7 +18,10 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from matplotlib import pyplot as plt
 from torch.nn import functional as F
+from msf_cls.ResMSF import ResMSFNet
+from util.data_loader import MSFClassifyDataset
 from matplotlib import colors
+from torch.nn.functional import sigmoid
 
 cam_list = ['GradCAM', 'HiResCAM', 'GradCAMElementWise', 'GradCAMPlusPlus', 'XGradCAM', 'AblationCAM', 'ScoreCAM',
             'EigenCAM', 'EigenGradCAM', 'LayerCAM', 'FullGrad', 'mask']
@@ -41,7 +44,7 @@ def Generate_CAMs(model, im):
     targets = [ClassifierOutputTarget(3)]
     grayscale_cam = cam(input_tensor=im.unsqueeze(0), targets=targets)
     # imshow(grayscale_cam.transpose(1, 2, 0))
-    color_map = (cv2.applyColorMap((grayscale_cam * 255).astype(np.uint8).transpose(1, 2, 0), cv2.COLORMAP_HSV))
+    color_map = (cv2.applyColorMap((grayscale_cam * 255).astype(np.uint8).transpose(1, 2, 0), cv2.COLORMAP_JET))
     # imshow(color_map)
     map = ((im.numpy() * 255).transpose(1, 2, 0) * 0.5 + color_map * 0.5)
     # imshow(map)
@@ -108,37 +111,42 @@ def Generate_CAMs(model, im):
 
 
 def get_img(id=100):
-    dataset = Cls_ProstateX_Dataset(label_dir='/media/breeze/dev/Mf_Cls/data/ProstateX/labeled_GT_colored/',
-                                    test_mode=True)
+    # dataset = Cls_ProstateX_Dataset(label_dir='/media/breeze/dev/Mf_Cls/data/ProstateX/labeled_GT_colored/',
+    #                                 test_mode=True)
+    dataset = MSFClassifyDataset(label_dir="/media/breeze/dev/Mf_Cls/data/ProstateX/temp/predict_mask_deep/",
+                                 num_classes=2, branch_num=3)
     # show image that used for training
-    im, label = dataset[id]
-    imshow(im.transpose(0, 1).transpose(1, 2), desc="used for training")
-    # show lesion that cropped from mask
-    img = dataset.lesions[id].image_np
-    imshow(img, desc="cropped lesion")
+    for id in range(20):
+        im, label = dataset[id]
+        imshow(im.transpose(0, 1).transpose(1, 2), desc="used for training")
+        # show lesion that cropped from mask
+        img = dataset.lesions[id].image_np
+        imshow(img, desc="cropped lesion")
 
-    slice_id = dataset.lesions[id].slice_id
-    patient_id = dataset.lesions[id].patient_id
-    path = glob.glob(
-        '/media/breeze/dev/Mf_Cls/data/ProstateX/labeled_GT_colored/ProstateX-{}-{}-*'.format(str(patient_id).zfill(4),
-                                                                                              str(slice_id)))
-    # '/media/breeze/dev/Mf_Cls/data/ProstateX/label_color/ProstateX-{}-{}-*.jpg'.format(patient_id, slice_id))
-    mask = PIL.Image.open(path[0])
+        slice_id = dataset.lesions[id].slice_id
+        patient_id = dataset.lesions[id].patient_id
+        path = glob.glob(
+            '/media/breeze/dev/Mf_Cls/data/ProstateX/labeled_GT_colored/ProstateX-{}-{}-*'.format(
+                str(patient_id).zfill(4),
+                str(slice_id)))
+        # '/media/breeze/dev/Mf_Cls/data/ProstateX/label_color/ProstateX-{}-{}-*.jpg'.format(patient_id, slice_id))
+        mask = PIL.Image.open(path[0])
 
-    # show the rectangle in mask
-    draw = PIL.ImageDraw.Draw(mask)
-    draw.rectangle((dataset.lesions[id].bbox[0][1], dataset.lesions[id].bbox[0][0], dataset.lesions[id].bbox[0][3],
-                    dataset.lesions[id].bbox[0][2]))
-    imshow(PIL.Image.fromarray(np.array(mask) * 255), desc="mask")
+        # show the rectangle in mask
+        draw = PIL.ImageDraw.Draw(mask)
+        draw.rectangle((dataset.lesions[id].bbox[0][1], dataset.lesions[id].bbox[0][0], dataset.lesions[id].bbox[0][3],
+                        dataset.lesions[id].bbox[0][2]))
+        imshow(PIL.Image.fromarray(np.array(mask) * 255), desc="mask")
 
-    # show the cropped mask by rectangle
-    mask_ = PIL.Image.fromarray(np.uint8((mask)) * 255).crop((dataset.lesions[id].bbox[0][1],
-                                                              dataset.lesions[id].bbox[0][0],
-                                                              dataset.lesions[id].bbox[0][3],
-                                                              dataset.lesions[id].bbox[0][2]))
-    imshow(mask_, desc="rectangle mask")
+        # show the cropped mask by rectangle
+        mask_ = PIL.Image.fromarray(np.uint8((mask)) * 255).crop((dataset.lesions[id].bbox[0][1],
+                                                                  dataset.lesions[id].bbox[0][0],
+                                                                  dataset.lesions[id].bbox[0][3],
+                                                                  dataset.lesions[id].bbox[0][2]))
+        imshow(mask_, desc="rectangle mask")
 
-    return im, mask_
+        CAM_hook(model, im)
+        # return im, mask_
 
 
 def CAM(model, im):
@@ -196,28 +204,73 @@ def CAM_hook(model, im):
     imshow(cam_img)
 
 
+def get_cam_msf():
+    dataset = MSFClassifyDataset(label_dir="/media/breeze/dev/Mf_Cls/data/ProstateX/test_for_cam/",
+                                 num_classes=2, branch_num=3, test_mode=True)
+    # show image that used for training
+    for id in range(4):
+        im_t2w, im_adc, im_dwi, label = dataset[id]
+        im = torch.stack([im_t2w, im_adc, im_dwi])
+        im = im.unsqueeze(dim=1)
+        feature_data = []
+
+        def feature_hook(model, input, output):
+            feature_data.append(output.data.numpy())
+
+        def makeCAM(feature, weights, classes_id):
+            print(feature.shape, weights.shape, classes_id.shape)
+            bz, nc, h, w = feature.shape
+            cam = weights[classes_id].dot(feature.reshape(nc, h * w))
+            cam = cam.reshape(h, w)
+            cam = (cam - cam.min()) / (cam.max() - cam.min())
+            cam_gray = np.uint8(255 * cam)
+            return cv2.resize(cam_gray, (224, 224))
+
+        i = 0
+        model.backbone[i]._modules.get('layer4').register_forward_hook(feature_hook)
+        fc_weight = model.backbone[i]._modules.get('fc').weight.data.numpy()
+        pred = model(im)
+        pred_c = np.argmax(pred.data.numpy())
+
+        cam = makeCAM(feature_data[0], fc_weight, pred_c)
+
+        imshow(cam)
+
+        im_np = im[i][0].numpy().transpose(1, 2, 0)
+        imshow(im_np)
+        h, w, _ = im_np.shape
+        cam_color = cv2.applyColorMap(cv2.resize(cam, (w, h)), cv2.COLORMAP_JET)
+        imshow(cam_color)
+        cam_img = np.clip(im_np * 255 * 0.2 + cam_color * 0.8, 0, 255)
+        imshow(cam_img)
+
+
 if __name__ == '__main__':
     # Load the model
-    model = Resnet_18(num_classes=4)
-    checkpoint_path = '/media/breeze/dev/Mf_Cls/checkpoints/classification/checkpoint_epoch100.pth'
-    checkpoint = torch.load(checkpoint_path)
+    # model = Resnet_18(num_classes=2)
+    model = ResMSFNet(in_c=3, out_c=2, num_branch=3)
+    # checkpoint_path = '/media/breeze/dev/Mf_Cls/checkpoints/classification/epochs[100]-bs[4]-lr[3e-05]-c2-ds[prostatex]-modal[adc]-focal/best_epoch50.pth'
+    checkpoint_path = '/media/breeze/dev/Mf_Cls/checkpoints/classification/stream3-epochs[200]-bs[8]-lr[3e-05]-c2-ds[prostatex]-modal[pre_fuse]-focal-fuse4-exp1000/checkpoint_epoch200.pth'
+    checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint)
     model.eval()
-
+    # get_img()
+    get_cam_msf()
     # Get the CAM weights
 
     # Load and preprocess the input image
 
     # img_tensor = preprocess(img).unsqueeze(0)
-    im, mask_ = get_img(id=45)
+    # for i in range(20):
+    #     im, mask_ = get_img(id=i)
     # img_tensor = im.unsqueeze(0)
     # CAM_weights = get_CAM_weights(model.model, img_tensor, 'layer4', 'fc')
     #
     # # Get the attention map
     # attention_map = get_attention_map(im.transpose(0, 1).transpose(1, 2).numpy(), CAM_weights)
     # imshow(attention_map)
-    CAM(model, im)
-    CAM_hook(model, im)
-    datas = Generate_CAMs(model, im)
-    datas.append(mask_.resize((224, 224), resample=2))
-    plot_imgs(datas)
+    # CAM(model, im)
+    #     CAM_hook(model, im)
+    # datas = Generate_CAMs(model, im)
+    # datas.append(mask_.resize((224, 224), resample=2))
+    # plot_imgs(datas)

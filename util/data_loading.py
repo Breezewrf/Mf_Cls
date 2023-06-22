@@ -34,13 +34,14 @@ class Lesion():
         return s
 
 
-def load_cls_prostatex_label(path='data/ProstateX/labeled_GT_colored/', num_classes=2, modal='t2w'):
+def load_cls_prostatex_label(path='data/ProstateX/labeled_GT_colored/', num_classes=2, modal='t2w', data_source=None,
+                             mode=None):
     Lesion_list = []
     slices = glob(path + "*.png")
     grades = []
     assert len(slices) != 0, 'error path:{}'.format(path)
     for _, s in enumerate(slices):
-        sli = Slice(s, modal=modal)
+        sli = Slice(s, modal=modal, data_source=data_source, mode=mode)
         patient_id = int(s.split('.')[0].split('-')[1])
         slice_id = int(s.split('.')[0].split('-')[2])
         grade = int(s.split('.')[0].split('-')[-1]) - 1  # for ProstateX, the grade is [1-5]
@@ -141,7 +142,9 @@ class Cls_ProstateX_Dataset(Dataset):
         self.lesions = []
         self.num_classes = num_classes
         self.modal = branch_name
-        self.lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal=self.modal)
+        self.lesions += load_cls_prostatex_label(path=label_dir, num_classes=num_classes, modal=self.modal,
+                                                 data_source=label_dir.split('/')[-2],
+                                                 mode='test' if test_mode else 'train')
         self.labels = [l.grade for l in self.lesions]
         trans = transforms.Compose([
             transforms.ToPILImage(mode='RGB'),
@@ -285,7 +288,8 @@ def enhance_util(img1, img2, gt):
 
 
 class MSFDataset(Dataset):
-    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, DWI_images_dir: str, mask_dir: str, scale: float = 1.0, aug: int = 1,
+    def __init__(self, T2W_images_dir: str, ADC_images_dir: str, DWI_images_dir: str, mask_dir: str, scale: float = 1.0,
+                 aug: int = 1,
                  ProstateX=False):
         self.t2w_dir = Path(T2W_images_dir)
         self.adc_dir = Path(ADC_images_dir)

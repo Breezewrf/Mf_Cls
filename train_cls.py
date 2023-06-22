@@ -7,6 +7,7 @@ import logging
 import torch
 from msf_cls.backbone.resnet import resnet34, resnet18, resnet50, resnet101
 from msf_cls.backbone.convnext import ConvNeXt
+from msf_cls.backbone.gain import GAIN
 from msf_cls.backbone.vgg import Vgg_16
 from msf_cls.ResMSF import ResMSFNet
 from util.data_loading import Cls_Dataset, Cls_ProstateX_Dataset
@@ -23,14 +24,17 @@ import wandb
 from sklearn.model_selection import KFold
 from test_cls import test_cls
 from util.data_loader import MSFClassifyDataset
-os.environ["WANDB_MODE"] = "offline"
+
+# os.environ["WANDB_MODE"] = "offline"
 from loss import lw_loss
 from msf_cls.backbone.pretrained import Resnet_18, VGG16
-from loss import FocalLoss, TverskyLoss
-from msf_cls.msfusion import MSFusionNet
+from loss import FocalLoss, TverskyLoss, TriModalSimilarityLoss
+
+
 kf = KFold(n_splits=5, shuffle=True, random_state=57749867)
 focalLoss = FocalLoss(alpha=1, gamma=2)
 tverskyLoss = TverskyLoss(alpha=0.5, beta=0.5)
+tmsLoss = TriModalSimilarityLoss()
 
 
 def train_model(
@@ -59,8 +63,10 @@ def train_model(
         task='cls',
         log=True
 ):
-    p = "epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}".format(epochs, batch_size, learning_rate, num_classes,
-                                                               dataset_name, branch_name, loss_name)
+    p = "gain-stream3-epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}-fuse4-exp1000-v2".format(epochs, batch_size, learning_rate,
+                                                                                      num_classes,
+                                                                                      dataset_name, branch_name,
+                                                                                      loss_name)
     dir_checkpoint = Path('./checkpoints/classification/{}'.format(p))
     best_model_path = 'best.pth'
     if log:
@@ -98,23 +104,33 @@ def train_model(
         if fold != 3:
             print("Empirical fold=3 gets best performance")
             continue
-        model_list = {'resnet18': Resnet_18(num_classes=num_classes), 'resnet34': resnet34(), 'resnet50': resnet50(),
-                      'resnet101': resnet101(), 'msfusion': MSFusionNet(input_c=2, output_c=args.classes, task=task),
-                      'vgg16': VGG16(), 'convnext': ConvNeXt(),
-                      'resmsf': ResMSFNet(in_c=3, out_c=2, num_branch=args.branch)}
+        if args.model != 'resmsf_gain':
+            model_list = {'resnet18': Resnet_18(num_classes=args.classes),
+                          'resmsf': ResMSFNet(in_c=3, out_c=args.classes, num_branch=args.branch),
+                          'vgg16': VGG16(),
+                          }
+            assert args.model in model_list
+            model = model_list[args.model]
+        else:
+            if args.test_mode:
+                model = GAIN(num_classes=2, backbone_name='resmsf',
+                             load_dir=args.load).model
+            else:
+                model = GAIN(num_classes=2, backbone_name='resmsf',
+                             load_dir=args.load)
+            logging.info(f'Using model {args.model}')
         logging.info(f'Using device {device}')
-        assert model_name in model_list
-        model = model_list[model_name]
+
         model = model.to(device)
-        if args.load is not None:
-            # Create a new dictionary with the desired parameters
-            new_state_dict = OrderedDict()
-            if args.load:
-                state_dict_seg = torch.load(args.load)
-                for key in state_dict_seg:
-                    if 'encode' in key or 'inc' in key:
-                        new_state_dict[key] = state_dict_seg[key]
-                model.load_state_dict(new_state_dict, strict=False)
+        # if args.load is not None:
+        #     # Create a new dictionary with the desired parameters
+        #     new_state_dict = OrderedDict()
+        #     if args.load:
+        #         state_dict_seg = torch.load(args.load)
+        #         for key in state_dict_seg:
+        #             if 'encode' in key or 'inc' in key:
+        #                 new_state_dict[key] = state_dict_seg[key]
+        #         model.load_state_dict(new_state_dict, strict=False)
 
         train_set = torch.utils.data.Subset(dataset, train_idx)
         val_set = torch.utils.data.Subset(dataset, val_idx)
@@ -122,7 +138,7 @@ def train_model(
         # re-weight
         class_weight = np.zeros(num_classes)
         train_labels = []
-        for im, _, _, label in train_set:
+        for im, _, _, label, _ in train_set:
             l, t = np.unique(label, return_counts=True)
             class_weight[l] += t
             train_labels.append(label)
@@ -136,7 +152,7 @@ def train_model(
         test_lodaer = DataLoader(test_set, shuffle=False, **loader_args)
         # exp_weight = [1, 0, 0, 0]
         class_weight = np.zeros(num_classes)
-        for im, _, _, label in train_loader:
+        for im, _, _, label, _ in train_loader:
             l, t = np.unique(label, return_counts=True)
             class_weight[l] += t
         logging.info("class weight after re_weight: {}".format(class_weight))
@@ -153,7 +169,7 @@ def train_model(
             model.train()
             epoch_loss = 0
             with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
-                for t2w_img, adc_img, dwi_img, grade in train_loader:
+                for t2w_img, adc_img, dwi_img, grade, _ in train_loader:
 
                     t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
@@ -163,14 +179,22 @@ def train_model(
                     grade = grade.to(device=device, dtype=torch.float32)
                     model.train()
                     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):
-                        pred = model(img)
+                        if model_name == 'resmsf_gain':
+                            pred1, pred2 = model(img)
+                            loss_pred = focalLoss(pred1, grade)
+                            loss_attention = pred2[torch.arange(len(grade)), grade.to(torch.long)].sum()
+                            loss = loss_pred + loss_attention
+                        else:
+                            pred = model(img)
                         # print("pred: ", pred.shape)
                         # print("pred: ", pred)
                         # print("res: ", res)
                         # loss = lw_loss(pred, grade)
-                        assert loss_name in ['focal'], "loss specification error"
-                        if loss_name == 'focal':
-                            loss = focalLoss(pred, grade)
+                            assert loss_name in ['focal'], "loss specification error"
+                            if loss_name == 'focal':
+                                loss = focalLoss(pred, grade)
+                            # l1_loss = abs(torch.argmax(pred, dim=1) - grade)
+                            # loss += l1_loss
 
                     optimizer.zero_grad(set_to_none=True)
                     grad_scaler.scale(loss).backward()
@@ -222,14 +246,13 @@ def train_model(
 
         logging.info("best model is trained with {} epochs, best acc is {}".format(best_epoch, best_acc))
 
-
         logging.info(f'Checkpoint  training finished!')
 
 
 def get_args():
     parser = argparse.ArgumentParser(description='Train the Classification')
-    parser.add_argument('--epochs', '-e', metavar='E', type=int, default=300, help='Number of epochs')
-    parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=1, help='Batch size')
+    parser.add_argument('--epochs', '-e', metavar='E', type=int, default=200, help='Number of epochs')
+    parser.add_argument('--batch-size', '-b', dest='batch_size', metavar='B', type=int, default=8, help='Batch size')
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=3e-5,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str, default=False, help='Load model from a .pth file')
@@ -241,7 +264,7 @@ def get_args():
     parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
     parser.add_argument('--model', type=str, default='resmsf',
                         help='choose model from: resnet18, resnet34, resnet50,resnet101, vgg16, convnext, mfcls')
-    parser.add_argument('--branch', type=int, default=2, help='denotes the number of streams')
+    parser.add_argument('--branch', type=int, default=3, help='denotes the number of streams')
     parser.add_argument('--seed', type=int, default=12321)
     parser.add_argument('--aug', type=int, default=1, help='set aug equal to 1 to implement augmentation')
     parser.add_argument('--opt', type=str, default='adamw')
@@ -251,6 +274,8 @@ def get_args():
     parser.add_argument('--task', type=str, default='cls')
     parser.add_argument('--log', type=bool, default=True)
     parser.add_argument('--desc', type=str)
+    parser.add_argument('--data_source', type=str)
+    parser.add_argument('--test_mode', type=bool)
     return parser.parse_args()
 
 
