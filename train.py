@@ -39,6 +39,19 @@ dir_t2w_cam = 'data/ProstateX/cam_t2w_v2'
 dir_adc_cam = 'data/ProstateX/cam_adc_v2'
 dir_dwi_cam = 'data/ProstateX/cam_dwi_v2'
 dir_mask = 'data/ProstateX/labeled_GT_colored'
+
+"""
+version 3
+train and test set for PWH
+"""
+dir_mask_train = 'data/ProstateX/train/labeled_GT_colored'
+dir_t2w_train = 'data/ProstateX/train/T2W_images'
+dir_adc_train = 'data/ProstateX/train/ADC_images'
+dir_dwi_train = 'data/ProstateX/train/DWI_images'
+dir_mask_test = 'data/ProstateX/test/labeled_GT_colored'
+dir_t2w_test = 'data/ProstateX/test/T2W_images'
+dir_adc_test = 'data/ProstateX/test/ADC_images'
+dir_dwi_test = 'data/ProstateX/test/DWI_images'
 # os.environ["WANDB_MODE"] = "offline"
 kf = KFold(n_splits=5, shuffle=True, random_state=57749867)
 focalLoss = FocalLoss(alpha=1, gamma=2)
@@ -73,7 +86,7 @@ def train_model(
 ):
     assert task in ['seg', 'cls', 'unified'], "{} is not a legal mode,please select a proper task in args".format(
         args.task)
-    p = "streams6-epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}-deep-sigmoid-v2".format(epochs, batch_size, learning_rate, num_classes,
+    p = "streams3-epochs[{}]-bs[{}]-lr[{}]-c{}-ds[{}]-modal[{}]-{}-sigmoid".format(epochs, batch_size, learning_rate, num_classes,
                                                                   dataset_name, branch_name, loss_name)
     dir_checkpoint = Path('./checkpoints/unified/{}'.format(p))
     best_model_path = 'best.pth'
@@ -83,12 +96,18 @@ def train_model(
         run = wandb.init(project='unified', config=config)
 
     # 1. create dataset
-    dataset = MSFDataset(dir_t2w, dir_adc, dir_dwi, dir_mask, dir_t2w_cam, dir_adc_cam, dir_dwi_cam, num_classes=num_classes, use_cam=True)
-    test_percent = 0.2
-    n_test = int(len(dataset) * test_percent)
-    n_train_val = len(dataset) - n_test
-    train_val_set, test_set = random_split(dataset, [n_train_val, n_test],
-                                           generator=torch.Generator().manual_seed(seed))
+    # dataset = MSFDataset(dir_t2w, dir_adc, dir_dwi, dir_mask, dir_t2w_cam, dir_adc_cam, dir_dwi_cam,
+    #                      num_classes=num_classes, use_cam=args.use_cam)
+    # test_percent = 0.2
+    # n_test = int(len(dataset) * test_percent)
+    # n_train_val = len(dataset) - n_test
+    # train_val_set, test_set = random_split(dataset, [n_train_val, n_test],
+    #                                        generator=torch.Generator().manual_seed(seed))
+    train_val_set = MSFDataset(dir_t2w_train, dir_adc_train, dir_dwi_train, dir_mask_train, dir_t2w_cam, dir_adc_cam, dir_dwi_cam,
+                         num_classes=num_classes, use_cam=args.use_cam)
+    test_set = MSFDataset(dir_t2w_test, dir_adc_test, dir_dwi_test, dir_mask_test, dir_t2w_cam, dir_adc_cam,
+                               dir_dwi_cam,
+                               num_classes=num_classes, use_cam=args.use_cam)
     # n_val = int(len(dataset) * val_percent)
     # n_train = len(dataset) - n_val
 
@@ -114,7 +133,7 @@ def train_model(
             continue
         logging.info(f'Using device {device}')
         model = MSFusionNet(args.branch, 2, task=args.task, deep=args.deep,
-                            channels=3 if args.branch == 6 else 1)
+                            channels=3 if args.branch == 6 else 3)
         model = model.to(device)
         if args.load is not None:
             # Create a new dictionary with the desired parameters
@@ -136,8 +155,8 @@ def train_model(
             for param in model.encoder4.parameters():
                 param.requires_grad = False
 
-        train_set = torch.utils.data.Subset(dataset, train_idx)
-        val_set = torch.utils.data.Subset(dataset, val_idx)
+        train_set = torch.utils.data.Subset(train_val_set, train_idx)
+        val_set = torch.utils.data.Subset(train_val_set, val_idx)
         n_train = len(train_set)
         if task != 'seg':
             # re-weight
@@ -169,7 +188,7 @@ def train_model(
             loader_args = dict(batch_size=batch_size, num_workers=os.cpu_count(), pin_memory=True)
             train_loader = DataLoader(train_set, shuffle=True, **loader_args)
             val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
-            test_lodaer = DataLoader(test_set, shuffle=False, **loader_args)
+            test_lodaer = DataLoader(test_set, shuffle=False, drop_last=True, **loader_args)
         # 4. Set up the optimizer, the loss, the learning rate scheduler and the loss scaling for AMP
         optimizer = optim.AdamW(model.parameters(),
                                 lr=learning_rate)  # , weight_decay=weight_decay, momentum=momentum, foreach=True)
@@ -183,20 +202,35 @@ def train_model(
             epoch_loss = 0
             with tqdm(total=n_train, desc=f'Epoch {epoch}/{epochs}', unit='img') as pbar:
                 for data in train_loader:
-                    t2w_img, adc_img, dwi_img, true_mask, grade, t2w_cam_img, adc_cam_img, dwi_cam_img = \
-                        data['t2w_image'], data['adc_image'], data['dwi_image'], data['mask'], data['GGG'], \
-                            data['t2w_cam_image'], data['adc_cam_image'], data['dwi_cam_image']
-                    t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                    adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                    dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                    t2w_cam_img = t2w_cam_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                    adc_cam_img = adc_cam_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                    dwi_cam_img = dwi_cam_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
-                    true_mask = true_mask.to(device=device, dtype=torch.long)
-                    t2w_img = torch.cat([t2w_img, t2w_img, t2w_img], dim=1)
-                    adc_img = torch.cat([adc_img, adc_img, adc_img], dim=1)
-                    dwi_img = torch.cat([dwi_img, dwi_img, dwi_img], dim=1)
-                    images = torch.stack((t2w_img, adc_img, dwi_img, t2w_cam_img, adc_cam_img, dwi_cam_img))
+                    if args.use_cam:
+                        t2w_img, adc_img, dwi_img, true_mask, grade, t2w_cam_img, adc_cam_img, dwi_cam_img = \
+                            data['t2w_image'], data['adc_image'], data['dwi_image'], data['mask'], data['GGG'], \
+                                data['t2w_cam_image'], data['adc_cam_image'], data['dwi_cam_image']
+                        t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                        adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                        dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                        t2w_cam_img = t2w_cam_img.to(device=device, dtype=torch.float32,
+                                                     memory_format=torch.channels_last)
+                        adc_cam_img = adc_cam_img.to(device=device, dtype=torch.float32,
+                                                     memory_format=torch.channels_last)
+                        dwi_cam_img = dwi_cam_img.to(device=device, dtype=torch.float32,
+                                                     memory_format=torch.channels_last)
+                        true_mask = true_mask.to(device=device, dtype=torch.long)
+                        t2w_img = torch.cat([t2w_img, t2w_img, t2w_img], dim=1)
+                        adc_img = torch.cat([adc_img, adc_img, adc_img], dim=1)
+                        dwi_img = torch.cat([dwi_img, dwi_img, dwi_img], dim=1)
+                        images = torch.stack((t2w_img, adc_img, dwi_img, t2w_cam_img, adc_cam_img, dwi_cam_img))
+                    else:
+                        t2w_img, adc_img, dwi_img, true_mask, grade = \
+                            data['t2w_image'], data['adc_image'], data['dwi_image'], data['mask'], data['GGG']
+                        t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                        adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                        dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                        true_mask = true_mask.to(device=device, dtype=torch.long)
+                        t2w_img = torch.cat([t2w_img, t2w_img, t2w_img], dim=1)
+                        adc_img = torch.cat([adc_img, adc_img, adc_img], dim=1)
+                        dwi_img = torch.cat([dwi_img, dwi_img, dwi_img], dim=1)
+                        images = torch.stack((t2w_img, adc_img, dwi_img))
                     grade = grade.to(device=device, dtype=torch.float32)
                     model.train()
                     with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=amp):

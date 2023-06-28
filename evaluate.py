@@ -56,6 +56,9 @@ def evaluate(net, dataloader, device, amp, num_branch, deep):
                     t2w_img = t2w_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     adc_img = adc_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
                     dwi_img = dwi_img.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+                    t2w_img = torch.cat([t2w_img, t2w_img, t2w_img], dim=1)
+                    adc_img = torch.cat([adc_img, adc_img, adc_img], dim=1)
+                    dwi_img = torch.cat([dwi_img, dwi_img, dwi_img], dim=1)
                     image = torch.stack((t2w_img, adc_img, dwi_img))
                 if num_branch == 6:
                     t2w_img, adc_img, dwi_img, true_mask, grade, t2w_cam_img, adc_cam_img, dwi_cam_img = \
@@ -86,10 +89,10 @@ def evaluate(net, dataloader, device, amp, num_branch, deep):
                 mask_pred = net(image)
             if net.name == 'unetpp':
                 mask_pred = mask_pred[0]
-            if net.name == 'msf':
-                visualize_images(t2w_img, mask_true, mask_pred, net.name, batch['name'])
-            else:
-                visualize_images(image, mask_true, mask_pred, net.name)
+            # if net.name == 'msf':
+            #     visualize_images(t2w_img, mask_true, mask_pred, net.name, batch['name'])
+            # else:
+            #     visualize_images(image, mask_true, mask_pred, net.name)
             if net.n_classes == 1:
                 assert mask_true.min() >= 0 and mask_true.max() <= 1, 'True mask indices should be in [0, 1]'
                 mask_pred = (F.sigmoid(mask_pred) > 0.5).float()
